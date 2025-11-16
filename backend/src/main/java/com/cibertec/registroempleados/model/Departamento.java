@@ -8,10 +8,11 @@ import jakarta.persistence.Table;
 import lombok.Data;
 
 @Entity
-@Table(name = "departamento")
+@Table(name = "departamentos")
 @Data
 public class Departamento {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nombre;
+    private String descripcion;
 }

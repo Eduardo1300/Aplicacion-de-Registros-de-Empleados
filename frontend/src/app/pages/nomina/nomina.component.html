@@ -1,0 +1,107 @@
+<div class="nomina-container">
+  <div class="header">
+    <h2><i class="bi bi-cash-coin"></i> Gestión de Nómina</h2>
+    <button class="btn btn-primary" (click)="toggleFormulario()">
+      <i class="bi bi-plus-circle"></i> {{ editandoId ? 'Cancelar' : 'Nuevo Salario' }}
+    </button>
+  </div>
+
+  <!-- Formulario -->
+  <div class="formulario-section" *ngIf="mostrarFormulario">
+    <div class="form-group">
+      <label>Monto Base *</label>
+      <input type="number" class="form-control" [(ngModel)]="nuevoSalario.montoBase" placeholder="Ingresa el monto">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Tipo de Salario</label>
+        <select class="form-control" [(ngModel)]="nuevoSalario.tipoSalario">
+          <option value="MENSUAL">Mensual</option>
+          <option value="QUINCENAL">Quincenal</option>
+          <option value="SEMANAL">Semanal</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Frecuencia de Pago</label>
+        <select class="form-control" [(ngModel)]="nuevoSalario.frecuenciaPago">
+          <option value="MENSUAL">Mensual</option>
+          <option value="QUINCENAL">Quincenal</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn btn-success" (click)="guardarSalario()">
+      <i class="bi bi-check-circle"></i> {{ editandoId ? 'Actualizar' : 'Guardar' }}
+    </button>
+  </div>
+
+  <!-- Tabla de Salarios -->
+  <div class="section">
+    <h3>Salarios Activos</h3>
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Empleado</th>
+            <th>Monto Base</th>
+            <th>Tipo</th>
+            <th>Frecuencia</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let salario of salarios">
+            <td>{{ salario.empleado }}</td>
+            <td>{{ salario.montoBase | currency }}</td>
+            <td>{{ salario.tipoSalario }}</td>
+            <td>{{ salario.frecuenciaPago }}</td>
+            <td><span class="badge bg-success">{{ salario.estado }}</span></td>
+            <td>
+              <button class="btn btn-sm btn-warning" (click)="editarSalario(salario)">
+                <i class="bi bi-pencil"></i>
+              </button>
+              <button class="btn btn-sm btn-danger" (click)="eliminarSalario(salario.id)">
+                <i class="bi bi-trash"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Historial de Pagos -->
+  <div class="section">
+    <h3>Historial de Pagos</h3>
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Empleado</th>
+            <th>Periodo</th>
+            <th>Monto Neto</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let pago of historialPagos">
+            <td>{{ pago.empleado }}</td>
+            <td>{{ pago.periodo }}</td>
+            <td>{{ pago.montoNeto | currency }}</td>
+            <td>
+              <span class="badge" [ngClass]="pago.estado === 'PAGADO' ? 'bg-success' : 'bg-warning'">
+                {{ pago.estado }}
+              </span>
+            </td>
+            <td>
+              <button class="btn btn-sm btn-info">
+                <i class="bi bi-eye"></i> Ver
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

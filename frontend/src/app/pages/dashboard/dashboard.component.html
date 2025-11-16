@@ -1,0 +1,143 @@
+<div class="dashboard-root">
+  <!-- barra superior -->
+  <header class="topbar d-flex align-items-center justify-content-between px-4 py-3">
+    <div class="d-flex align-items-center gap-3">
+      <h1 class="m-0 title">
+        <i class="bi bi-graph-up me-2"></i>Panel de Control
+      </h1>
+    </div>
+    <div class="d-flex gap-2 align-items-center">
+      <button class="btn btn-primary btn-sm me-2" (click)="descargarPDF()" title="Exportar PDF">
+        <i class="bi bi-file-pdf me-1"></i> Exportar PDF
+      </button>
+      <button class="btn btn-light btn-sm" (click)="refreshData()" title="Actualizar datos">
+        <i class="bi bi-arrow-clockwise"></i>
+      </button>
+    </div>
+  </header>
+
+  <div class="container-fluid p-4">
+    <!-- fila de KPIs -->
+    <div class="row g-3 mb-4">
+      <div class="col-lg-3 col-md-6 col-sm-12" *ngFor="let k of kpis">
+        <div class="kpi-card p-3 d-flex align-items-center">
+          <div class="kpi-icon me-3" [style.background]="k.color">
+            <i class="{{ k.icon }}"></i>
+          </div>
+          <div class="w-100">
+            <div class="kpi-value" [attr.data-target]="k.value">{{ k.displayValue }}</div>
+            <div class="text-muted small">{{ k.label }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- grid de gráficos -->
+    <div class="row g-4">
+      <!-- Barra de tardanzas + lista -->
+      <div class="col-lg-6">
+        <div class="glass-card p-0 h-100 d-flex flex-column">
+          <div class="card-head d-flex justify-content-between align-items-center">
+            <div>
+              <h5 class="mb-0">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>Top 5 Empleados con Más Tardanzas
+              </h5>
+              <small>Empleados ordenados por cantidad de tardanzas</small>
+            </div>
+          </div>
+
+          <div class="chart-wrap p-3">
+            <canvas #chartTardanza></canvas>
+          </div>
+
+          <div class="px-3 pb-3">
+            <ul class="list-group list-group-flush small">
+              <li class="list-group-item" *ngFor="let emp of empleadosTardanza; let i = index">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-danger rounded-circle" style="width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;">
+                      {{ i + 1 }}
+                    </span>
+                    <strong>{{ emp.nombre }}</strong>
+                  </div>
+                  <span class="badge bg-warning text-dark">{{ emp.tardanzas }} tardanzas</span>
+                </div>
+                <div class="progress mt-2" style="height:6px;">
+                  <div class="progress-bar bg-danger" [style.width.%]="(emp.tardanzas/maxTardanzas*100)"></div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Donut porcentaje de asistencia -->
+      <div class="col-lg-6">
+        <div class="glass-card p-0 h-100 d-flex flex-column">
+          <div class="card-head d-flex justify-content-between align-items-center">
+            <div>
+              <h5 class="mb-0">
+                <i class="bi bi-pie-chart-fill me-2"></i>Porcentaje de Asistencia
+              </h5>
+              <small>Comparativo de presentes vs faltas</small>
+            </div>
+          </div>
+
+          <div class="d-flex align-items-center justify-content-center my-4 flex-fill">
+            <div style="position: relative; width: 280px; height: 280px;">
+              <canvas #chartPorcentaje style="width: 100%; height: 100%;"></canvas>
+              <div class="center-badge">
+                <div class="fs-2 fw-bold text-success">{{ porcentajeAsistencia }}%</div>
+                <div class="text-muted small">presentes</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-auto text-center px-3 pb-3">
+            <div class="row g-2">
+              <div class="col-6">
+                <small class="text-muted d-block">Presentes</small>
+                <strong class="text-success">{{ porcentajeAsistencia }}%</strong>
+              </div>
+              <div class="col-6">
+                <small class="text-muted d-block">Ausentes</small>
+                <strong class="text-danger">{{ 100 - porcentajeAsistencia }}%</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gráfico mensual área -->
+      <div class="col-lg-8">
+        <div class="glass-card p-0 h-100 d-flex flex-column">
+          <div class="card-head d-flex justify-content-between align-items-center">
+            <div>
+              <h5 class="mb-0">
+                <i class="bi bi-graph-up-arrow me-2"></i>Asistencias Mensuales
+              </h5>
+              <small>Tendencia de asistencias por mes en 2025</small>
+            </div>
+          </div>
+          <div class="chart-wrap p-3">
+            <canvas #chartMes></canvas>
+          </div>
+          <div class="px-3 pb-3">
+            <div class="row g-2">
+              <div class="col-6" *ngFor="let mes of asistenciasPorMes | slice:0:6">
+                <small class="text-muted d-block">{{ mes.mes }}</small>
+                <strong>{{ mes.cantidad }}</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- logout flotante -->
+  <div class="logout-fixed" (click)="cerrarSesion()" title="Cerrar sesión">
+    <i class="bi bi-box-arrow-right me-2"></i> Cerrar sesión
+  </div>
+</div>

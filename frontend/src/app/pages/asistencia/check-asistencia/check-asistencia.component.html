@@ -1,0 +1,143 @@
+<div class="check-asistencia-wrapper">
+  <!-- Encabezado -->
+  <div class="check-header">
+    <div class="header-content">
+      <h1>
+        <i class="bi bi-clock-fill"></i>
+        Marcado de Asistencia
+      </h1>
+      <p class="bienvenida">Bienvenido, {{ empleadoNombre }}</p>
+    </div>
+  </div>
+
+  <!-- Contenedor principal -->
+  <div class="check-container">
+    <!-- Sección de hora y fecha -->
+    <div class="info-section">
+      <div class="tiempo-actual">
+        <div class="hora-display">
+          <span class="hora">{{ horaActual }}</span>
+          <span class="meridiem"></span>
+        </div>
+        <div class="fecha-display">
+          {{ fechaActual }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Mostrar mensaje de éxito o error -->
+    <div *ngIf="mostrarMensaje" class="alert-message" 
+         [ngClass]="mensajeExito ? 'alert-success' : 'alert-danger'">
+      <i class="bi" [ngClass]="mensajeExito ? 'bi-check-circle' : 'bi-exclamation-circle'"></i>
+      <span>{{ mensajeExito || mensajeError }}</span>
+    </div>
+
+    <!-- Estado de la asistencia -->
+    <div class="estado-section">
+      <h2>Estado de tu Asistencia</h2>
+
+      <!-- Tarjetas de entrada y salida -->
+      <div class="asistencia-cards">
+        <!-- Tarjeta de Entrada -->
+        <div class="asistencia-card" [ngClass]="getClaseEntrada()">
+          <div class="card-icon">
+            <i class="bi bi-box-arrow-in-right"></i>
+          </div>
+          <div class="card-content">
+            <h3>Entrada</h3>
+            <p class="hora-marcada" *ngIf="registroHoy && (registroHoy.horaEntrada || registroHoy.hora_entrada)">
+              {{ registroHoy.horaEntrada || registroHoy.hora_entrada }}
+            </p>
+            <p class="estado-texto" *ngIf="!yaMarcoEntrada">
+              <span class="badge-pendiente">Pendiente</span>
+            </p>
+            <p class="estado-texto" *ngIf="yaMarcoEntrada">
+              <span class="badge-marcado">✓ Marcado</span>
+            </p>
+          </div>
+          <button 
+            class="btn-marcar"
+            [disabled]="yaMarcoEntrada"
+            (click)="marcarEntrada()"
+            [ngClass]="yaMarcoEntrada ? 'btn-disabled' : 'btn-active'">
+            {{ yaMarcoEntrada ? 'Marcado' : 'Marcar Entrada' }}
+          </button>
+        </div>
+
+        <!-- Separador -->
+        <div class="separator">
+          <span class="time-label" *ngIf="tiempoTranscurrido">
+            Tiempo: {{ tiempoTranscurrido }}
+          </span>
+        </div>
+
+        <!-- Tarjeta de Salida -->
+        <div class="asistencia-card" [ngClass]="getClaseSalida()">
+          <div class="card-icon">
+            <i class="bi bi-box-arrow-right"></i>
+          </div>
+          <div class="card-content">
+            <h3>Salida</h3>
+            <p class="hora-marcada" *ngIf="registroHoy && (registroHoy.horaSalida || registroHoy.hora_salida)">
+              {{ registroHoy.horaSalida || registroHoy.hora_salida }}
+            </p>
+            <p class="estado-texto" *ngIf="!yaMarcoSalida">
+              <span [ngClass]="yaMarcoEntrada ? 'badge-disponible' : 'badge-pendiente'">
+                {{ yaMarcoEntrada ? 'Disponible' : 'Pendiente' }}
+              </span>
+            </p>
+            <p class="estado-texto" *ngIf="yaMarcoSalida">
+              <span class="badge-marcado">✓ Marcado</span>
+            </p>
+          </div>
+          <button 
+            class="btn-marcar"
+            [disabled]="!yaMarcoEntrada || yaMarcoSalida"
+            (click)="marcarSalida()"
+            [ngClass]="(!yaMarcoEntrada || yaMarcoSalida) ? 'btn-disabled' : 'btn-active'">
+            {{ yaMarcoSalida ? 'Marcado' : 'Marcar Salida' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Información de hoy -->
+    <div class="info-box" *ngIf="registroHoy">
+      <h3>Resumen de hoy</h3>
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="label">Entrada:</span>
+          <span class="value">{{ registroHoy.horaEntrada || registroHoy.hora_entrada }}</span>
+        </div>
+        <div class="info-item" *ngIf="registroHoy.horaSalida || registroHoy.hora_salida">
+          <span class="label">Salida:</span>
+          <span class="value">{{ registroHoy.horaSalida || registroHoy.hora_salida }}</span>
+        </div>
+        <div class="info-item" *ngIf="tiempoTranscurrido">
+          <span class="label">Tiempo trabajado:</span>
+          <span class="value">{{ tiempoTranscurrido }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Estado:</span>
+          <span class="value badge" [ngClass]="(registroHoy.estadoAsist || registroHoy.Estado_Asist) === 'Asistio' ? 'bg-success' : 'bg-warning'">
+            {{ registroHoy.estadoAsist || registroHoy.Estado_Asist }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Instrucciones -->
+    <div class="instructions">
+      <h4>
+        <i class="bi bi-info-circle"></i>
+        Instrucciones
+      </h4>
+      <ul>
+        <li>Haz clic en "Marcar Entrada" cuando llegues al trabajo</li>
+        <li>Haz clic en "Marcar Salida" cuando termines tu jornada</li>
+        <li>Solo puedes marcar una entrada y una salida por día</li>
+        <li>El sistema registrará automáticamente la hora exacta</li>
+      </ul>
+    </div>
+  </div>
+</div>

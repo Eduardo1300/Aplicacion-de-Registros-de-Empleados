@@ -1,0 +1,76 @@
+<div class="comunicacion-container">
+  <div class="header">
+    <h2><i class="bi bi-chat-dots"></i> Comunicación</h2>
+    <div class="tab-buttons">
+      <button [class.active]="activeTab === 'notificaciones'" (click)="selectTab('notificaciones')">
+        <i class="bi bi-bell"></i> Notificaciones
+      </button>
+      <button [class.active]="activeTab === 'anuncios'" (click)="selectTab('anuncios')">
+        <i class="bi bi-megaphone"></i> Anuncios
+      </button>
+      <button [class.active]="activeTab === 'mensajes'" (click)="selectTab('mensajes')">
+        <i class="bi bi-envelope"></i> Mensajes
+      </button>
+    </div>
+  </div>
+
+  <!-- Notificaciones -->
+  <div *ngIf="activeTab === 'notificaciones'" class="tab-content">
+    <h3>Notificaciones</h3>
+    <div class="notifications-list">
+      <div *ngFor="let notif of notificaciones" class="notification-card" [class.leida]="notif.leida">
+        <div class="notif-header">
+          <h4>{{ notif.titulo }}</h4>
+          <span class="priority" [ngClass]="'priority-' + notif.prioridad.toLowerCase()">{{ notif.prioridad }}</span>
+        </div>
+        <p>{{ notif.mensaje }}</p>
+        <button *ngIf="!notif.leida" class="btn btn-sm btn-primary" (click)="marcarLeida(notif.id)">
+          Marcar como leída
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Anuncios -->
+  <div *ngIf="activeTab === 'anuncios'" class="tab-content">
+    <div class="anuncios-header">
+      <h3>Anuncios</h3>
+      <button class="btn btn-primary" (click)="mostrarFormulario = !mostrarFormulario">
+        <i class="bi bi-plus"></i> Nuevo Anuncio
+      </button>
+    </div>
+
+    <div *ngIf="mostrarFormulario" class="form-section">
+      <input class="form-control" [(ngModel)]="nuevoAnuncio.titulo" placeholder="Título del anuncio">
+      <textarea class="form-control" [(ngModel)]="nuevoAnuncio.contenido" placeholder="Contenido"></textarea>
+      <select class="form-control" [(ngModel)]="nuevoAnuncio.categoria">
+        <option value="EMPRESA">Empresa</option>
+        <option value="DEPARTAMENTO">Departamento</option>
+        <option value="PROYECTO">Proyecto</option>
+      </select>
+      <button class="btn btn-success" (click)="guardarAnuncio()">Guardar</button>
+    </div>
+
+    <div class="anuncios-list">
+      <div *ngFor="let anuncio of anuncios" class="anuncio-card" [class.destacado]="anuncio.destacado">
+        <h4>{{ anuncio.titulo }}</h4>
+        <p>{{ anuncio.contenido }}</p>
+        <button class="btn btn-danger btn-sm" (click)="deleteAnuncio(anuncio.id)">Eliminar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mensajes -->
+  <div *ngIf="activeTab === 'mensajes'" class="tab-content">
+    <h3>Mensajes</h3>
+    <div class="messages-list">
+      <div *ngFor="let msg of mensajes" class="message-card" [class.no-leido]="!msg.leido">
+        <div class="msg-header">
+          <strong>{{ msg.remitente }}</strong>
+          <span *ngIf="!msg.leido" class="badge-new">Nuevo</span>
+        </div>
+        <p class="msg-subject">{{ msg.asunto }}</p>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,58 @@
+<div class="ver-empleado-bg py-5">
+  <div class="container">
+    <h2 class="text-center mb-4 fw-bold text-gradient">
+      <span *ngIf="esSuProfiil">Mi Perfil</span>
+      <span *ngIf="!esSuProfiil">Información del Empleado</span>
+    </h2>
+    <div *ngIf="empleado" class="card shadow-lg mx-auto" style="max-width: 540px; border-radius: 1.5rem;">
+      <div class="card-header bg-info text-white d-flex flex-column align-items-center" style="border-radius: 1.5rem 1.5rem 0 0;">
+        <div class="avatar mb-3" style="width:72px;height:72px;font-size:2.5rem;background:#0d6efd;border:4px solid #fff;box-shadow:0 0 0.5rem #0d6efd;">
+          {{ empleado?.nombre ? empleado.nombre.charAt(0) : '' }}{{ empleado?.apellido ? empleado.apellido.charAt(0) : '' }}
+        </div>
+        <h4 class="mb-1 fw-bold">{{ empleado?.nombre }} {{ empleado?.apellido }}</h4>
+        <div class="d-flex flex-wrap justify-content-center gap-2">
+          <span *ngIf="empleado?.id" class="badge bg-secondary"><i class="fas fa-hashtag me-1"></i>ID: {{ empleado?.id }}</span>
+          <span *ngIf="esSuProfiil" class="badge bg-success"><i class="fas fa-check-circle me-1"></i>Este eres tú</span>
+          <span *ngIf="empleado?.estado" class="badge bg-success"><i class="fas fa-user-check me-1"></i>{{ empleado?.estado }}</span>
+        </div>
+      </div>
+      <div class="card-body px-4 py-3">
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">
+            <i class="fas fa-id-card me-2 text-primary"></i><strong>DNI:</strong> {{ empleado?.dni }}
+          </li>
+          <li class="list-group-item">
+            <i class="fas fa-phone me-2 text-success"></i><strong>Teléfono:</strong> {{ empleado?.telefono }}
+          </li>
+          <li class="list-group-item">
+            <i class="fas fa-envelope me-2 text-info"></i><strong>Correo:</strong> {{ empleado?.correo }}
+          </li>
+          <!-- Quitar contacto -->
+          <li class="list-group-item">
+            <i class="fas fa-calendar-alt me-2 text-danger"></i><strong>Fecha de Ingreso:</strong> {{ empleado?.fechaIngreso | date:'dd/MM/yyyy' }}
+          </li>
+          <li class="list-group-item">
+            <i class="fas fa-building me-2 text-secondary"></i><strong>Departamento:</strong>
+            <ng-container *ngIf="empleado?.departamento?.nombre; else noDepto">
+              <span class="badge" [ngClass]="getDepartamentoBadgeClass(empleado?.departamento?.nombre)" style="color:#212529;background:#e9ecef;">{{ empleado?.departamento?.nombre }}</span>
+            </ng-container>
+            <ng-template #noDepto><span class="text-muted">No asignado</span></ng-template>
+          </li>
+          <li class="list-group-item">
+            <i class="fas fa-briefcase me-2 text-dark"></i><strong>Cargo:</strong>
+            <ng-container *ngIf="empleado?.cargo?.nombre; else noCargo">
+              <span class="badge bg-dark"><i class="fas fa-user-tie me-1"></i>{{ empleado?.cargo?.nombre }}</span>
+            </ng-container>
+            <ng-template #noCargo><span class="text-muted">No asignado</span></ng-template>
+          </li>
+        </ul>
+      </div>
+      <div class="card-footer text-end" style="border-radius: 0 0 1.5rem 1.5rem;">
+        <button class="btn btn-secondary px-4 py-2" (click)="onVolver()"><i class="fas fa-arrow-left me-2"></i>Volver</button>
+      </div>
+    </div>
+    <div *ngIf="!empleado" class="alert alert-danger mt-3 text-center">
+      <i class="fas fa-exclamation-triangle me-2"></i>No se encontraron datos del empleado.
+    </div>
+  </div>
+</div>

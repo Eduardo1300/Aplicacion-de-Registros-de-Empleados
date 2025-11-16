@@ -12,6 +12,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AsistenciaRepository extends JpaRepository<Asistencia, Long> { 
 
-	List<Asistencia> findByFecha(LocalDate fecha);
+	List<Asistencia> findByFechaAsistencia(LocalDate fechaAsistencia);
 }
 

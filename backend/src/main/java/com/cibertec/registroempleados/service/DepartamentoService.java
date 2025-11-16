@@ -1,19 +1,17 @@
 package com.cibertec.registroempleados.service;
 
-
 import com.cibertec.registroempleados.model.Departamento;
 import com.cibertec.registroempleados.repository.DepartamentoRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class DepartamentoService {
-
-    @Autowired
-    private DepartamentoRepository repository;
+    private final DepartamentoRepository repository;
 
     public List<Departamento> listar() {
         return repository.findAll();
@@ -24,11 +22,10 @@ public class DepartamentoService {
     }
 
     public Optional<Departamento> obtenerPorId(Long id) {
-        Optional<Departamento> optional = repository.findById(id);
-        if(optional.isPresent())
-        	return optional;
-        return Optional.empty();
+        return repository.findById(id);
     }
 
-
+    public void eliminar(Long id) {
+        repository.deleteById(id);
+    }
 }

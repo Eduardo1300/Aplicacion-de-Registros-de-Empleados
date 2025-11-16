@@ -1,0 +1,598 @@
+:host {
+  display: block;
+}
+
+/* ==========================================
+   DASHBOARD ROOT
+   ========================================== */
+
+.dashboard-root {
+  min-height: 100vh;
+  background-color: #f9fafb;
+  padding: 2rem;
+}
+
+/* ==========================================
+   TOPBAR
+   ========================================== */
+
+.topbar {
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  padding: 1.5rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.topbar .title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1e3a8a;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.topbar .btn {
+  background-color: white;
+  border: 1px solid #d1d5db;
+  color: #6b7280;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.topbar .btn:hover {
+  background-color: #f3f4f6;
+  border-color: #9ca3af;
+  color: #374151;
+}
+
+/* ==========================================
+   KPI CARDS
+   ========================================== */
+
+.kpi-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.kpi-card:hover {
+  border-color: #d1d5db;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.kpi-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 16px 40px rgba(102, 126, 234, 0.25);
+  border-color: #667eea;
+}
+
+.kpi-card:hover::before {
+  left: 100%;
+}
+
+.kpi-icon {
+  width: 70px;
+  height: 70px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 2rem;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+.kpi-value {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #2d3748;
+  line-height: 1;
+  letter-spacing: -0.5px;
+}
+
+.kpi-label {
+  font-size: 0.9rem;
+  color: #a0aec0;
+  font-weight: 600;
+  margin-top: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ============================================
+   GLASS CARD STYLE FOR CHARTS & LISTS
+   ============================================ */
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.glass-card:hover {
+  box-shadow: 0 16px 48px rgba(102, 126, 234, 0.2);
+  transform: translateY(-4px);
+}
+
+/* ============================================
+   CARD HEADER
+   ============================================ */
+
+.card-head {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-bottom: none;
+  padding: 1.75rem;
+  margin-bottom: 0;
+}
+
+.card-head h5 {
+  font-weight: 700;
+  color: white;
+  margin: 0;
+  font-size: 1.2rem;
+  letter-spacing: 0.3px;
+  display: flex;
+  align-items: center;
+}
+
+.card-head small {
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 500;
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+}
+
+/* ============================================
+   CHART CONTAINER
+   ============================================ */
+
+.chart-wrap {
+  width: 100%;
+  height: 350px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-height: 300px;
+  position: relative;
+}
+
+.chart-wrap canvas {
+  max-height: 100%;
+  width: 100%;
+}
+
+/* ============================================
+   CENTER BADGE FOR DONUT
+   ============================================ */
+
+.center-badge {
+  position: absolute;
+  text-align: center;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.center-badge .fs-2 {
+  margin: 0;
+  color: #2e7d32;
+}
+
+.center-badge .small {
+  margin: 0.5rem 0 0 0;
+}
+
+/* ============================================
+   LIST STYLING
+   ============================================ */
+
+.list-group-item {
+  background: transparent;
+  border: 1px solid #f0f0f0;
+  border-left: 4px solid transparent;
+  padding: 1rem;
+  transition: all 0.3s ease;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+}
+
+.list-group-item:hover {
+  background: linear-gradient(90deg, #f8f4ff 0%, #fff0f8 100%);
+  border-left-color: #667eea;
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+}
+
+.list-group-item:last-child {
+  margin-bottom: 0;
+}
+
+/* ============================================
+   BADGE STYLING
+   ============================================ */
+
+.badge {
+  font-weight: 600;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+}
+
+.badge.bg-danger {
+  background: linear-gradient(135deg, #e53935 0%, #c62828 100%) !important;
+  box-shadow: 0 4px 12px rgba(229, 57, 53, 0.3);
+}
+
+.badge.bg-warning {
+  background: linear-gradient(135deg, #fb8c00 0%, #f57c00 100%) !important;
+  color: white !important;
+  box-shadow: 0 4px 12px rgba(251, 140, 0, 0.3);
+}
+
+.badge.bg-info {
+  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%) !important;
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+}
+
+.badge.bg-success {
+  background: linear-gradient(135deg, #388e3c 0%, #2e7d32 100%) !important;
+  box-shadow: 0 4px 12px rgba(56, 142, 60, 0.3);
+}
+
+/* ============================================
+   PROGRESS BAR STYLING
+   ============================================ */
+
+.progress {
+  background: #f0f0f0;
+  height: 8px;
+  border-radius: 6px;
+  overflow: hidden;
+  margin: 0.75rem 0;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+}
+
+.progress-bar {
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+  transition: width 0.6s ease;
+}
+
+.progress-bar.bg-danger {
+  background: linear-gradient(90deg, #e53935 0%, #c62828 100%) !important;
+}
+
+.progress-bar.bg-success {
+  background: linear-gradient(90deg, #388e3c 0%, #2e7d32 100%) !important;
+}
+
+/* ============================================
+   LOGOUT BUTTON
+   ============================================ */
+
+.logout-fixed {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: linear-gradient(135deg, #e53935 0%, #c62828 100%);
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(229, 57, 53, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.logout-fixed:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(229, 57, 53, 0.4);
+}
+
+.logout-fixed:active {
+  transform: translateY(-2px);
+}
+
+/* ============================================
+   TABLE STYLING (in dashboard context)
+   ============================================ */
+
+.table {
+  margin-bottom: 0;
+  border-collapse: separate;
+  border-spacing: 0 0.75rem;
+}
+
+.table thead {
+  background: transparent;
+}
+
+.table-light th {
+  background: linear-gradient(90deg, #f0f4ff 0%, #f5f0ff 100%);
+  color: #667eea;
+  font-weight: 800;
+  border: none;
+  padding: 1.25rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  border-radius: 8px;
+}
+
+.table tbody tr {
+  background: white;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  border: 1px solid #f0f0f0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.table-hover tbody tr:hover {
+  background-color: linear-gradient(90deg, #f8fbff 0%, #f5f0ff 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.15);
+  border-color: #667eea;
+}
+
+.table tbody td {
+  padding: 1.25rem;
+  vertical-align: middle;
+  border-top: none;
+  border-bottom: none;
+  color: #4a5568;
+  font-weight: 500;
+  font-size: 0.95rem;
+  letter-spacing: 0.3px;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 1200px) {
+  .dashboard-root {
+    padding: 1.5rem;
+  }
+
+  .chart-wrap {
+    height: 300px;
+  }
+
+  .kpi-card {
+    padding: 1.5rem;
+  }
+
+  .kpi-value {
+    font-size: 1.6rem;
+  }
+
+  .topbar {
+    padding: 1.5rem;
+  }
+
+  .topbar .title {
+    font-size: 1.6rem;
+  }
+}
+
+@media (max-width: 992px) {
+  .chart-wrap {
+    height: 280px;
+  }
+
+  .center-badge {
+    padding: 1rem;
+  }
+
+  .topbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .topbar .title {
+    font-size: 1.4rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-root {
+    padding: 1rem;
+  }
+
+  .topbar {
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .topbar .title {
+    font-size: 1.2rem;
+  }
+
+  .kpi-card {
+    padding: 1.25rem;
+    gap: 1rem;
+  }
+
+  .kpi-icon {
+    width: 56px;
+    height: 56px;
+    font-size: 1.5rem;
+  }
+
+  .kpi-value {
+    font-size: 1.4rem;
+  }
+
+  .chart-wrap {
+    height: 280px;
+  }
+
+  .glass-card {
+    margin-bottom: 1.5rem;
+  }
+
+  .table {
+    font-size: 0.85rem;
+  }
+
+  .table tbody td {
+    padding: 0.75rem;
+  }
+
+  .center-badge {
+    padding: 0.75rem;
+  }
+
+  .logout-fixed {
+    bottom: 1rem;
+    right: 1rem;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-root {
+    padding: 0.75rem;
+  }
+
+  .topbar {
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .topbar .title {
+    font-size: 1rem;
+  }
+
+  .kpi-card {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem;
+  }
+
+  .kpi-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 1.2rem;
+  }
+
+  .kpi-value {
+    font-size: 1.2rem;
+  }
+
+  .chart-wrap {
+    height: 240px;
+  }
+
+  .center-badge {
+    padding: 0.5rem;
+  }
+
+  .logout-fixed {
+    bottom: 0.75rem;
+    right: 0.75rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+  }
+
+  .card-head h5 {
+    font-size: 1rem;
+  }
+
+  .card-head small {
+    font-size: 0.75rem;
+  }
+
+  .list-group-item {
+    padding: 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  .table {
+    font-size: 0.75rem;
+  }
+
+  .table tbody td {
+    padding: 0.5rem;
+  }
+
+  .table-light th {
+    padding: 0.65rem;
+    font-size: 0.65rem;
+  }
+}
+
+/* ============================================
+   DARK MODE
+   ============================================ */
+
+body.dark-mode .dashboard-root {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+}
+
+body.dark-mode .glass-card {
+  background: rgba(30, 30, 50, 0.9);
+  border-color: rgba(102, 126, 234, 0.2);
+  color: #e0e0e0;
+}
+
+body.dark-mode .kpi-card {
+  background: rgba(40, 40, 60, 0.9);
+  border-color: rgba(102, 126, 234, 0.2);
+  color: #e0e0e0;
+}
+
+body.dark-mode .kpi-value {
+  color: #f0f0f0;
+}
+
+body.dark-mode .list-group-item {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #e0e0e0;
+}
+
+body.dark-mode .list-group-item:hover {
+  background: rgba(102, 126, 234, 0.1);
+  border-left-color: #667eea;
+}
+

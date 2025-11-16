@@ -1,0 +1,264 @@
+/* ============================================
+   COMPONENT STRUCTURE
+   ============================================ */
+
+:host {
+  background-color: transparent;
+  display: block;
+  width: 100%;
+}
+
+/* ============================================
+   CARD STYLING
+   ============================================ */
+
+.card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.12);
+  transition: all 0.3s ease;
+  background: white;
+  margin-bottom: 2rem;
+}
+
+.card:hover {
+  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.18);
+}
+
+.card-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 12px 12px 0 0;
+  padding: 1.5rem !important;
+}
+
+.card-header h4 {
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.card-header i {
+  font-size: 1.4rem;
+}
+
+.card-body {
+  padding: 2rem;
+}
+
+.card-footer {
+  background: linear-gradient(135deg, #f0f4ff 0%, #f5f0ff 100%);
+  border-top: 1px solid #e3e6f0;
+  border-radius: 0 0 12px 12px;
+  padding: 1.5rem;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* ============================================
+   FORM STYLING
+   ============================================ */
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-label {
+  font-weight: 700;
+  color: #667eea;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+  display: block;
+}
+
+.form-control,
+.form-select {
+  border: 2px solid #e3e6f0;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  background-color: #f8f9fa;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: #667eea;
+  background-color: white;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+  outline: none;
+}
+
+.form-control::placeholder {
+  color: #a0aec0;
+}
+
+/* ============================================
+   INPUT GROUP STYLING
+   ============================================ */
+
+.input-group-text {
+  width: 44px;
+  justify-content: center;
+  background: linear-gradient(135deg, #f0f4ff 0%, #f5f0ff 100%);
+  border: 2px solid #e3e6f0;
+  color: #667eea;
+  font-weight: 600;
+  border-radius: 8px 0 0 8px;
+}
+
+.input-group .form-control,
+.input-group .form-select {
+  border-left: none;
+  border-radius: 0 8px 8px 0;
+}
+
+.input-group:focus-within .input-group-text {
+  border-color: #667eea;
+  background: linear-gradient(135deg, #e9e5ff 0%, #f0e5ff 100%);
+}
+
+/* ============================================
+   BUTTON STYLING
+   ============================================ */
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25);
+  letter-spacing: 0.3px;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.35);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-secondary,
+.btn-outline-secondary {
+  color: #667eea;
+  border-color: #667eea;
+  background-color: rgba(102, 126, 234, 0.05);
+  font-weight: 600;
+  border-width: 2px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  padding: 0.65rem 1.25rem;
+}
+
+.btn-secondary:hover,
+.btn-outline-secondary:hover {
+  background: #667eea;
+  color: white;
+  border-color: #667eea;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 1200px) {
+  .card-body {
+    padding: 1.5rem;
+  }
+
+  .form-group {
+    margin-bottom: 1.25rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .card {
+    border-radius: 10px;
+  }
+
+  .card-header {
+    padding: 1.25rem !important;
+  }
+
+  .card-header h4 {
+    font-size: 1.1rem;
+  }
+
+  .card-body {
+    padding: 1.5rem;
+  }
+
+  .card-footer {
+    flex-direction: column;
+    justify-content: stretch;
+  }
+
+  .card-footer .btn {
+    width: 100%;
+  }
+
+  .form-group {
+    margin-bottom: 1rem;
+  }
+
+  .form-label {
+    font-size: 0.8rem;
+  }
+
+  .form-control,
+  .form-select {
+    padding: 0.65rem 0.875rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .card-header {
+    padding: 1rem !important;
+  }
+
+  .card-body {
+    padding: 1.25rem;
+  }
+
+  .card-footer {
+    padding: 1rem;
+  }
+
+  .form-group {
+    margin-bottom: 0.875rem;
+  }
+
+  .form-label {
+    font-size: 0.75rem;
+  }
+
+  .form-control,
+  .form-select {
+    padding: 0.6rem 0.75rem;
+    font-size: 0.85rem;
+  }
+
+  .input-group-text {
+    width: 38px;
+    font-size: 0.9rem;
+  }
+
+  .btn {
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+  }
+}

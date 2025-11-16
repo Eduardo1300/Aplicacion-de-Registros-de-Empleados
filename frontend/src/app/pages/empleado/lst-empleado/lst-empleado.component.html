@@ -1,49 +1,76 @@
-<div class="card">
-    <div class="card-header">
-      Listado de Empleados
-      <nav class="navbar bg-body-tertiary">
-          <form class="container-fluid justify-content-start">
-            <button class="btn btn-outline-success me-2" (click)="redirecTo('asistencias')" type="button">Lista de asistencia</button>
-            <button class="btn btn-outline-success me-2" (click)="redirecTo('asistencias-hoy')" type="button">Asistencias de Hoy</button>
-          </form>
-        </nav>
+
+
+<div class="container-fluid pt-4 px-4">
+  <div class="card border-0 shadow-sm rounded-3">
+    <div class="card-header bg-light d-flex flex-wrap justify-content-between align-items-center py-3">
+      <h5 class="mb-0 text-dark">
+        <i class="fas fa-users me-2 text-primary"></i>Lista de Empleados
+      </h5>
+      <div class="d-flex align-items-center mt-2 mt-md-0">
+        <input class="form-control form-control-sm me-2" [(ngModel)]="filtroNombre" name="search" placeholder="Buscar por nombre o apellido..." aria-label="Search" />
+      </div>
     </div>
     <div class="card-body">
-      <button type="button" (click)="onNavigateCrearEmpleado()" class="btn btn-primary">Nuevo Empleado</button> 
-      <hr />
-      <form class="d-flex" role="search">
-        <input class="form-control me-2" [(ngModel)]="filtroNombre" name="search" placeholder="Buscar empleado" aria-label="Search"/>
-      </form>
-      <hr />
-        <table class="table">
-            <thead>
-              <tr class="table-dark">
-                <th scope="col">#</th>
-                <th scope="col">Nombre</th>
-                <th scope="col">Apellido</th>
-                <th scope="col">Correo</th>
-                <th scope="col">Telefono</th>
-                <th scope="col">Fecha Ingreso</th>
-                <th scope="col">DNI</th>
-                <th scope="col">Departamento</th>
-                <th scope="col">Acciones</th>
+      <div class="d-flex justify-content-end mb-3">
+        <button class="btn btn-primary" (click)="agregarEmpleado()">
+          <i class="fas fa-user-plus me-2"></i>Agregar Empleado
+        </button>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th scope="col">Empleado</th>
+              <th scope="col">DNI</th>
+              <th scope="col">Correo</th>
+              <th scope="col">Teléfono</th>
+              <th scope="col">Fecha de Ingreso</th>
+              <th scope="col">Estado</th>
+              <th scope="col">Departamento</th>
+              <th scope="col">Cargo</th>
+              <th scope="col" class="text-center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngIf="empleadosFiltrados.length > 0; else noEmpleados">
+              <tr *ngFor="let empleado of empleadosFiltrados" class="animate__animated animate__fadeIn">
+                <td>
+                  <div class="d-flex align-items-center">
+                    <div class="avatar me-3">{{empleado.nombre.charAt(0)}}{{empleado.apellido.charAt(0)}}</div>
+                    <div>
+                      <div class="fw-bold">{{empleado.nombre}} {{empleado.apellido}}</div>
+                      <small class="text-muted">ID: {{empleado.id}}</small>
+                    </div>
+                  </div>
+                </td>
+                <td>{{ empleado.dni }}</td>
+                <td>{{ empleado.correo }}</td>
+                <td>{{ empleado.telefono }}</td>
+                <td>{{ empleado.fechaIngreso | date: 'dd/MM/yyyy' }}</td>
+                <td>{{ empleado.estado }}</td>
+                <td>{{ empleado.departamento?.nombre }}</td>
+                <td>{{ empleado.cargo?.nombre }}</td>
+                <td class="text-center">
+                  <button class="btn btn-outline-info btn-sm px-3 fw-bold me-1" (click)="verEmpleado(empleado.id!)">
+                    <i class="fas fa-eye me-1"></i> Ver
+                  </button>
+                  <button class="btn btn-outline-warning btn-sm px-3 fw-bold me-1" (click)="editarEmpleado(empleado.id!)">
+                    <i class="fas fa-edit me-1"></i> Editar
+                  </button>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-                @for(item of Filtros; track $index){
-                    <tr class="table-secondary">
-                        <th scope="row">{{item.id}}</th>
-                        <th>{{item.nombre}}</th>
-                        <td>{{item.apellido}}</td>
-                        <td>{{item.correo}}</td>
-                        <td>{{item.telefono}}</td>
-                        <td>{{item.fechaIngreso}}</td>
-                        <td>{{item.dni}}</td>
-                        <td>{{item.departamento.nombre}}</td>
-                        <td><button type="button" (click)="onNavigateEditEmpleado(item.id)" class="btn btn-primary">Editar</button></td>
-                      </tr>
-                }
-            </tbody>
-          </table>
+            </ng-container>
+            <ng-template #noEmpleados>
+              <tr>
+                <td colspan="9" class="text-center text-muted py-5">
+                  <i class="fas fa-folder-open fa-3x mb-3"></i>
+                  <p>No se encontraron empleados.</p>
+                </td>
+              </tr>
+            </ng-template>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
+</div>

@@ -1,0 +1,179 @@
+<div class="container-fluid mt-4">
+  <div class="row mb-4">
+    <div class="col-md-12">
+      <h2>📅 Gestión de Licencias y Permisos</h2>
+      
+      <ul class="nav nav-tabs mt-3" role="tablist">
+        <li class="nav-item">
+          <a class="nav-link" 
+             [ngClass]="{'active': pestanaActiva === 'solicitar'}"
+             (click)="cambiarPestana('solicitar')" 
+             role="tab">
+            📝 Solicitar Licencia
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" 
+             [ngClass]="{'active': pestanaActiva === 'mis-solicitudes'}"
+             (click)="cambiarPestana('mis-solicitudes')" 
+             role="tab">
+            📋 Mis Solicitudes
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" 
+             [ngClass]="{'active': pestanaActiva === 'pendientes'}"
+             (click)="cambiarPestana('pendientes')" 
+             role="tab">
+            ⏳ Pendientes de Aprobación
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Pestaña: Solicitar Licencia -->
+  <div *ngIf="pestanaActiva === 'solicitar'" class="row mt-4">
+    <div class="col-md-8 offset-md-2">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Nueva Solicitud de Licencia</h5>
+          
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Tipo de Licencia *</label>
+                <select class="form-select" [(ngModel)]="nuevaSolicitud.tipoLicenciaId">
+                  <option value="">-- Selecciona --</option>
+                  <option *ngFor="let tipo of tiposLicencia" [value]="tipo.id">
+                    {{ tipo.nombre }} ({{ tipo.diasDisponibles }} días)
+                  </option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Días Solicitados *</label>
+                <input type="number" class="form-control" [(ngModel)]="nuevaSolicitud.diasSolicitados" min="1">
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Fecha Inicio *</label>
+                <input type="date" class="form-control" [(ngModel)]="nuevaSolicitud.fechaInicio">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Fecha Fin *</label>
+                <input type="date" class="form-control" [(ngModel)]="nuevaSolicitud.fechaFin">
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Motivo/Razón</label>
+            <textarea class="form-control" [(ngModel)]="nuevaSolicitud.razon" rows="3" 
+                      placeholder="Explica el motivo de tu solicitud de licencia"></textarea>
+          </div>
+
+          <button class="btn btn-success" (click)="crearSolicitud()">Enviar Solicitud</button>
+          <button class="btn btn-secondary" (click)="reiniciarFormulario()">Limpiar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pestaña: Mis Solicitudes -->
+  <div *ngIf="pestanaActiva === 'mis-solicitudes'" class="row mt-4">
+    <div class="col-md-12">
+      <div *ngIf="cargando" class="alert alert-info">Cargando solicitudes...</div>
+      
+      <div *ngIf="!cargando && solicitudes.length === 0" class="alert alert-warning">
+        No tienes solicitudes de licencia
+      </div>
+
+      <div class="table-responsive" *ngIf="!cargando && solicitudes.length > 0">
+        <table class="table table-striped">
+          <thead class="table-dark">
+            <tr>
+              <th>Tipo</th>
+              <th>Fecha Inicio</th>
+              <th>Fecha Fin</th>
+              <th>Días</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let solicitud of solicitudes">
+              <td><strong>Licencia</strong></td>
+              <td>{{ solicitud.fechaInicio | date:'dd/MM/yyyy' }}</td>
+              <td>{{ solicitud.fechaFin | date:'dd/MM/yyyy' }}</td>
+              <td>{{ solicitud.diasSolicitados }}</td>
+              <td>
+                <span class="badge" 
+                      [ngClass]="{
+                        'bg-success': solicitud.estado === 'APROBADA',
+                        'bg-danger': solicitud.estado === 'RECHAZADA',
+                        'bg-warning': solicitud.estado === 'PENDIENTE'
+                      }">
+                  {{ solicitud.estado }}
+                </span>
+              </td>
+              <td>
+                <button class="btn btn-sm btn-danger" (click)="eliminarSolicitud(solicitud.id)" title="Eliminar">
+                  🗑️ Eliminar
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pestaña: Pendientes de Aprobación -->
+  <div *ngIf="pestanaActiva === 'pendientes'" class="row mt-4">
+    <div class="col-md-12">
+      <div *ngIf="solicitudesPendientes.length === 0" class="alert alert-info">
+        No hay solicitudes pendientes de aprobación
+      </div>
+
+      <div class="table-responsive" *ngIf="solicitudesPendientes.length > 0">
+        <table class="table table-striped">
+          <thead class="table-dark">
+            <tr>
+              <th>Empleado</th>
+              <th>Tipo</th>
+              <th>Fecha Inicio</th>
+              <th>Fecha Fin</th>
+              <th>Días</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let solicitud of solicitudesPendientes">
+              <td>Empleado {{ solicitud.empleadoId }}</td>
+              <td><strong>Licencia</strong></td>
+              <td>{{ solicitud.fechaInicio | date:'dd/MM/yyyy' }}</td>
+              <td>{{ solicitud.fechaFin | date:'dd/MM/yyyy' }}</td>
+              <td>{{ solicitud.diasSolicitados }}</td>
+              <td>
+                <button class="btn btn-sm btn-success" (click)="aprobarSolicitud(solicitud.id)" title="Aprobar">
+                  ✅ Aprobar
+                </button>
+                <button class="btn btn-sm btn-danger" (click)="rechazarSolicitud(solicitud.id)" title="Rechazar">
+                  ❌ Rechazar
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

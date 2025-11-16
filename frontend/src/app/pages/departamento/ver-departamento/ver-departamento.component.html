@@ -1,0 +1,123 @@
+<div class="ver-departamento-bg">
+  <div class="container">
+    <h2 class="text-center mb-5 text-gradient">
+      <i class="fas fa-building me-2"></i>{{ editMode ? 'Editar Departamento' : 'Información del Departamento' }}
+    </h2>
+
+    <!-- Loading State -->
+    <div *ngIf="cargando" class="text-center mx-auto" style="max-width: 600px;">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+      <p class="mt-3">Cargando información del departamento...</p>
+    </div>
+
+    <!-- Departamento Cargado - View Mode -->
+    <div *ngIf="departamento && !cargando && !editMode" class="card shadow-lg mx-auto" style="max-width: 600px;">
+      <div class="card-header">
+        <h4>
+          <i class="fas fa-building"></i>{{ departamento?.nombre }}
+        </h4>
+      </div>
+
+      <div class="card-body">
+        <div class="list-group list-group-flush">
+          <!-- ID -->
+          <div class="list-group-item">
+            <i class="fas fa-hashtag text-secondary"></i>
+            <span>
+              <strong>ID:</strong>
+              <span class="ms-2">{{ departamento?.id }}</span>
+            </span>
+          </div>
+
+          <!-- Nombre -->
+          <div class="list-group-item">
+            <i class="fas fa-tag text-info"></i>
+            <span>
+              <strong>Nombre:</strong>
+              <span class="ms-2">{{ departamento?.nombre }}</span>
+            </span>
+          </div>
+
+          <!-- Descripción -->
+          <div class="list-group-item">
+            <i class="fas fa-align-left text-info"></i>
+            <span>
+              <strong>Descripción:</strong>
+              <span class="ms-2">{{ departamento?.descripcion || 'No asignada' }}</span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-footer d-flex justify-content-between">
+        <button class="btn btn-secondary" (click)="onVolver()">
+          <i class="fas fa-arrow-left"></i>Volver
+        </button>
+        <button class="btn btn-primary" (click)="activarEdicion()">
+          <i class="fas fa-edit me-2"></i>Editar
+        </button>
+      </div>
+    </div>
+
+    <!-- Departamento Cargado - Edit Mode -->
+    <div *ngIf="departamento && !cargando && editMode" class="card shadow-lg mx-auto" style="max-width: 600px;">
+      <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">
+          <i class="fas fa-edit me-2"></i>Editar Departamento
+        </h4>
+      </div>
+
+      <form (ngSubmit)="guardarCambios()" class="card-body">
+        <!-- Nombre -->
+        <div class="mb-3">
+          <label for="nombre" class="form-label fw-bold">Nombre</label>
+          <input 
+            type="text" 
+            id="nombre" 
+            class="form-control form-control-lg" 
+            [(ngModel)]="departamento.nombre" 
+            name="nombre" 
+            required 
+            maxlength="100" 
+            placeholder="Nombre del departamento">
+        </div>
+
+        <!-- Descripción -->
+        <div class="mb-3">
+          <label for="descripcion" class="form-label fw-bold">Descripción</label>
+          <textarea 
+            id="descripcion" 
+            class="form-control" 
+            [(ngModel)]="departamento.descripcion" 
+            name="descripcion" 
+            maxlength="255" 
+            rows="3"
+            placeholder="Descripción (opcional)"></textarea>
+        </div>
+
+        <!-- Error Message -->
+        <div *ngIf="error" class="alert alert-danger">
+          <i class="fas fa-exclamation-triangle me-2"></i>{{ error }}
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="d-flex justify-content-between gap-2">
+          <button type="button" class="btn btn-secondary" (click)="cancelarEdicion()" [disabled]="guardando">
+            <i class="fas fa-times me-2"></i>Cancelar
+          </button>
+          <button type="submit" class="btn btn-primary" [disabled]="guardando">
+            <i class="fas fa-save me-2"></i>{{ guardando ? 'Guardando...' : 'Guardar Cambios' }}
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="error && (!departamento && !cargando)" class="alert alert-danger mx-auto" style="max-width: 600px;">
+      <i class="fas fa-exclamation-triangle"></i>
+      <strong>Error:</strong> {{ error || 'No se encontraron datos del departamento.' }}
+    </div>
+  </div>
+</div>

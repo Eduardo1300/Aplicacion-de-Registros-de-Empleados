@@ -7,21 +7,19 @@
           </form>
         </nav>
     </div>
-     <form class="d-flex" role="search">
-        <input class="form-control me-2" [(ngModel)]="filtroNombre" name="search" placeholder="Personal a buscar" aria-label="Search"/>
-      </form>
+    <form class="d-flex" role="search">
+      <input class="form-control me-2" [(ngModel)]="filtroNombre" name="search" placeholder="Personal a buscar" aria-label="Search"/>
+    </form>
     <div class="card-body">
-        <button type="button" (click)="onGenerarAsistencia()" class="btn btn-primary" >Registrar Asistencia</button>       <table class="table table-striped">
-           <form class="d-flex" role="search">
-              <input class="form-control me-2" [(ngModel)]="filtroNombre" name="search" placeholder="Personal a buscar" aria-label="Search"/>
-          </form>
+      <button *ngIf="rol === 'EMPLEADO'" type="button" (click)="onGenerarAsistencia()" class="btn btn-primary" >Registrar Asistencia</button>
+      <table class="table table-striped">
             <thead>
                 <tr>
                   <th scope="col">Fecha</th>
                   <th scope="col">Hora de Ingreso</th>
                   <th scope="col">Hora de Salida</th>
                   <th scope="col">Empleado</th>
-                  <th scope="col">Acciones</th>
+                  <th scope="col" *ngIf="rol === 'EMPLEADO'">Acciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -31,8 +29,10 @@
                         <td>{{item.horaEntrada}}</td>
                         <td>{{item.horaSalida}}</td>
                         <td>{{item.empleado.nombre +' '+ item.empleado.apellido}}</td>
-                        <td><button type="button" (click)="onGenerarSalida(item.id)"  
-                          class="btn btn-primary" >Salida</button></td>
+                        <td *ngIf="rol === 'EMPLEADO'">
+                          <button type="button" (click)="onGenerarSalida(item.id)"  
+                            class="btn btn-primary" >Salida</button>
+                        </td>
 
                       </tr>
                 }

@@ -1,0 +1,91 @@
+<div class="container-fluid pt-4 px-4">
+  <div class="card border-0 shadow-sm rounded-3">
+    <div class="card-header bg-light d-flex flex-wrap justify-content-between align-items-center py-3">
+      <h5 class="mb-0 text-dark">
+        <i class="fas fa-check-circle me-2 text-success"></i>Revisar Justificaciones
+      </h5>
+    </div>
+
+    <div class="card-body">
+      <!-- Mensaje de error -->
+      <div *ngIf="error" class="alert alert-danger" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i>{{ error }}
+      </div>
+
+      <!-- Loading -->
+      <div *ngIf="cargando" class="text-center">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Cargando...</span>
+        </div>
+      </div>
+
+      <!-- Tabla de justificaciones -->
+      <div *ngIf="!cargando && !error" class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th scope="col">Empleado</th>
+              <th scope="col">Tipo</th>
+              <th scope="col">Fecha</th>
+              <th scope="col">Descripción</th>
+              <th scope="col">Estado</th>
+              <th scope="col" class="text-center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let j of justificacionesFiltradas" class="animate__animated animate__fadeIn">
+              <td>
+                <div class="fw-bold">
+                  {{ j.asistencia?.empleado?.nombre }} {{ j.asistencia?.empleado?.apellido }}
+                </div>
+                <small class="text-muted">{{ j.asistencia?.empleado?.dni }}</small>
+              </td>
+              <td>
+                <span *ngIf="j.asistencia?.estadoAsist === 'Tardanza'" class="badge bg-warning">
+                  Tardanza
+                </span>
+                <span *ngIf="j.asistencia?.estadoAsist === 'Inasistencia'" class="badge bg-danger">
+                  Falta
+                </span>
+              </td>
+              <td>{{ j.asistencia?.fecha | date: 'dd/MM/yyyy' }}</td>
+              <td>
+                <small>{{ j.descripcion | slice:0:50 }}{{ j.descripcion.length > 50 ? '...' : '' }}</small>
+              </td>
+              <td>
+                <span *ngIf="j.estado === 'APROBADA'" class="badge bg-success">
+                  Aprobada
+                </span>
+                <span *ngIf="j.estado === 'RECHAZADA'" class="badge bg-danger">
+                  Rechazada
+                </span>
+                <span *ngIf="!j.estado || j.estado === 'Pendiente'" class="badge bg-warning">
+                  Pendiente
+                </span>
+              </td>
+              <td class="text-center">
+                <button *ngIf="!j.estado || j.estado === 'Pendiente'" class="btn btn-sm btn-success me-2" (click)="aprobarJustificacion(j)">
+                  <i class="fas fa-check me-1"></i>Aprobar
+                </button>
+                <button *ngIf="!j.estado || j.estado === 'Pendiente'" class="btn btn-sm btn-danger" (click)="rechazarJustificacion(j)">
+                  <i class="fas fa-times me-1"></i>Rechazar
+                </button>
+                <span *ngIf="j.estado && j.estado !== 'Pendiente'" class="text-muted">
+                  Ya procesada
+                </span>
+              </td>
+            </tr>
+
+            <!-- Sin justificaciones -->
+            <tr *ngIf="justificacionesFiltradas.length === 0 && !cargando">
+              <td colspan="6" class="text-center text-muted py-5">
+                <i class="fas fa-inbox fa-3x mb-3"></i>
+                <p>No hay justificaciones pendientes</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

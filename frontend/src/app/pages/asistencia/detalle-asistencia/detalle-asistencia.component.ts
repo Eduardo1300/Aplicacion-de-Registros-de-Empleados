@@ -16,12 +16,23 @@ import { AsistenciaModel } from '../../../Model/AsistenciaModel';
 })
 export class DetalleAsistenciaComponent {
   empleados: Empleado[] = []
-  asisId: string | null = ""
   asisFecha: string = ""
   asisEntrada: string = ""
   asisSalida: string = ""
-  horasTrabajadas: number = 0
-  asisEmpleado: Empleado = {id:0, nombre:"",apellido:"",correo:"",telefono:"",fechaIngreso: new Date(),dni: "", departamento:{ id:0}} 
+  asistencia: any = null;
+  asisEmpleado: Empleado = {
+    id: 0,
+    nombre: "",
+    apellido: "",
+    correo: "",
+    telefono: "",
+    fechaIngreso: new Date(),
+    dni: "",
+    estado: "Activo",
+    cargo: null,
+    departamento: { id: 0, nombre: "" }
+  }
+
   constructor(private router:ActivatedRoute,private asistenciaService: AsistenciaserviceService,
     private route:Router,private empleadoService: EmpleadoserviceService){
     }
@@ -31,18 +42,15 @@ export class DetalleAsistenciaComponent {
           this.empleados = res;
           }
         });
-        this.asisId=""
-        //obtener la hora actual para el asisEntrada y asisSalida obtenga la hora 00:00:00
         const now = new Date();
         const horas = now.getHours().toString().padStart(2, '0');
         const minutos = now.getMinutes().toString().padStart(2, '0');
         const segundos = now.getSeconds().toString().padStart(2, '0');
         this.asisEntrada = `${horas}:${minutos}:${segundos}`;
         this.asisSalida ="00:00:00"
-        //modificar el formato de fehca al dia de hoy 
         const hoy = new Date();
         const yyyy = hoy.getFullYear();
-        const mm = String(hoy.getMonth() + 1).padStart(2, '0'); //js cuenta los meses desde 0-11
+        const mm = String(hoy.getMonth() + 1).padStart(2, '0');
         const dd = String(hoy.getDate()).padStart(2, '0');
         const fechaFormateada = `${yyyy}-${mm}-${dd}`;
         this.asisFecha = fechaFormateada
@@ -60,9 +68,10 @@ export class DetalleAsistenciaComponent {
           alert("Asistencia registrada")
           this.route.navigate(['/pages/asistencias-hoy'])
         },error:(err) =>{
-          console.error(err)
-          alert(err)
         }
       })
+    }
+    onVolver(): void {
+      this.route.navigate(['/pages/asistencias-hoy']);
     }
 }

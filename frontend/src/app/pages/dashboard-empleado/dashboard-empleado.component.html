@@ -1,0 +1,137 @@
+<div class="dashboard-empleado-main">
+  <!-- Header con información del empleado -->
+  <div class="dashboard-empleado-header">
+    <div class="header-content">
+      <div class="empleado-avatar">
+        <i class="fas fa-user-circle"></i>
+      </div>
+      <div class="empleado-info">
+        <h2 class="dashboard-title" *ngIf="empleado">{{ empleado.nombre }} {{ empleado.apellido }}</h2>
+        <p class="dashboard-subtitle" *ngIf="empleado">{{ empleado.departamento?.nombre || 'Departamento' }} • {{ empleado.id }}</p>
+        <p class="empleado-email" *ngIf="empleado">{{ empleado.correo }}</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <a routerLink="/pages/empleados/ver" class="btn btn-info btn-sm">
+        <i class="fas fa-user-circle me-2"></i>Ver Mi Perfil
+      </a>
+    </div>
+  </div>
+
+  <!-- Estado de carga o contenido -->
+  <div class="dashboard-content" *ngIf="!cargando; else loading">
+    <!-- Mensaje de error si existe -->
+    <div class="alert alert-danger" *ngIf="error" role="alert">
+      <i class="fas fa-exclamation-circle me-2"></i>{{ error }}
+    </div>
+
+    <!-- Grid de métricas con gráficos -->
+    <div class="dashboard-empleado-grid">
+      <!-- Card Asistencias con Gráfico Doughnut -->
+      <div class="card asistencia">
+        <div class="card-header">
+          <div class="card-icon bg-success">
+            <i class="fas fa-calendar-check"></i>
+          </div>
+          <h3>Asistencias</h3>
+        </div>
+        <div class="card-body">
+          <div class="metric-row">
+            <div class="metric">{{ asistencias }}</div>
+            <p class="metric-label">registros</p>
+          </div>
+          <div class="chart-container">
+            <canvas 
+              baseChart 
+              [type]="chartAsistenciasConfig.type"
+              [data]="chartAsistenciasConfig.data"
+              [options]="chartAsistenciasConfig.options">
+            </canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Faltas con Gráfico Bar -->
+      <div class="card faltas">
+        <div class="card-header">
+          <div class="card-icon bg-danger">
+            <i class="fas fa-user-times"></i>
+          </div>
+          <h3>Faltas por Tipo</h3>
+        </div>
+        <div class="card-body">
+          <div class="metric-row">
+            <div class="metric">{{ faltas }}</div>
+            <p class="metric-label">faltas</p>
+          </div>
+          <div class="chart-container chart-horizontal">
+            <canvas 
+              baseChart 
+              [type]="chartFaltasConfig.type"
+              [data]="chartFaltasConfig.data"
+              [options]="chartFaltasConfig.options">
+            </canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Justificaciones con Gráfico Pie -->
+      <div class="card justificaciones">
+        <div class="card-header">
+          <div class="card-icon bg-warning">
+            <i class="fas fa-file-alt"></i>
+          </div>
+          <h3>Justificaciones</h3>
+        </div>
+        <div class="card-body">
+          <div class="metric-row">
+            <div class="metric">{{ justificaciones }}</div>
+            <p class="metric-label">enviadas</p>
+          </div>
+          <div class="chart-container">
+            <canvas 
+              baseChart 
+              [type]="chartJustificacionesConfig.type"
+              [data]="chartJustificacionesConfig.data"
+              [options]="chartJustificacionesConfig.options">
+            </canvas>
+          </div>
+          <a href="/pages/justificacion" class="btn-small">
+            <i class="fas fa-plus me-1"></i>Enviar
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sección de acciones rápidas -->
+    <div class="quick-actions">
+      <h4>Acciones Rápidas</h4>
+      <div class="actions-grid">
+        <a routerLink="/pages/empleados/ver" class="action-card">
+          <i class="fas fa-user"></i>
+          <span>Mi Perfil</span>
+        </a>
+        <a routerLink="/pages/asistencias" class="action-card">
+          <i class="fas fa-clock"></i>
+          <span>Asistencias</span>
+        </a>
+        <a routerLink="/pages/marcar-asistencia" class="action-card">
+          <i class="fas fa-history"></i>
+          <span>Marcar Asistencia</span>
+        </a>
+        <a routerLink="/pages/justificacion" class="action-card">
+          <i class="fas fa-pencil-alt"></i>
+          <span>Justificaciones</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Template -->
+  <ng-template #loading>
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Cargando datos...</p>
+    </div>
+  </ng-template>
+</div>

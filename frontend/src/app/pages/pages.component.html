@@ -1,8 +1,187 @@
-<nav class="navbar bg-body-tertiary">
-  <div class="container-fluid">
-    <a class="navbar-brand">Navbar</a>
-    
-  </div>
-</nav>
+<div class="layout-wrapper">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <!-- Logo / Brand -->
+    <div class="sidebar-brand">
+      <div class="brand-icon">
+        <i class="bi bi-building"></i>
+      </div>
+      <div class="brand-text">
+        <h3>Sistema</h3>
+        <p>de Registro</p>
+      </div>
+    </div>
 
-<router-outlet></router-outlet>
+    <!-- Navigation Menu -->
+    <nav class="sidebar-nav">
+      <!-- MENU PARA EMPLEADOS -->
+      <ng-container *ngIf="rol === 'EMPLEADO'; else adminMenu">
+        <div class="nav-section">
+          <p class="nav-title">Marcado de Asistencia</p>
+          <ul class="nav-list">
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/pages/marcar-asistencia" routerLinkActive="active">
+                <i class="bi bi-clock"></i>
+                <span>Marcar Entrada/Salida</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-section">
+          <p class="nav-title">Mi Panel</p>
+          <ul class="nav-list">
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/pages/dashboard-empleado" routerLinkActive="active">
+                <i class="bi bi-graph-up"></i>
+                <span>Mi Dashboard</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/pages/empleados/ver" routerLinkActive="active">
+                <i class="bi bi-person-circle"></i>
+                <span>Mi Perfil</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-section">
+          <p class="nav-title">Registros</p>
+          <ul class="nav-list">
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/pages/asistencias" routerLinkActive="active">
+                <i class="bi bi-calendar-check"></i>
+                <span>Asistencias</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/pages/justificacion" routerLinkActive="active">
+                <i class="bi bi-file-earmark-text"></i>
+                <span>Justificaciones</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </ng-container>
+
+      <!-- MENU PARA ADMIN -->
+      <ng-template #adminMenu>
+        <div class="nav-section">
+          <p class="nav-title">Principal</p>
+          <ul class="nav-list">
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/dashboard" routerLinkActive="active">
+                <i class="bi bi-speedometer2"></i>
+                <span>Dashboard</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-section">
+          <p class="nav-title">Gestión</p>
+          <ul class="nav-list">
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/pages/empleados" routerLinkActive="active">
+                <i class="bi bi-people-fill"></i>
+                <span>Empleados</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/pages/departamentos" routerLinkActive="active">
+                <i class="bi bi-building"></i>
+                <span>Departamentos</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/pages/asistencias" routerLinkActive="active">
+                <i class="bi bi-calendar-event"></i>
+                <span>Asistencias</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/pages/asistencias-hoy" routerLinkActive="active">
+                <i class="bi bi-clock-history"></i>
+                <span>Hoy</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/pages/justificacion/admin" routerLinkActive="active">
+                <i class="bi bi-file-earmark-check"></i>
+                <span>Revisar Justificaciones</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-section">
+          <p class="nav-title">RRHH & Nómina</p>
+          <ul class="nav-list">
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/pages/horarios" routerLinkActive="active">
+                <i class="bi bi-clock"></i>
+                <span>Horarios y Turnos</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/pages/licencias" routerLinkActive="active">
+                <i class="bi bi-calendar-check"></i>
+                <span>Licencias y Permisos</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/pages/nomina" routerLinkActive="active">
+                <i class="bi bi-cash-coin"></i>
+                <span>Nómina</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-section">
+          <p class="nav-title">Reportes y Análisis</p>
+          <ul class="nav-list">
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/pages/reportes" routerLinkActive="active">
+                <i class="bi bi-file-earmark-pdf"></i>
+                <span>Reportes</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/pages/dashboard-avanzado" routerLinkActive="active">
+                <i class="bi bi-graph-up"></i>
+                <span>Dashboard Avanzado</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-section">
+          <p class="nav-title">Comunicación</p>
+          <ul class="nav-list">
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/pages/comunicacion" routerLinkActive="active">
+                <i class="bi bi-chat-dots"></i>
+                <span>Comunicación</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </ng-template>
+    </nav>
+
+    <!-- Logout Button -->
+    <div class="sidebar-footer">
+      <button class="logout-btn" (click)="logout($event)">
+        <i class="bi bi-box-arrow-right"></i>
+        <span>Cerrar Sesión</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

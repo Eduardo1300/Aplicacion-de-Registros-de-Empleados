@@ -4,19 +4,23 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
-@Table(name = "usuario")
+@Table(name = "usuarios")
 @Data
 public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Column(name = "nombre_usuario", nullable = false, unique = true)
     private String nombreUsuario;
 
+    @Column(name = "contrasena")
     private String clave;
 
-    @ManyToOne
-    @JoinColumn(name = "empleado_id")
+    @OneToOne(mappedBy = "usuario")
     private Empleado empleado;
+    
+    @ManyToOne
+    @JoinColumn(name = "rol_id")
+    private Rol rol;
 }

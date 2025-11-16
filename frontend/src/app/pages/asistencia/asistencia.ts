@@ -5,5 +5,6 @@ export interface Asistencia{
     fecha: Date,
     horaEntrada: string,
     horaSalida: string,
-    empleado: Empleado
+    empleado: Empleado,
+    estadoAsist?: string
 }

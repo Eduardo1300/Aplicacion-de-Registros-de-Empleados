@@ -1,0 +1,128 @@
+.charts-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 20px;
+  padding: 20px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+  gap: 20px;
+}
+
+.chart-card {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.chart-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.chart-card h3 {
+  margin: 0 0 15px 0;
+  color: #333;
+  font-size: 16px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chart-card h3 i {
+  color: #2196F3;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+  font-size: 14px;
+  color: #999;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+  font-size: 14px;
+  color: #d32f2f;
+  background-color: #ffebee;
+  border-radius: 4px;
+  padding: 20px;
+  border-left: 4px solid #d32f2f;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .charts-container {
+    grid-template-columns: 1fr;
+    padding: 15px;
+  }
+
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-card {
+    padding: 15px;
+  }
+
+  .chart-card h3 {
+    font-size: 14px;
+  }
+
+  .loading,
+  .error {
+    min-height: 200px;
+  }
+}
+
+/* Colores temáticos */
+.color-success { color: #4CAF50; }
+.color-danger { color: #F44336; }
+.color-warning { color: #FFC107; }
+.color-info { color: #2196F3; }
+
+/* Badge personalizado */
+.badge-custom {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.badge-success {
+  background-color: #E8F5E9;
+  color: #2E7D32;
+}
+
+.badge-danger {
+  background-color: #FFEBEE;
+  color: #C62828;
+}
+
+.badge-warning {
+  background-color: #FFF3E0;
+  color: #E65100;
+}

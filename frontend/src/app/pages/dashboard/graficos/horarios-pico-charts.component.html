@@ -1,0 +1,19 @@
+<div class="chart-container">
+  <div *ngIf="loading" class="loading">
+    <p>Cargando horarios pico...</p>
+  </div>
+
+  <div *ngIf="error" class="error">
+    <p>{{ error }}</p>
+  </div>
+
+  <div *ngIf="!loading && !error" class="chart-card">
+    <h3>Horarios Pico (Top 10)</h3>
+    <canvas
+      baseChart
+      [data]="horariosPicoChartConfig.data"
+      [options]="horariosPicoChartConfig.options"
+      [type]="horariosPicoChartConfig.type">
+    </canvas>
+  </div>
+</div>

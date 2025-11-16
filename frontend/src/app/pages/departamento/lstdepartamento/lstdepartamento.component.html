@@ -1,1 +1,59 @@
-<p>lstdepartamento works!</p>
+
+
+
+<div class="container py-5 animate__animated animate__fadeIn">
+  <div class="card shadow-lg mx-auto" style="max-width: 1100px; border-radius: 1.5rem;">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center" style="border-radius: 1.5rem 1.5rem 0 0;">
+      <h2 class="mb-0 fw-bold text-gradient"><i class="fas fa-building me-2"></i>Gestión de Departamentos</h2>
+      <button class="btn btn-light px-4 py-2 fw-bold" (click)="onNavigateCrearDepartamento()">
+        <i class="fas fa-plus-circle me-2"></i>Nuevo Departamento
+      </button>
+    </div>
+    <div class="card-body px-4 py-3">
+      <div class="mb-4 position-relative">
+        <span class="position-absolute search-icon"><i class="fas fa-search"></i></span>
+        <input class="form-control form-control-lg ps-5" [(ngModel)]="filtroNombre" placeholder="Buscar por nombre...">
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th class="text-center">#</th>
+              <th>Departamento</th>
+              <th>Descripción</th>
+              <th class="text-center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let departamento of departamentos | departmentFilter:filtroNombre; let i = index" class="animate__animated animate__fadeIn">
+              <td class="text-center fw-bold">{{ i + 1 }}</td>
+              <td>
+                <div class="d-flex align-items-center">
+                  <span class="avatar bg-primary me-2">{{ departamento.nombre ? departamento.nombre.charAt(0).toUpperCase() : '?' }}</span>
+                  <span class="fw-bold fs-5">{{ departamento.nombre }}</span>
+                </div>
+              </td>
+              <td>
+                <span *ngIf="departamento.descripcion; else sinDescripcion">{{ departamento.descripcion }}</span>
+                <ng-template #sinDescripcion>
+                  <span class="text-muted">-</span>
+                </ng-template>
+              </td>
+              <td class="text-center">
+                <button class="btn btn-outline-info btn-sm me-2 px-3 fw-bold" (click)="onNavigateEditDepartamento(departamento.id)">
+                  <i class="fas fa-eye"></i> Ver
+                </button>
+                <button class="btn btn-outline-danger btn-sm px-3 fw-bold" (click)="onDeleteDepartamento(departamento.id)">
+                  <i class="fas fa-trash"></i> Eliminar
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="(departamentos | departmentFilter:filtroNombre).length === 0">
+              <td colspan="4" class="text-center text-muted">No se encontraron departamentos.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

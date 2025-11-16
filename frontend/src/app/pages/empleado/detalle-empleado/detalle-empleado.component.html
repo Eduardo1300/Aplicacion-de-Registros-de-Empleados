@@ -1,34 +1,76 @@
-<div class="card text-center">
-    <div class="card-header">
-      {{titulo}}
+<div class="container mt-4">
+  <div class="card shadow-lg">
+    <div class="card-header bg-primary text-white">
+      <h3 class="mb-0">{{ titulo }}</h3>
     </div>
     <div class="card-body">
-        <label for="text-body-secondary" id="txtnombre" class="form-label">Nombre</label>
-        <input type="text" id="txtnombre" [(ngModel)]="nombre" class="form-control">
-        
-        <label for="text-body-secondary" id="txtapellido" class="form-label">Apellido</label>
-        <input type="text" id="txtapellido" [(ngModel)]="apellido" class="form-control">
-
-        <label for="text-body-secondary" id="txtcorreo" class="form-label">Correo</label>
-        <input type="email" id="txtcorreo" [(ngModel)]="correo" class="form-control">
-        
-        <label for="text-body-secondary" id="txttelefono" class="form-label">Telefono</label>
-        <input type="text" id="txttelefono" [(ngModel)]="telefono" class="form-control">    
-        
-        <label for="text-body-secondary" id="txtfecha" class="form-label">Fecha de Ingreso</label>
-        <input type="date" id="txtfecha" [(ngModel)]="fechaIngreso" class="form-control">
-        
-        <label for="text-body-secondary" id="txtdni" class="form-label">DNI</label>
-        <input type="text" id="txtdni" [(ngModel)]="dni" class="form-control">
-        <label for="text-body-secondary" id="txtdepartamento" class="form-label">Departamento</label>
-        <select [(ngModel)]="departamento.id" name="departamento" required class="form-select">
-            <option value="0" disabled selected>-- Selecciona un departamento --</option>
-            <option *ngFor="let d of departamentos" [value]="d.id">{{ d.nombre }}</option>
-          </select>
-          <br/>
+      <form>
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label for="nombre" class="form-label">Nombre</label>
+            <input type="text" id="nombre" class="form-control" [(ngModel)]="empleado.nombre" name="nombre">
+          </div>
+          <div class="col-md-6">
+            <label for="apellido" class="form-label">Apellido</label>
+            <input type="text" id="apellido" class="form-control" [(ngModel)]="empleado.apellido" name="apellido">
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label for="dni" class="form-label">DNI</label>
+            <input type="text" id="dni" class="form-control" [(ngModel)]="empleado.dni" name="dni">
+          </div>
+          <div class="col-md-6">
+            <label for="correo" class="form-label">Correo Electrónico</label>
+            <input type="email" id="correo" class="form-control" [(ngModel)]="empleado.correo" name="correo">
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label for="telefono" class="form-label">Teléfono</label>
+            <input type="text" id="telefono" class="form-control" [(ngModel)]="empleado.telefono" name="telefono">
+          </div>
+          <div class="col-md-6">
+            <label for="departamento" class="form-label">Departamento</label>
+            <select id="departamento" class="form-select" [(ngModel)]="empleado.departamento" name="departamento">
+              <option value="">Seleccionar...</option>
+              <option *ngFor="let dept of departamentos" [ngValue]="dept">
+                {{ dept.nombre }}
+              </option>
+            </select>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label for="cargo" class="form-label">Cargo</label>
+            <select id="cargo" class="form-select" [(ngModel)]="empleado.cargo" name="cargo">
+              <option value="">Seleccionar...</option>
+              <option *ngFor="let cargo of cargos" [ngValue]="cargo">
+                {{ cargo.nombre }}
+              </option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label for="fechaIngreso" class="form-label">Fecha de Ingreso</label>
+            <input type="date" id="fechaIngreso" class="form-control" [(ngModel)]="empleado.fechaIngreso" name="fechaIngreso">
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label for="estado" class="form-label">Estado</label>
+            <select id="estado" class="form-select" [(ngModel)]="empleado.estado" name="estado">
+              <option value="Activo">Activo</option>
+              <option value="Inactivo">Inactivo</option>
+              <option value="Suspendido">Suspendido</option>
+              <option value="Retirado">Retirado</option>
+            </select>
+          </div>
+        </div>
+      </form>
     </div>
-    <button type="button" (click)="registrarEmpleado()" class="btn btn-primary">Guardar Datos</button>
-    <div class="card-footer text-body-secondary">
-      <hr>
+    <div class="card-footer text-end">
+      <button class="btn btn-secondary me-2" (click)="cancelar()">Cancelar</button>
+      <button class="btn btn-primary" (click)="guardarCambios()">Guardar</button>
     </div>
   </div>
+</div>

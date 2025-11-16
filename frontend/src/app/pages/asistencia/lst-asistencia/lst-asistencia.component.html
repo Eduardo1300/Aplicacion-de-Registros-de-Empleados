@@ -1,38 +1,63 @@
-
-<div class="card">
-    <div class="card-header">
-        Asistencias del Personal
-        <br/>
-        <nav class="navbar bg-body-tertiary">
-          <form class="container-fluid justify-content-start">
-            <button class="btn btn-outline-success me-2" (click)="redirecTo('empleados')" type="button">Lista de Empleados</button>
-          </form>
-        </nav>
+<div class="container-fluid pt-4 px-4">
+  <div class="card border-0 shadow-sm rounded-3">
+    <div class="card-header bg-light d-flex flex-wrap justify-content-between align-items-center py-3">
+      <h5 class="mb-0 text-dark">
+        <i class="fas fa-calendar-check me-2 text-primary"></i>Registro de Asistencias
+      </h5>
+      <div class="d-flex align-items-center mt-2 mt-md-0">
+        <input type="date" class="form-control form-control-sm me-2" placeholder="Fecha Inicio">
+        <input type="date" class="form-control form-control-sm me-2" placeholder="Fecha Fin">
+        <button class="btn btn-sm btn-outline-secondary">Filtrar</button>
+      </div>
     </div>
-    
     <div class="card-body">
-      <form class="d-flex" role="search">
-        <input class="form-control me-2" [(ngModel)]="filtroNombre" name="search" placeholder="Personal a buscar" aria-label="Search"/>
-      </form>
-      <table class="table table-striped">
-            <thead>
-                <tr>
-                  <th scope="col">Fecha</th>
-                  <th scope="col">Hora de Ingreso</th>
-                  <th scope="col">Hora de Salida</th>
-                  <th scope="col">Empleado</th>
-                </tr>
-              </thead>
-              <tbody>
-                 @for (item of asistenciasFiltradas; track item.id) {
-                    <tr >
-                        <th scope="row">{{item.fecha}}</th>
-                        <td>{{item.horaEntrada}}</td>
-                        <td>{{item.horaSalida}}</td>
-                        <td>{{item.empleado.nombre +' '+ item.empleado.apellido}}</td>
-                      </tr>
-                }
-              </tbody>
-          </table>
+      <div class="mb-4 position-relative">
+        <i class="fas fa-search position-absolute text-muted search-icon"></i>
+        <input class="form-control ps-5" [(ngModel)]="filtroNombre" name="search" placeholder="Buscar por nombre de empleado..." aria-label="Search"/>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th scope="col">Empleado</th>
+              <th scope="col">Fecha</th>
+              <th scope="col">Hora de Entrada</th>
+              <th scope="col">Hora de Salida</th>
+              <th scope="col" class="text-center">Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for(item of asistenciasFiltradas; track item.id){
+              <tr class="animate__animated animate__fadeIn">
+                <td>
+                  <div class="d-flex align-items-center">
+                    <div class="avatar me-3">{{item.empleado.nombre.charAt(0)}}{{item.empleado.apellido.charAt(0)}}</div>
+                    <div>
+                      <div class="fw-bold">{{item.empleado.nombre}} {{item.empleado.apellido}}</div>
+                      <small class="text-muted">{{item.empleado.dni}}</small>
+                    </div>
+                  </div>
+                </td>
+                <td>{{item.fecha | date: 'dd/MM/yyyy'}}</td>
+                <td>{{item.horaEntrada}}</td>
+                <td>{{item.horaSalida}}</td>
+                <td class="text-center">
+                  <span class="badge rounded-pill" [ngClass]="getEstadoClass(item.horaEntrada)">
+                    {{getEstado(item.horaEntrada)}}
+                  </span>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="5" class="text-center text-muted py-5">
+                  <i class="fas fa-folder-open fa-3x mb-3"></i>
+                  <p>No se encontraron registros de asistencia.</p>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
+</div>

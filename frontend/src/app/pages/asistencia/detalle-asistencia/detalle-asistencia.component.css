@@ -1,0 +1,255 @@
+/* ============================================
+   IMPORTS & COMPONENT STRUCTURE
+   ============================================ */
+
+:host {
+  background-color: transparent;
+  display: block;
+  width: 100%;
+}
+
+/* ============================================
+   CARD & CONTAINER STYLING
+   ============================================ */
+
+.card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.12);
+  transition: all 0.3s ease;
+  background: white;
+  margin-bottom: 2rem;
+}
+
+.card:hover {
+  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.18);
+}
+
+.card-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 12px 12px 0 0;
+  padding: 1.5rem !important;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.card-header h5 {
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.card-header i {
+  font-size: 1.4rem;
+}
+
+.card-body {
+  padding: 2rem;
+}
+
+/* ============================================
+   DETAIL INFORMATION STYLING
+   ============================================ */
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: -0.5rem;
+  margin-left: -0.5rem;
+}
+
+.col-md-6 {
+  flex: 0 0 50%;
+  padding-right: 0.5rem;
+  padding-left: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.detail-section {
+  background: linear-gradient(135deg, #f0f4ff 0%, #f5f0ff 100%);
+  padding: 1.5rem;
+  border-radius: 8px;
+  border-left: 4px solid #667eea;
+  transition: all 0.3s ease;
+}
+
+.detail-section:hover {
+  border-left-color: #764ba2;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+}
+
+.detail-section label {
+  font-weight: 700;
+  color: #667eea;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.detail-section p {
+  color: #2d3748;
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+/* ============================================
+   BUTTON STYLING
+   ============================================ */
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25);
+  letter-spacing: 0.3px;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.35);
+}
+
+.btn-secondary,
+.btn-outline-secondary {
+  color: #667eea;
+  border-color: #667eea;
+  background-color: rgba(102, 126, 234, 0.05);
+  font-weight: 600;
+  border-radius: 6px;
+  border-width: 2px;
+  transition: all 0.3s ease;
+  padding: 0.65rem 1.25rem;
+}
+
+.btn-secondary:hover,
+.btn-outline-secondary:hover {
+  background: #667eea;
+  color: white;
+  border-color: #667eea;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+/* ============================================
+   BADGE/STATUS STYLING
+   ============================================ */
+
+.badge {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  font-size: 0.85rem;
+  display: inline-block;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  text-transform: uppercase;
+}
+
+.badge.bg-success {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  color: #fff;
+}
+
+.badge.bg-warning {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+  color: #fff;
+}
+
+.badge.bg-danger {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+  color: #fff;
+}
+
+.badge.bg-info {
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%) !important;
+  color: #fff;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 1200px) {
+  .card-body {
+    padding: 1.5rem;
+  }
+
+  .detail-section {
+    padding: 1.25rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .card {
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+  }
+
+  .card-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+    padding: 1.25rem !important;
+  }
+
+  .card-header h5 {
+    font-size: 1.1rem;
+  }
+
+  .col-md-6 {
+    flex: 0 0 100%;
+    margin-bottom: 1rem;
+  }
+
+  .detail-section {
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .btn-primary,
+  .btn-secondary,
+  .btn-outline-secondary {
+    width: 100%;
+    margin-bottom: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .card-header {
+    padding: 1rem !important;
+  }
+
+  .card-body {
+    padding: 1.25rem;
+  }
+
+  .detail-section {
+    padding: 0.875rem;
+  }
+
+  .detail-section label {
+    font-size: 0.75rem;
+  }
+
+  .detail-section p {
+    font-size: 0.9rem;
+  }
+
+  .badge {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.7rem;
+  }
+}

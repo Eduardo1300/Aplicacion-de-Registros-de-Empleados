@@ -1,0 +1,62 @@
+<div class="heatmap-container">
+  <div class="heatmap-header">
+    <h3>Heatmap de Asistencia Mensual</h3>
+    <div class="controls">
+      <select [(ngModel)]="month" (change)="onMesChange()">
+        <option *ngFor="let m of meses" [value]="m.valor">{{ m.nombre }}</option>
+      </select>
+      <select [(ngModel)]="year" (change)="onMesChange()">
+        <option *ngFor="let y of [2024, 2025, 2026]" [value]="y">{{ y }}</option>
+      </select>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="loading">
+    <p>Cargando heatmap...</p>
+  </div>
+
+  <div *ngIf="error" class="error">
+    <p>{{ error }}</p>
+  </div>
+
+  <div *ngIf="!loading && !error" class="heatmap">
+    <div class="legend">
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: #4CAF50;"></div>
+        <span>Asistió</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: #FFC107;"></div>
+        <span>Tardanza</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: #F44336;"></div>
+        <span>Inasistencia/Ausente</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: #E0E0E0;"></div>
+        <span>Sin registro</span>
+      </div>
+    </div>
+
+    <div class="heatmap-table">
+      <div class="empleado-row" *ngFor="let empleado of heatmapData">
+        <div class="empleado-info">
+          <div class="empleado-nombre">{{ empleado.empleadoNombre }}</div>
+          <div class="empleado-depto">{{ empleado.departamento }}</div>
+        </div>
+        
+        <div class="dias-grid">
+          <div 
+            class="dia-cell"
+            *ngFor="let dia of empleado.dias"
+            [style.background-color]="getEstadoColor(dia.estado)"
+            [title]="'Día ' + dia.dia + ': ' + getEstadoTitulo(dia.estado) + (dia.horaEntrada ? ' - Entrada: ' + dia.horaEntrada : '')"
+          >
+            <span class="dia-numero">{{ dia.dia }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

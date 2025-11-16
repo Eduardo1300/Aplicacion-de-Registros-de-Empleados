@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Empleado } from './empleado';
@@ -11,18 +11,21 @@ import { EmpleadoModel } from '../../Model/EmpleadoModel';
 export class EmpleadoserviceService {
   constructor(private httpClient: HttpClient) { }
   getAllEmpleado(): Observable<Empleado[]>{
-    return this.httpClient.get<Empleado[]>("http://localhost:8080/api/empleado")
+    return this.httpClient.get<Empleado[]>("http://localhost:8080/api/empleado");
   }
   getEmpleadoById(id: number): Observable<Empleado>{
-    return this.httpClient.get<Empleado>("http://localhost:8080/api/empleado/"+id)
+    return this.httpClient.get<Empleado>("http://localhost:8080/api/empleado/"+id);
   }
   saveEmpleado(empleado: EmpleadoModel): Observable<Empleado>{
-    return this.httpClient.post<Empleado>("http://localhost:8080/api/empleado",empleado)
+    return this.httpClient.post<Empleado>("http://localhost:8080/api/empleado",empleado);
   }
   updateEmpleado(empleado: Empleado): Observable<Empleado>{
-    return this.httpClient.put<Empleado>("http://localhost:8080/api/empleado/"+empleado.id,empleado)
+    return this.httpClient.put<Empleado>("http://localhost:8080/api/empleado/"+empleado.id,empleado);
   }
   getDepartamentos(): Observable<Departamento[]>{
     return this.httpClient.get<Departamento[]>("http://localhost:8080/api/departamento")
+  }
+  getCargos(): Observable<any[]>{
+    return this.httpClient.get<any[]>("http://localhost:8080/api/cargo")
   }
 }

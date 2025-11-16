@@ -1,0 +1,19 @@
+<div class="chart-container">
+  <div *ngIf="loading" class="loading">
+    <p>Cargando distribución...</p>
+  </div>
+
+  <div *ngIf="error" class="error">
+    <p>{{ error }}</p>
+  </div>
+
+  <div *ngIf="!loading && !error" class="chart-card">
+    <h3>Distribución de Empleados por Departamento</h3>
+    <canvas
+      baseChart
+      [data]="distribucionChartConfig.data"
+      [options]="distribucionChartConfig.options"
+      [type]="distribucionChartConfig.type">
+    </canvas>
+  </div>
+</div>
