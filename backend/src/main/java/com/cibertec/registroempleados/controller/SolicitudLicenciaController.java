@@ -1,6 +1,7 @@
 package com.cibertec.registroempleados.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,7 +16,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cibertec.registroempleados.model.Empleado;
 import com.cibertec.registroempleados.model.SolicitudLicencia;
+import com.cibertec.registroempleados.model.TipoLicencia;
+import com.cibertec.registroempleados.repository.EmpleadoRepository;
+import com.cibertec.registroempleados.repository.TipoLicenciaRepository;
 import com.cibertec.registroempleados.service.SolicitudLicenciaService;
 
 @RestController
@@ -26,10 +31,37 @@ public class SolicitudLicenciaController {
     @Autowired
     private SolicitudLicenciaService solicitudLicenciaService;
     
+    @Autowired
+    private EmpleadoRepository empleadoRepository;
+    
+    @Autowired
+    private TipoLicenciaRepository tipoLicenciaRepository;
+    
     @PostMapping
-    public ResponseEntity<SolicitudLicencia> crear(@RequestBody SolicitudLicencia solicitud) {
-        SolicitudLicencia nueva = solicitudLicenciaService.crear(solicitud);
-        return new ResponseEntity<>(nueva, HttpStatus.CREATED);
+    public ResponseEntity<?> crear(@RequestBody SolicitudLicenciaDTO solicitudDTO) {
+        try {
+            // Obtener empleado y tipo licencia
+            Optional<Empleado> empleado = empleadoRepository.findById((long)solicitudDTO.empleadoId);
+            Optional<TipoLicencia> tipoLicencia = tipoLicenciaRepository.findById((long)solicitudDTO.tipoLicenciaId);
+            
+            if (!empleado.isPresent() || !tipoLicencia.isPresent()) {
+                return ResponseEntity.badRequest().body("Empleado o tipo de licencia no encontrado");
+            }
+            
+            SolicitudLicencia solicitud = new SolicitudLicencia();
+            solicitud.setEmpleado(empleado.get());
+            solicitud.setTipoLicencia(tipoLicencia.get());
+            solicitud.setFechaInicio(solicitudDTO.fechaInicio);
+            solicitud.setFechaFin(solicitudDTO.fechaFin);
+            solicitud.setDiasSolicitados(solicitudDTO.diasSolicitados);
+            solicitud.setRazon(solicitudDTO.razon);
+            
+            SolicitudLicencia nueva = solicitudLicenciaService.crear(solicitud);
+            return new ResponseEntity<>(nueva, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Error al crear solicitud: " + e.getMessage());
+        }
     }
     
     @GetMapping
@@ -88,5 +120,15 @@ public class SolicitudLicenciaController {
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         solicitudLicenciaService.eliminar(id);
         return ResponseEntity.noContent().build();
+    }
+    
+    // DTO inner class para manejo de datos
+    public static class SolicitudLicenciaDTO {
+        public Integer empleadoId;
+        public Integer tipoLicenciaId;
+        public java.time.LocalDate fechaInicio;
+        public java.time.LocalDate fechaFin;
+        public Integer diasSolicitados;
+        public String razon;
     }
 }

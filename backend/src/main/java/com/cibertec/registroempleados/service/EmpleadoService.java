@@ -32,8 +32,11 @@ public class EmpleadoService {
         // Si el ID es null o 0, se considera un nuevo empleado
         boolean esNuevo = empleado.getId() == null || empleado.getId() == 0;
         
-        // Para nuevos empleados, establecer ID a null para que Hibernate genere uno
+        // Validar DNI único para empleados nuevos
         if (esNuevo) {
+            if (empleadoRepository.existsByDni(empleado.getDni())) {
+                throw new IllegalArgumentException("El empleado con DNI '" + empleado.getDni() + "' ya existe");
+            }
             empleado.setId(null);
         }
         

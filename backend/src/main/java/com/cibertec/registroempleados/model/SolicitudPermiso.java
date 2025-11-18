@@ -30,8 +30,8 @@ public class SolicitudPermiso {
     @JoinColumn(name = "tipo_permiso_id", nullable = false)
     private TipoPermiso tipoPermiso;
 
-    @Column(name = "fecha", nullable = false)
-    private LocalDate fecha;
+    @Column(name = "fecha_permiso", nullable = false)
+    private LocalDate fechaPermiso;
 
     @Column(name = "hora_inicio", nullable = false)
     private LocalTime horaInicio;
@@ -39,8 +39,8 @@ public class SolicitudPermiso {
     @Column(name = "hora_fin", nullable = false)
     private LocalTime horaFin;
 
-    @Column(name = "razon", columnDefinition = "TEXT")
-    private String razon;
+    @Column(name = "motivo", columnDefinition = "TEXT")
+    private String motivo;
 
     @Column(name = "estado", length = 50)
     private String estado = "PENDIENTE"; // PENDIENTE, APROBADO, RECHAZADO

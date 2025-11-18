@@ -2,6 +2,7 @@ package com.cibertec.registroempleados.controller;
 
 import com.cibertec.registroempleados.model.Departamento;
 import com.cibertec.registroempleados.service.DepartamentoService;
+import com.cibertec.registroempleados.dto.ErrorResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,8 +34,16 @@ public class DepartamentoController {
     }
 
     @PostMapping
-    public ResponseEntity<Departamento> guardarDepartamento(@RequestBody Departamento departamento){
-        return new ResponseEntity<>(departamentoService.guardar(departamento), HttpStatus.CREATED);
+    public ResponseEntity<?> guardarDepartamento(@RequestBody Departamento departamento){
+        try {
+            return new ResponseEntity<>(departamentoService.guardar(departamento), HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(new ErrorResponse(e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse("Error al guardar el departamento: " + e.getMessage()));
+        }
     }
 
     @PutMapping("/{id}")

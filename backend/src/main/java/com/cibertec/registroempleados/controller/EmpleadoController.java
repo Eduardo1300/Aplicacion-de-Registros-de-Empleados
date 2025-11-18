@@ -1,6 +1,7 @@
 package com.cibertec.registroempleados.controller;
 
 import com.cibertec.registroempleados.dto.EmpleadoResponse;
+import com.cibertec.registroempleados.dto.ErrorResponse;
 import com.cibertec.registroempleados.model.Departamento;
 import com.cibertec.registroempleados.model.Empleado;
 import com.cibertec.registroempleados.service.EmpleadoService;
@@ -45,14 +46,19 @@ public class EmpleadoController {
         
         // Establecer estado por defecto si viene nulo
         if (empleado.getEstado() == null) {
-            empleado.setEstado(Empleado.EstadoEmpleado.ACTIVO);
+            empleado.setEstado("Activo");
         }
         
         try {
             return new ResponseEntity<>(empleadoService.guardarEmpleado(empleado), HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
+            logger.warn("Validación: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(new ErrorResponse(e.getMessage()));
         } catch (Exception e) {
             logger.error("Error al guardar empleado: ", e);
-            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse("Error al guardar empleado: " + e.getMessage()));
         }
     }
     

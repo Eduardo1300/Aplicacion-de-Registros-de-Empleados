@@ -15,7 +15,7 @@ public interface SolicitudPermisoRepository extends JpaRepository<SolicitudPermi
     List<SolicitudPermiso> findByEmpleadoId(Long empleadoId);
     List<SolicitudPermiso> findByEstado(String estado);
     
-    @Query("SELECT s FROM SolicitudPermiso s WHERE s.empleado.id = :empId AND s.fecha >= :inicio AND s.fecha <= :fin")
+    @Query("SELECT s FROM SolicitudPermiso s WHERE s.empleado.id = :empId AND s.fechaPermiso >= :inicio AND s.fechaPermiso <= :fin")
     List<SolicitudPermiso> findByEmpleadoAndPeriodo(@Param("empId") Long empleadoId, 
                                                      @Param("inicio") LocalDate inicio, 
                                                      @Param("fin") LocalDate fin);

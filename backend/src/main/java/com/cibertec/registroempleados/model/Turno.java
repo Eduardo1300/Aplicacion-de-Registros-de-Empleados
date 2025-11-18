@@ -36,7 +36,7 @@ public class Turno {
     @Column(name = "horas_trabajo")
     private Integer horasTrabajo;
 
-    @Column(name = "descripcion", columnDefinition = "TEXT")
+    @Column(name = "descripcion")
     private String descripcion;
 
     @Column(name = "activo")

@@ -18,6 +18,11 @@ public class DepartamentoService {
     }
 
     public Departamento guardar(Departamento departamento) {
+        // Verificar si ya existe un departamento con ese nombre
+        Optional<Departamento> existente = repository.findByNombreIgnoreCase(departamento.getNombre());
+        if (existente.isPresent()) {
+            throw new IllegalArgumentException("El departamento '" + departamento.getNombre() + "' ya existe");
+        }
         return repository.save(departamento);
     }
 
