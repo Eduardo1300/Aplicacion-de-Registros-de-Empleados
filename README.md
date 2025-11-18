@@ -1,86 +1,123 @@
-# Sistema de Registro de Empleados con Spring Boot y Angular
+# Sistema de Registro de Empleados
 
-Esta aplicación web permite gestionar el **registro y administración de empleados**, así como **registrar asistencias** de manera eficiente.  
-Ha sido desarrollada utilizando **Spring Boot (STS)** para el backend y **Angular** para el frontend, integrando tecnologías modernas y buenas prácticas de desarrollo web.
+## Descripción
+Sistema web completo para la gestión de empleados, asistencias, justificaciones, turnos y departamentos en una organización. Incluye autenticación JWT, roles de usuario (ADMIN y EMPLEADO), panel de administración, dashboard estadístico y gestión de incidencias.
 
----
+## Tecnologías Utilizadas
+- **Backend:** Java 21, Spring Boot 3, Spring Security, Hibernate/JPA, MySQL 8
+- **Frontend:** Angular 16+, TypeScript, Bootstrap 5
+- **Base de Datos:** MySQL 8
 
-## 🧩 Funcionalidades principales
-
-- ✅ **Gestión completa de empleados:** Crear, visualizar, editar y eliminar información del personal.
-- 🔒 **Control de roles y seguridad:** El sistema cuenta con autenticación y autorización para acceso restringido según el rol del usuario.
-- 📅 **Registro de asistencias:** Solo los usuarios autenticados pueden registrar las asistencias del personal.
-- 🔍 **Barra de búsqueda:** Permite filtrar empleados por nombre para facilitar la navegación.
-- 💻 **Interfaz dinámica y moderna:** Desarrollada con Angular, proporciona una experiencia fluida y responsiva.
-- 🛡️ **Manejo de sesiones y rutas protegidas:** Implementación con Spring Security para proteger accesos no autorizados.
-- 🧠 **Modificación en tiempo real:** Los cambios se reflejan de inmediato, mejorando la eficiencia del sistema.
-- 🗄️ **Base de datos relacional:** Utiliza MySQL para almacenar los datos de forma segura y estructurada.
-
----
-
-## ⚙️ Requisitos y ejecución
-
-### 1. Base de datos (MySQL)
-
-- Asegúrate de que el servidor de MySQL esté corriendo.
-- Crea una base de datos con el nombre que esté especificado en `application.properties` del backend.
-- Si tu usuario o contraseña de MySQL es diferente, actualiza el archivo:
-
-
----
-
-### 2. Backend - Spring Boot (STS)
-
-```bash
-# Abre el proyecto 'backend' en Spring Tool Suite
-# Ejecuta la aplicación desde la clase principal
-
-### 3. Fronted Angular
-# Abre la carpeta 'frontend' en Visual Studio Code
-npm install
-npm run start
+## Estructura del Proyecto
 ```
-Navega a:
-
-http://localhost:4200/pages/empleados
-
-
-4. Acceso al sistema
-
-    Usuario: rrhh
-
-    Contraseña: rrhh
-
-    El login es requerido únicamente para acceder a la sección de registro de asistencias.
+Sistema-de-Registro-de-Empleados/
+├── backend/         # API REST Spring Boot
+├── frontend/        # Aplicación Angular
+├── basededatos.sql  # Script de creación de BD y tablas
+├── README.md        # Este archivo
+```
 
 
-🖼️ Capturas de pantalla
+## Arquitectura del Sistema
 
-  
+**Backend:** API REST modular con arquitectura en capas (Controller – Service – Repository – Entity).
 
-![Vista del proyecto - Lista de empleados](./frontend/src/assets/vista_empleados.png)
-![Vista del proyecto - nuevo empleado](./frontend/src/assets/nuevo_empleados.png)
-![Vista del proyecto - editar empleado](./frontend/src/assets/editar_empleados.png)
-![Vista del proyecto - lista empleado actualizada](./frontend/src/assets/vista_empleados_actualizada.png)
-![Vista del proyecto - logeo lista asistencia](./frontend/src/assets/logeo_lista_asistencia.png)
-![Vista del proyecto - lista asistencia](./frontend/src/assets/lista_asistencia.png)
-![Vista del proyecto - registrar asistencia](./frontend/src/assets/registrar_asistencia.png)
-![Vista del proyecto - vista asistencia actualizada](./frontend/src/assets/vista_asistencia.png)
+**Seguridad:** Autenticación JWT y autorización por roles (ADMIN / EMPLEADO).
 
+**Frontend:** Angular modularizado con lazy loading, guards y servicios centralizados para consumo de API.
 
-📝 Estructura del proyecto
+**Comunicación:** HTTP + JSON entre Angular y Spring Boot.
 
-proyecto-spring/
-├── backend/                  # Proyecto Spring Boot (registro de empleados)
-├── frontend/                 # Proyecto Angular
-├── README.md                 # Este archivo
-└── .gitignore                # Ignorar archivos innecesarios
+**Persistencia:** JPA + Hibernate conectados a MySQL.
 
+**Gestión de errores:** Global Exception Handler con respuestas estandarizadas.
 
-👨‍💻 Autor
+## Diagrama de la Arquitectura
 
-Christopher Eduardo Valdivia Baca
-📍 Estudiante de Computación e Informática — Cibertec Callao
-🔗 LinkedIn
-📧 eduardovaldivia130@outlook.es
-📱 +51 953 587 619
+```
+┌──────────────┐     HTTP      ┌───────────────┐      JDBC/Hibernate     ┌────────────┐
+│   Angular     │  <────────→  │  Spring Boot   │  <──────────────→      │   MySQL     │
+│  (Frontend)   │               │     (API)      │                        │   BD        │
+└──────────────┘               └───────────────┘                        └────────────┘
+```
+
+## Cómo Contribuir / Testing
+
+**Testing**
+
+- Backend preparado para pruebas con JUnit y Mockito (estructura generada por Spring Initializr).
+
+## Estado del Proyecto / Roadmap
+
+**✅ Completado**:
+- Autenticación y autorización
+- CRUD de empleados, departamentos, cargos
+- Asistencias y justificaciones
+- Turnos y horarios
+- Licencias y permisos
+- Nómina y salarios
+- Evaluaciones de desempeño
+- Reportes personalizados
+- Estadísticas y análisis
+- Notificaciones
+- Auditoría y trazabilidad
+- Encoding UTF-8 completo
+- Dashboards (Admin y Empleado)
+
+**Mejoras futuras**
+
+- Implementar asistencia por geolocalización.
+- Integrar subida de documentos en justificaciones y licencias.
+- Migración futura a PostgreSQL.
+- Dockerización del backend y frontend.
+- Integración con sistemas de terceros (RH, contabilidad).
+- Mejoras en algoritmos de reportes.
+- Integración de firma digital en documentos.
+
+## Tablas de la Base de Datos (40+)
+- **Usuarios**: usuario, rol
+- **Empleados**: empleado, departamento, cargo, horario, turno
+- **Asistencias**: asistencia, falta, justificacion
+- **Licencias y Permisos**: tipo_licencia, solicitud_licencia, saldo_licencia, tipo_permiso, solicitud_permiso
+- **Nómina**: salario, historial_pago, deduccion, bonificacion, hora_extra
+- **Evaluaciones**: evaluacion, competencia, analisis_desempenio
+- **Reportes**: reporte, configuracion_reporte
+- **Notificaciones**: notificacion
+- **Logs**: log_acceso, auditoria
+- **Sistema**: rol_granular, mensaje, documento, anuncio, contacto_formulario
+
+## Instalación y Ejecución
+
+### 1. Base de Datos
+- Crear la base de datos ejecutando el script `basededatos_completa.sql` en MySQL.
+- Usuario por defecto: `root` / contraseña: `mysql` (ajustar en `application.properties` si es necesario).
+
+### 2. Backend (Spring Boot)
+```bash
+cd backend
+mvn clean package
+java -jar target/registro-empleados-0.0.1-SNAPSHOT.jar
+```
+- El backend corre por defecto en `http://localhost:8080`
+- Configuración en `src/main/resources/application.properties`
+
+### 3. Frontend (Angular)
+```bash
+cd frontend
+npm install
+ng serve
+```
+- El frontend corre por defecto en `http://localhost:4200`
+
+## Notas Técnicas
+- El backend y frontend deben estar corriendo para el funcionamiento completo.
+- Si cambias el puerto o credenciales de la BD, actualiza ambos proyectos.
+- El backend maneja errores y validaciones, devolviendo mensajes claros al frontend.
+- El frontend muestra mensajes de error personalizados para duplicados y validaciones.
+- La base de datos utiliza UTF-8MB4 para soportar todos los caracteres especiales.
+- Los controladores utilizan `/api` para rutas públicas y `/api/v1` para la versión 1 de la API.
+- JWT se genera con algoritmo HS256 y contiene claims de: token, nombreUsuario, rol, empleadoId.
+- Todos los datos de empleados se muestran con encoding UTF-8 (tildes, acentos correctos).
+
+## Contacto
+Desarrollado por Eduardo1300

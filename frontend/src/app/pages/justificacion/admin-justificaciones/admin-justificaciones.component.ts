@@ -25,10 +25,11 @@ export class AdminJustificacionesComponent implements OnInit {
 
   ngOnInit(): void {
     this.rol = this.authService.getRolActual();
-    if (this.rol === 'ADMIN') {
+    console.log('Rol actual:', this.rol); // Debug
+    if (this.rol && this.rol.toUpperCase() === 'ADMIN') {
       this.cargarJustificaciones();
     } else {
-      this.error = 'Solo administradores pueden acceder a este módulo';
+      this.error = 'Solo administradores pueden acceder a este módulo. Rol: ' + this.rol;
       this.cargando = false;
     }
   }
@@ -37,17 +38,25 @@ export class AdminJustificacionesComponent implements OnInit {
     this.cargando = true;
     this.justificacionService.obtenerTodas().subscribe({
       next: (justificaciones: any) => {
-        // Filtrar por estado
-        if (this.filtroEstado === 'PENDIENTE') {
-          this.justificaciones = justificaciones.filter((j: any) => !j.estado || j.estado === 'Pendiente');
+        // Asegurar que justificaciones es un array
+        if (!justificaciones) {
+          this.justificaciones = [];
+        } else if (Array.isArray(justificaciones)) {
+          // Filtrar por estado
+          if (this.filtroEstado === 'PENDIENTE') {
+            this.justificaciones = justificaciones.filter((j: any) => !j.estado || j.estado === 'Pendiente');
+          } else {
+            this.justificaciones = justificaciones;
+          }
         } else {
-          this.justificaciones = justificaciones;
+          this.justificaciones = [];
         }
         this.cargando = false;
       },
       error: (err) => {
         console.error('Error al cargar justificaciones:', err);
         this.error = 'Error al cargar justificaciones';
+        this.justificaciones = [];
         this.cargando = false;
       }
     });
@@ -107,6 +116,9 @@ export class AdminJustificacionesComponent implements OnInit {
   }
 
   get justificacionesFiltradas(): any[] {
+    if (!this.justificaciones || this.justificaciones.length === 0) {
+      return [];
+    }
     if (this.filtroEstado === 'TODAS') {
       return this.justificaciones;
     }

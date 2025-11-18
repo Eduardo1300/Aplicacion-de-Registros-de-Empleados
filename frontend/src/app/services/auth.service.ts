@@ -24,7 +24,7 @@ export class AuthService {
 
   login(nombre: string, clave: string): Observable<AuthResponse> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    return this.http.post<AuthResponse>(`${this.API_URL}/login`, { username: nombre, clave: clave }, { headers })
+    return this.http.post<AuthResponse>(`${this.API_URL}/login`, { nombreUsuario: nombre, clave: clave }, { headers })
       .pipe(
         tap(response => {
           this.storeSession(response.token, nombre, response.empleadoId);
