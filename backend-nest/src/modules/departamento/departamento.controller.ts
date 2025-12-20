@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Put, Delete, Param, Body, UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../../auth';
 import { DepartamentoService } from './departamento.service';
 
 @Controller('api/departamento')

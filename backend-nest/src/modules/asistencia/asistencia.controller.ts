@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Put, Delete, Param, Body, Query, UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../../auth';
 import { AsistenciaService } from './asistencia.service';
 import { CreateAsistenciaDto } from '../../dto/create-asistencia.dto';
 
