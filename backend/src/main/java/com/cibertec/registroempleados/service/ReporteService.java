@@ -28,27 +28,42 @@ public class ReporteService {
     private DepartamentoRepository departamentoRepository;
     
     public Reporte crearReporte(ReporteDTO dto) {
-        Reporte reporte = new Reporte();
-        reporte.setTitulo(dto.getTitulo());
-        reporte.setDescripcion(dto.getDescripcion());
-        reporte.setTipoReporte(Reporte.TipoReporte.valueOf(dto.getTipoReporte()));
-        reporte.setFechaGeneracion(LocalDateTime.now());
-        reporte.setEstado(Reporte.EstadoReporte.BORRADOR);
-        
-        if (dto.getUsuarioGeneradorId() != null) {
-            Optional<Usuario> usuario = usuarioRepository.findById(dto.getUsuarioGeneradorId());
-            usuario.ifPresent(reporte::setUsuarioGenerador);
+        try {
+            Reporte reporte = new Reporte();
+            reporte.setTitulo(dto.getTitulo());
+            reporte.setDescripcion(dto.getDescripcion());
+            
+            // Validar tipo de reporte
+            if (dto.getTipoReporte() == null || dto.getTipoReporte().isEmpty()) {
+                throw new IllegalArgumentException("TipoReporte no puede ser nulo o vacío");
+            }
+            reporte.setTipoReporte(Reporte.TipoReporte.valueOf(dto.getTipoReporte()));
+            reporte.setFechaGeneracion(LocalDateTime.now());
+            reporte.setEstado(Reporte.EstadoReporte.BORRADOR);
+            
+            if (dto.getUsuarioGeneradorId() != null) {
+                Optional<Usuario> usuario = usuarioRepository.findById(dto.getUsuarioGeneradorId());
+                if (usuario.isPresent()) {
+                    reporte.setUsuarioGenerador(usuario.get());
+                } else {
+                    throw new IllegalArgumentException("Usuario con ID " + dto.getUsuarioGeneradorId() + " no existe");
+                }
+            } else {
+                throw new IllegalArgumentException("UsuarioGeneradorId es requerido");
+            }
+            
+            if (dto.getDepartamentoId() != null) {
+                Optional<Departamento> depto = departamentoRepository.findById(dto.getDepartamentoId());
+                depto.ifPresent(reporte::setDepartamento);
+            }
+            
+            reporte.setFechaInicio(dto.getFechaInicio());
+            reporte.setFechaFin(dto.getFechaFin());
+            
+            return reporteRepository.save(reporte);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Error en los datos del reporte: " + e.getMessage(), e);
         }
-        
-        if (dto.getDepartamentoId() != null) {
-            Optional<Departamento> depto = departamentoRepository.findById(dto.getDepartamentoId());
-            depto.ifPresent(reporte::setDepartamento);
-        }
-        
-        reporte.setFechaInicio(dto.getFechaInicio());
-        reporte.setFechaFin(dto.getFechaFin());
-        
-        return reporteRepository.save(reporte);
     }
     
     public List<Reporte> listarTodos() {
