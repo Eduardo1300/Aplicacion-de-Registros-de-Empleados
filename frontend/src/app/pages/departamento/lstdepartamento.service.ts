@@ -7,7 +7,7 @@
     providedIn: 'root'
   })
   export class LstdepartamentoService {
-    private apiUrl = 'http://localhost:8080/api/departamento';
+    private apiUrl = 'http://localhost:3000/api/departamento';
 
     constructor(private http: HttpClient) { }
 

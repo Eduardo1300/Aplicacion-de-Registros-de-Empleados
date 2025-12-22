@@ -7,7 +7,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authToken = authService.getToken();
 
   // Agregar token a TODAS las requests de la API
-  if (authToken && req.url.includes('http://localhost:8080/api/')) {
+  if (authToken && req.url.includes('http://localhost:3000/api/')) {
     const authReq = req.clone({
       setHeaders: {
         Authorization: `Bearer ${authToken}`,

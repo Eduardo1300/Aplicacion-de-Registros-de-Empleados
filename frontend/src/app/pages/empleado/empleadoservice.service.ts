@@ -11,7 +11,7 @@ import { EmpleadoModel } from '../../Model/EmpleadoModel';
 export class EmpleadoserviceService {
   constructor(private httpClient: HttpClient) { }
   getAllEmpleado(): Observable<Empleado[]>{
-    return this.httpClient.get<Empleado[]>("http://localhost:8080/api/empleado");
+    return this.httpClient.get<Empleado[]>("http://localhost:3000/api/empleado");
   }
   getEmpleadoById(id: number): Observable<Empleado>{
     return this.httpClient.get<Empleado>("http://localhost:8080/api/empleado/"+id);

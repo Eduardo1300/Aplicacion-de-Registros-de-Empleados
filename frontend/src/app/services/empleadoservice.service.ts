@@ -7,7 +7,7 @@ import { EmpleadoModel } from '../Model/EmpleadoModel';
   providedIn: 'root'
 })
 export class EmpleadoService {
-  private apiUrl = 'http://localhost:8080/api/empleado'; // Corregido para coincidir con el backend
+  private apiUrl = 'http://localhost:3000/api/empleado'; // Corregido para coincidir con el backend
 
   constructor(private http: HttpClient) {}
 

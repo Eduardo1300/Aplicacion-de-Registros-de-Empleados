@@ -11,7 +11,7 @@ export class AsistenciaserviceService {
 
   constructor(private httpClient: HttpClient) { }
   getAllAsistencia(): Observable<Asistencia[]>{
-    return this.httpClient.get<Asistencia[]>("http://localhost:8080/api/asistencia");
+    return this.httpClient.get<Asistencia[]>("http://localhost:3000/api/asistencia");
   }
   getAsistenciaById(id: number): Observable<Asistencia>{
     return this.httpClient.get<Asistencia>("http://localhost:8080/api/asistencia/"+id);

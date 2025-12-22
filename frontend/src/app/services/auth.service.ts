@@ -16,7 +16,7 @@ export class AuthService {
   private readonly JWT_TOKEN = 'JWT_TOKEN';
   private readonly USERNAME_KEY = 'AUTH_USERNAME';
   private readonly EMPLEADO_ID_KEY = 'EMPLEADO_ID';
-  private readonly API_URL = 'http://localhost:8080/api/auth';
+  private readonly API_URL = 'http://localhost:3000/api/auth';
 
   private loggedIn = new BehaviorSubject<boolean>(this.hasToken());
 
