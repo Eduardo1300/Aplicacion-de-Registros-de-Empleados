@@ -121,6 +121,15 @@ INSERT INTO roles (nombre, descripcion) VALUES
   ('EMPLEADO', 'Empleado regular')
 ON CONFLICT (nombre) DO NOTHING;
 
+-- Insertar usuarios por defecto
+-- Usuario: admin, Contraseña: admin123 (hasheada)
+-- Usuario: empleado, Contraseña: empleado123 (hasheada)
+-- Para generar hashes, usar: bcryptjs con rounds=10
+INSERT INTO usuarios (nombre_usuario, clave, activo, rol_id) VALUES
+  ('admin', '$2a$10$jJD66jEeJNfFAZrj36uGN.DUEKaVc9FJZPmx1BqIRD8LWf3/8YeCq', true, 1),
+  ('empleado', '$2a$10$OVBhvpTKy9pQmKF3RzAQ3eN8q5VMbp8S3UZxPM3G6L5W2E.Fy/.n.', true, 2)
+ON CONFLICT (nombre_usuario) DO NOTHING;
+
 -- Insertar tipos de licencia por defecto
 INSERT INTO tipos_licencia (nombre, descripcion, dias_anuales, remunerada) VALUES
   ('Vacaciones', 'Licencia de vacaciones', 30, true),
