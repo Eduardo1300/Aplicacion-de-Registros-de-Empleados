@@ -48,7 +48,7 @@
       </div>
     </nav>
     <main class="container mt-4">
-      <router-view />
+      <router-view :key="$route.fullPath" />
     </main>
     <ToastContainer />
   </div>

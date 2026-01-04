@@ -261,7 +261,26 @@ export default {
     }
   },
   mounted() {
+    console.log('Graficos component mounted')
     this.loadData()
+  },
+  beforeUnmount() {
+    console.log('Graficos component unmounting')
+    // Limpiar datos al salir del componente
+    this.empleados = []
+    this.asistencias = []
+    this.licencias = []
+    this.departamentos = []
+    // Limpiar gráficos
+    this.chartEmpleadosPorDepartamento = { labels: [], datasets: [] }
+    this.chartEstadoEmpleados = { labels: [], datasets: [] }
+    this.chartAsistenciasUltimos7Dias = { labels: [], datasets: [] }
+    this.chartGeneros = { labels: [], datasets: [] }
+    this.chartSalariosPromedio = { labels: [], datasets: [] }
+    this.chartLicencias = { labels: [], datasets: [] }
+    this.chartAntiguedad = { labels: [], datasets: [] }
+    this.chartTasaAsistencia = { labels: [], datasets: [] }
+    this.chartTendenciaAsistencias = { labels: [], datasets: [] }
   },
   methods: {
     async loadData() {
