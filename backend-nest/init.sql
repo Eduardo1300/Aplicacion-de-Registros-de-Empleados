@@ -31,13 +31,13 @@ CREATE TABLE IF NOT EXISTS cargos (
 -- Crear tabla de usuarios
 CREATE TABLE IF NOT EXISTS usuarios (
   id SERIAL PRIMARY KEY,
-  nombre_usuario VARCHAR(255) NOT NULL UNIQUE,
+  nombreUsuario VARCHAR(255) NOT NULL UNIQUE,
   clave VARCHAR(255) NOT NULL,
   activo BOOLEAN DEFAULT true,
   rol_id INTEGER NOT NULL REFERENCES roles(id),
   empleado_id INTEGER,
-  fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  fechaCreacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  fechaActualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Crear tabla de empleados
@@ -65,17 +65,17 @@ CREATE TABLE IF NOT EXISTS tipos_licencia (
   id SERIAL PRIMARY KEY,
   nombre VARCHAR(255) NOT NULL,
   descripcion TEXT,
-  dias_anuales INTEGER DEFAULT 0,
+  diasAnuales INTEGER DEFAULT 0,
   remunerada BOOLEAN DEFAULT true,
-  fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  fechaCreacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  fechaActualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Crear tabla de asistencias
 CREATE TABLE IF NOT EXISTS asistencias (
   id SERIAL PRIMARY KEY,
   empleado_id INTEGER NOT NULL REFERENCES empleados(id) ON DELETE CASCADE,
-  fecha_asistencia DATE NOT NULL,
+  fechaAsistencia DATE NOT NULL,
   hora_entrada TIME,
   hora_salida TIME,
   estado VARCHAR(50) NOT NULL,
@@ -125,13 +125,13 @@ ON CONFLICT (nombre) DO NOTHING;
 -- Usuario: admin, Contraseña: admin123 (hasheada)
 -- Usuario: empleado, Contraseña: empleado123 (hasheada)
 -- Para generar hashes, usar: bcryptjs con rounds=10
-INSERT INTO usuarios (nombre_usuario, clave, activo, rol_id) VALUES
+INSERT INTO usuarios (nombreUsuario, clave, activo, rol_id) VALUES
   ('admin', '$2a$10$jJD66jEeJNfFAZrj36uGN.DUEKaVc9FJZPmx1BqIRD8LWf3/8YeCq', true, 1),
   ('empleado', '$2a$10$OVBhvpTKy9pQmKF3RzAQ3eN8q5VMbp8S3UZxPM3G6L5W2E.Fy/.n.', true, 2)
-ON CONFLICT (nombre_usuario) DO NOTHING;
+ON CONFLICT (nombreUsuario) DO NOTHING;
 
 -- Insertar tipos de licencia por defecto
-INSERT INTO tipos_licencia (nombre, descripcion, dias_anuales, remunerada) VALUES
+INSERT INTO tipos_licencia (nombre, descripcion, diasAnuales, remunerada) VALUES
   ('Vacaciones', 'Licencia de vacaciones', 30, true),
   ('Enfermedad', 'Licencia por enfermedad', 0, true),
   ('Personal', 'Licencia personal', 0, false),
@@ -144,7 +144,7 @@ CREATE INDEX IF NOT EXISTS idx_empleados_dni ON empleados(dni);
 CREATE INDEX IF NOT EXISTS idx_empleados_departamento ON empleados(departamento_id);
 CREATE INDEX IF NOT EXISTS idx_empleados_cargo ON empleados(cargo_id);
 CREATE INDEX IF NOT EXISTS idx_asistencias_empleado ON asistencias(empleado_id);
-CREATE INDEX IF NOT EXISTS idx_asistencias_fecha ON asistencias(fecha_asistencia);
+CREATE INDEX IF NOT EXISTS idx_asistencias_fecha ON asistencias(fechaAsistencia);
 CREATE INDEX IF NOT EXISTS idx_solicitudes_empleado ON solicitudes_licencia(empleado_id);
 CREATE INDEX IF NOT EXISTS idx_solicitudes_estado ON solicitudes_licencia(estado);
 CREATE INDEX IF NOT EXISTS idx_saldos_empleado_anio ON saldos_licencia(empleado_id, anio);

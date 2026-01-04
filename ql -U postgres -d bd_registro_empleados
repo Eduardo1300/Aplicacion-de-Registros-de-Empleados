@@ -1,0 +1,22 @@
+                                            Table "public.usuarios"
+       Column       |            Type             | Collation | Nullable |               Default                
+--------------------+-----------------------------+-----------+----------+--------------------------------------
+ id                 | integer                     |           | not null | nextval('usuarios_id_seq'::regclass)
+ nombreusuario      | character varying(255)      |           | not null | 
+ clave              | character varying(255)      |           | not null | 
+ activo             | boolean                     |           |          | true
+ rol_id             | integer                     |           | not null | 
+ empleado_id        | integer                     |           |          | 
+ fechacreacion      | timestamp without time zone |           |          | CURRENT_TIMESTAMP
+ fechaactualizacion | timestamp without time zone |           |          | CURRENT_TIMESTAMP
+ nombreUsuario      | character varying(255)      |           | not null | 'tempuser'::character varying
+Indexes:
+    "usuarios_pkey" PRIMARY KEY, btree (id)
+    "usuarios_nombreusuario_key" UNIQUE CONSTRAINT, btree (nombreusuario)
+Foreign-key constraints:
+    "fk_usuarios_empleado" FOREIGN KEY (empleado_id) REFERENCES empleados(id) ON DELETE CASCADE
+    "usuarios_rol_id_fkey" FOREIGN KEY (rol_id) REFERENCES roles(id)
+Referenced by:
+    TABLE "empleados" CONSTRAINT "empleados_usuario_id_fkey" FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+    TABLE "solicitudes_licencia" CONSTRAINT "solicitudes_licencia_usuario_aprobador_id_fkey" FOREIGN KEY (usuario_aprobador_id) REFERENCES usuarios(id)
+

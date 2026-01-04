@@ -1,8 +1,8 @@
-# 🚀 Sistema de Registro de Empleados - Migración Completada
+# 🎯 Sistema de Registro de Empleados - EFSRT IV
 
-> **Migración exitosa de Spring Boot + MySQL a NestJS + PostgreSQL**  
-> Estado: ✅ **100% FUNCIONAL**  
-> Fecha: 19/12/2025
+> **Plataforma moderna para gestión de empleados, asistencias y licencias**
+
+**Estado del Proyecto**: ✅ En Desarrollo | **Última actualización**: 22 Diciembre 2025
 
 ---
 
