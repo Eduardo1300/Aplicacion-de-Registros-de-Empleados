@@ -20,49 +20,38 @@
 
     <!-- Stats Cards Section -->
     <div class="stats-section">
-      <div class="stat-card stat-card-1">
-        <div class="stat-icon">
-          <i class="bi bi-people-fill"></i>
-        </div>
-        <div class="stat-content">
-          <p class="stat-label">Total de Empleados</p>
-          <h2 class="stat-number">{{ stats.empleados }}</h2>
-          <span class="stat-change">Activos en el sistema</span>
-        </div>
-      </div>
-
-      <div class="stat-card stat-card-2">
-        <div class="stat-icon">
-          <i class="bi bi-clock-fill"></i>
-        </div>
-        <div class="stat-content">
-          <p class="stat-label">Asistencias Hoy</p>
-          <h2 class="stat-number">{{ stats.asistenciasHoy }}</h2>
-          <span class="stat-change">Registrados hasta ahora</span>
-        </div>
-      </div>
-
-      <div class="stat-card stat-card-3">
-        <div class="stat-icon">
-          <i class="bi bi-calendar-check-fill"></i>
-        </div>
-        <div class="stat-content">
-          <p class="stat-label">Licencias Pendientes</p>
-          <h2 class="stat-number">{{ stats.licenciasPendientes }}</h2>
-          <span class="stat-change">Requieren aprobación</span>
-        </div>
-      </div>
-
-      <div class="stat-card stat-card-4">
-        <div class="stat-icon">
-          <i class="bi bi-building-fill"></i>
-        </div>
-        <div class="stat-content">
-          <p class="stat-label">Departamentos</p>
-          <h2 class="stat-number">{{ stats.departamentos }}</h2>
-          <span class="stat-change">En la organización</span>
-        </div>
-      </div>
+      <StatCard
+        title="Total de Empleados"
+        :value="stats.empleados.total"
+        icon="bi bi-people-fill"
+        type="primary"
+        :subtitle="`${stats.empleados.activos} activos`"
+      />
+      
+      <StatCard
+        title="Asistencias"
+        :value="stats.asistencias.porcentajeAsistencia"
+        icon="bi bi-clock-fill"
+        type="success"
+        format="percent"
+        :subtitle="`${stats.asistencias.presente} presentes hoy`"
+      />
+      
+      <StatCard
+        title="Licencias Pendientes"
+        :value="stats.licencias.pendiente"
+        icon="bi bi-calendar-check-fill"
+        type="warning"
+        :subtitle="`${stats.licencias.aprobada} aprobadas`"
+      />
+      
+      <StatCard
+        title="Ausentes Hoy"
+        :value="stats.asistencias.ausente"
+        icon="bi bi-exclamation-circle-fill"
+        type="danger"
+        :subtitle="`${stats.asistencias.conPermiso} con permiso`"
+      />
     </div>
 
     <!-- Quick Actions Section -->
@@ -156,18 +145,23 @@
 
 <script>
 import api from '../services/api'
+import { getSystemStats } from '../services/estadisticas.service'
+import StatCard from '../components/StatCard.vue'
 
 export default {
   name: 'Dashboard',
+  components: {
+    StatCard
+  },
   data() {
     return {
       usuario: null,
       stats: {
-        empleados: 0,
-        asistenciasHoy: 0,
-        licenciasPendientes: 0,
-        departamentos: 0
-      }
+        empleados: { total: 0, activos: 0, inactivos: 0 },
+        asistencias: { presente: 0, ausente: 0, porcentajeAsistencia: 0, conPermiso: 0 },
+        licencias: { pendiente: 0, aprobada: 0, rechazada: 0 }
+      },
+      loading: false
     }
   },
   mounted() {
@@ -183,20 +177,17 @@ export default {
     },
     async loadStats() {
       try {
-        const [empleados, asistencias, licencias] = await Promise.all([
-          api.getEmpleados(),
-          api.getAsistencias(),
-          api.getSolicitudesLicencia()
-        ])
-        
-        this.stats.empleados = empleados.data?.length || 0
-        this.stats.asistenciasHoy = asistencias.data?.filter(a => 
-          new Date(a.fechaAsistencia).toDateString() === new Date().toDateString()
-        ).length || 0
-        this.stats.licenciasPendientes = licencias.data?.filter(l => l.estado === 'PENDIENTE').length || 0
-        this.stats.departamentos = 5 // Simulado
+        this.loading = true
+        const response = await getSystemStats()
+        this.stats = {
+          empleados: response.empleados,
+          asistencias: response.asistencias,
+          licencias: response.licencias
+        }
       } catch (err) {
         console.error('Error cargando estadísticas:', err)
+      } finally {
+        this.loading = false
       }
     },
     getCurrentDate() {

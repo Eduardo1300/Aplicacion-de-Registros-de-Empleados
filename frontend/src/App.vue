@@ -26,6 +26,14 @@
               </router-link>
             </li>
             <li class="nav-item" v-if="isLoggedIn">
+              <router-link to="/auditoria" class="nav-link">
+                <i class="bi bi-clock-history"></i> Auditoría
+              </router-link>
+            </li>
+            <li class="nav-item" v-if="isLoggedIn">
+              <ThemeToggle />
+            </li>
+            <li class="nav-item" v-if="isLoggedIn">
               <button @click="logout" class="btn btn-outline-light btn-sm ms-2">
                 <i class="bi bi-box-arrow-right"></i> Salir
               </button>
@@ -43,11 +51,14 @@
 
 <script>
 import ToastContainer from './components/ToastContainer.vue'
+import ThemeToggle from './components/ThemeToggle.vue'
+import { useTheme } from './services/theme.service'
 
 export default {
   name: 'App',
   components: {
-    ToastContainer
+    ToastContainer,
+    ThemeToggle
   },
   data() {
     return {
@@ -56,6 +67,8 @@ export default {
   },
   mounted() {
     this.isLoggedIn = !!localStorage.getItem('token')
+    const theme = useTheme()
+    theme.initTheme()
   },
   methods: {
     logout() {

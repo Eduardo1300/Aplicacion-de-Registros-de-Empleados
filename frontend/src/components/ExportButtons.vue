@@ -149,14 +149,14 @@ const handleExportCSV = () => {
 /**
  * Maneja exportación a PDF
  */
-const handleExportPDF = () => {
+const handleExportPDF = async () => {
   try {
     if (props.tableId) {
-      exportTableToPDF(props.tableId, `${props.filename}.pdf`, props.title)
+      await exportTableToPDF(props.tableId, `${props.filename}.pdf`, props.title)
     } else {
       const { generateTableHTML, exportToPDF } = require('../services/export')
       const html = generateTableHTML(dataToExport.value, null, props.title)
-      exportToPDF(html, `${props.filename}.pdf`)
+      await exportToPDF(html, `${props.filename}.pdf`)
     }
     emit('exported', { format: 'pdf', filename: `${props.filename}.pdf` })
   } catch (error) {

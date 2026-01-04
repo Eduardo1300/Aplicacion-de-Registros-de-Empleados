@@ -44,7 +44,7 @@
         title="Solicitudes de Licencia"
         @exported="handleExported"
       />
-    </div>    </div>
+    </div>
 
     <!-- Empty State -->
     <div v-if="licencias.length === 0" class="empty-state">

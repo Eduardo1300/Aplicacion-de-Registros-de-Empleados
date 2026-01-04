@@ -4,6 +4,7 @@ import Dashboard from '../views/Dashboard.vue'
 import Empleados from '../views/Empleados.vue'
 import Asistencias from '../views/Asistencias.vue'
 import Licencias from '../views/Licencias.vue'
+import Auditoria from '../views/pages/auditoria/Auditoria.vue'
 
 const routes = [
   { path: '/login', component: Login, name: 'Login' },
@@ -29,6 +30,12 @@ const routes = [
     path: '/licencias', 
     component: Licencias, 
     name: 'Licencias',
+    meta: { requiresAuth: true }
+  },
+  { 
+    path: '/auditoria', 
+    component: Auditoria, 
+    name: 'Auditoria',
     meta: { requiresAuth: true }
   },
   { path: '/', redirect: '/dashboard' }

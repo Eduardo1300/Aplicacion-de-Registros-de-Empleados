@@ -4,7 +4,8 @@
  */
 
 import * as XLSX from 'xlsx'
-import html2pdf from 'html2pdf.js'
+import { jsPDF } from 'jspdf'
+import html2canvas from 'html2canvas'
 
 /**
  * Exporta un array de objetos a Excel
@@ -54,23 +55,59 @@ export const exportToCSV = (data, filename = 'export.csv') => {
 }
 
 /**
- * Exporta HTML a PDF
+ * Exporta HTML a PDF usando jsPDF y html2canvas
  * @param {string} htmlContent - Contenido HTML
  * @param {string} filename - Nombre del archivo
- * @param {object} options - Opciones de html2pdf
  */
-export const exportToPDF = (htmlContent, filename = 'export.pdf', options = {}) => {
-  const defaultOptions = {
-    margin: 10,
-    filename: filename,
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2 },
-    jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' },
-    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
-    ...options
-  }
+export const exportToPDF = async (htmlContent, filename = 'export.pdf') => {
+  try {
+    // Crear elemento temporal
+    const element = document.createElement('div')
+    element.innerHTML = htmlContent
+    element.style.padding = '10px'
+    element.style.backgroundColor = 'white'
+    document.body.appendChild(element)
 
-  html2pdf().set(defaultOptions).from(htmlContent).save()
+    // Convertir a canvas
+    const canvas = await html2canvas(element, {
+      scale: 2,
+      backgroundColor: '#ffffff'
+    })
+
+    // Crear PDF
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4'
+    })
+
+    const pageWidth = pdf.internal.pageSize.getWidth()
+    const pageHeight = pdf.internal.pageSize.getHeight()
+    const imgWidth = pageWidth - 10
+    const imgHeight = (canvas.height * imgWidth) / canvas.width
+
+    let heightLeft = imgHeight
+    let position = 0
+
+    const imgData = canvas.toDataURL('image/png')
+
+    // Agregar imágenes a múltiples páginas si es necesario
+    while (heightLeft >= 0) {
+      pdf.addImage(imgData, 'PNG', 5, position, imgWidth, imgHeight)
+      heightLeft -= pageHeight
+      position -= pageHeight
+      if (heightLeft > 0) {
+        pdf.addPage()
+      }
+    }
+
+    pdf.save(filename)
+
+    // Limpiar elemento temporal
+    document.body.removeChild(element)
+  } catch (error) {
+    console.error('Error generating PDF:', error)
+  }
 }
 
 /**
@@ -79,7 +116,7 @@ export const exportToPDF = (htmlContent, filename = 'export.pdf', options = {}) 
  * @param {string} filename - Nombre del archivo
  * @param {string} title - Título del documento
  */
-export const exportTableToPDF = (tableId, filename = 'table.pdf', title = 'Reporte') => {
+export const exportTableToPDF = async (tableId, filename = 'table.pdf', title = 'Reporte') => {
   const table = document.getElementById(tableId)
   
   if (!table) {
@@ -89,13 +126,13 @@ export const exportTableToPDF = (tableId, filename = 'table.pdf', title = 'Repor
 
   const htmlContent = `
     <h1 style="text-align: center; margin-bottom: 20px;">${title}</h1>
-    <p style="text-align: center; color: #666; margin-bottom: 20px;">
+    <p style="text-align: center; color: #666; margin-bottom: 20px; font-size: 12px;">
       Generado el: ${new Date().toLocaleString('es-ES')}
     </p>
     ${table.outerHTML}
   `
 
-  exportToPDF(htmlContent, filename)
+  await exportToPDF(htmlContent, filename)
 }
 
 /**
