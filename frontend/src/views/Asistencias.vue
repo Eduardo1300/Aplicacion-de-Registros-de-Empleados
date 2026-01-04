@@ -128,7 +128,7 @@ export default {
   data() {
     return {
       asistencias: [],
-      filterDate: new Date().toISOString().split('T')[0],
+      filterDate: '',
       filterEstado: ''
     }
   },
@@ -195,7 +195,7 @@ export default {
       return `${horas}h ${minutos}m`
     },
     resetFilters() {
-      this.filterDate = new Date().toISOString().split('T')[0]
+      this.filterDate = ''
       this.filterEstado = ''
     },
     getInitials(nombre, apellido) {
