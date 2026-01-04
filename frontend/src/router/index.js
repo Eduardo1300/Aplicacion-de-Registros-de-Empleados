@@ -66,4 +66,9 @@ router.beforeEach((to, from, next) => {
   }
 })
 
+// Scroll a top cuando cambia de ruta
+router.afterEach((to, from) => {
+  window.scrollTo(0, 0)
+})
+
 export default router

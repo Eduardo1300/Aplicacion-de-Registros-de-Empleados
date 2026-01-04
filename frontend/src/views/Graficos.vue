@@ -260,45 +260,73 @@ export default {
       }
     }
   },
+  watch: {
+    '$route.path'(newPath, oldPath) {
+      console.log('[GRAFICOS] Route changed from', oldPath, 'to', newPath)
+      if (newPath !== '/graficos') {
+        console.log('[GRAFICOS] Saliendo de gráficos, limpiando recursos')
+        this.resetAllData()
+      }
+    }
+  },
   mounted() {
-    console.log('Graficos component mounted')
+    console.log('[GRAFICOS] Component mounted at', new Date().toLocaleTimeString())
+    console.log('[GRAFICOS] Current route:', this.$route.path)
     this.loadData()
   },
   beforeUnmount() {
-    console.log('Graficos component unmounting')
-    // Limpiar datos al salir del componente
-    this.empleados = []
-    this.asistencias = []
-    this.licencias = []
-    this.departamentos = []
-    // Limpiar gráficos
-    this.chartEmpleadosPorDepartamento = { labels: [], datasets: [] }
-    this.chartEstadoEmpleados = { labels: [], datasets: [] }
-    this.chartAsistenciasUltimos7Dias = { labels: [], datasets: [] }
-    this.chartGeneros = { labels: [], datasets: [] }
-    this.chartSalariosPromedio = { labels: [], datasets: [] }
-    this.chartLicencias = { labels: [], datasets: [] }
-    this.chartAntiguedad = { labels: [], datasets: [] }
-    this.chartTasaAsistencia = { labels: [], datasets: [] }
-    this.chartTendenciaAsistencias = { labels: [], datasets: [] }
+    console.log('[GRAFICOS] Component UNmounting at', new Date().toLocaleTimeString())
+    console.log('[GRAFICOS] Cleaning up all data...')
+    this.resetAllData()
   },
   methods: {
+    resetAllData() {
+      // Limpiar datos al salir del componente
+      this.empleados = null
+      this.asistencias = null
+      this.licencias = null
+      this.departamentos = null
+      this.totalEmpleados = 0
+      this.empleadosActivos = 0
+      this.presentesHoy = 0
+      this.ausenciasHoy = 0
+      
+      // Limpiar gráficos forzando re-inicialización
+      this.chartEmpleadosPorDepartamento = { labels: [], datasets: [] }
+      this.chartEstadoEmpleados = { labels: [], datasets: [] }
+      this.chartAsistenciasUltimos7Dias = { labels: [], datasets: [] }
+      this.chartGeneros = { labels: [], datasets: [] }
+      this.chartSalariosPromedio = { labels: [], datasets: [] }
+      this.chartLicencias = { labels: [], datasets: [] }
+      this.chartAntiguedad = { labels: [], datasets: [] }
+      this.chartTasaAsistencia = { labels: [], datasets: [] }
+      this.chartTendenciaAsistencias = { labels: [], datasets: [] }
+      
+      console.log('[GRAFICOS] Data cleanup completed')
+    },
     async loadData() {
       try {
-        console.log('Iniciando carga de datos...')
+        const startTime = new Date().getTime()
+        console.log('[GRAFICOS] ===== INICIANDO CARGA DE DATOS =====')
+        console.log('[GRAFICOS] Timestamp:', new Date().toLocaleTimeString())
+        console.log('[GRAFICOS] Route:', this.$route.path)
+        
+        // Reset datos primero
+        this.resetAllData()
         
         // Load all data
+        console.log('[GRAFICOS] Llamando APIs...')
         const [empleadosRes, asistenciasRes, licenciasRes] = await Promise.all([
           api.getEmpleados().catch(e => {
-            console.error('Error cargando empleados:', e)
+            console.error('[GRAFICOS] ❌ Error cargando empleados:', e.message)
             return { data: [] }
           }),
           api.getAsistencias().catch(e => {
-            console.error('Error cargando asistencias:', e)
+            console.error('[GRAFICOS] ❌ Error cargando asistencias:', e.message)
             return { data: [] }
           }),
           api.getSolicitudesLicencia().catch(e => {
-            console.error('Error cargando licencias:', e)
+            console.error('[GRAFICOS] ❌ Error cargando licencias:', e.message)
             return { data: [] }
           })
         ])
@@ -307,20 +335,26 @@ export default {
         this.asistencias = Array.isArray(asistenciasRes.data) ? asistenciasRes.data : []
         this.licencias = Array.isArray(licenciasRes.data) ? licenciasRes.data : []
 
-        console.log('Empleados cargados:', this.empleados.length)
-        console.log('Asistencias cargadas:', this.asistencias.length)
-        console.log('Licencias cargadas:', this.licencias.length)
+        console.log('[GRAFICOS] ✅ Empleados cargados:', this.empleados.length)
+        console.log('[GRAFICOS] ✅ Asistencias cargadas:', this.asistencias.length)
+        console.log('[GRAFICOS] ✅ Licencias cargadas:', this.licencias.length)
 
         // Si no hay datos, agregar datos simulados
         if (this.empleados.length === 0) {
+          console.log('[GRAFICOS] ⚠️ No hay datos reales, usando datos simulados')
           this.agregarDatosSimulados()
         }
 
+        console.log('[GRAFICOS] Calculando estadísticas...')
         this.calculateStats()
+        console.log('[GRAFICOS] Generando gráficos...')
         this.generateCharts()
+        
+        const endTime = new Date().getTime()
+        console.log('[GRAFICOS] ===== CARGA COMPLETADA EN', (endTime - startTime) + 'ms =====')
       } catch (error) {
-        console.error('Error cargando datos:', error)
-        console.log('Usando datos simulados por defecto...')
+        console.error('[GRAFICOS] ❌ ERROR GENERAL:', error)
+        console.log('[GRAFICOS] Usando datos simulados por defecto...')
         this.agregarDatosSimulados()
         this.calculateStats()
         this.generateCharts()
