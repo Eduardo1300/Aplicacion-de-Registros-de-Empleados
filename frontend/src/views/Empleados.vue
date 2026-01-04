@@ -13,6 +13,12 @@
       </button>
     </div>
 
+    <!-- Advanced Search Component -->
+    <AdvancedSearch
+      :fields="['Nombre', 'DNI', 'Correo', 'Departamento', 'Estado']"
+      @search="handleAdvancedSearch"
+    />
+
     <!-- Search & Filter Bar -->
     <div class="search-bar">
       <div class="search-input-wrapper">
@@ -98,7 +104,7 @@
                   <i class="bi bi-pencil-fill"></i>
                 </button>
                 <button 
-                  @click="deleteEmpleado(empleado.id)" 
+                  @click="confirmDeleteDialog(empleado)" 
                   class="btn-action btn-delete"
                   title="Eliminar"
                 >
@@ -203,6 +209,18 @@
         </div>
       </div>
     </transition>
+
+    <!-- Confirm Dialog Component -->
+    <ConfirmDialog
+      ref="confirmDialog"
+      title="Eliminar Empleado"
+      message="¿Está seguro de que desea eliminar este empleado?"
+      type="danger"
+      action-text="Eliminar"
+      :require-confirmation-text="true"
+      confirmation-text="ELIMINAR"
+      @confirmed="confirmDeleteWithDialog"
+    />
   </div>
 </template>
 
@@ -211,12 +229,16 @@ import api from '../services/api'
 import { useNotification } from '../services/notification.service'
 import Pagination from '../components/Pagination.vue'
 import ExportButtons from '../components/ExportButtons.vue'
+import AdvancedSearch from '../components/AdvancedSearch.vue'
+import ConfirmDialog from '../components/ConfirmDialog.vue'
 
 export default {
   name: 'Empleados',
   components: {
     Pagination,
-    ExportButtons
+    ExportButtons,
+    AdvancedSearch,
+    ConfirmDialog
   },
   data() {
     return {
@@ -294,6 +316,23 @@ export default {
       this.deleteId = id
       this.showDeleteConfirm = true
     },
+    confirmDeleteDialog(empleado) {
+      this.deleteId = empleado.id
+      this.deletingEmpleado = empleado
+      this.$refs.confirmDialog.show()
+    },
+    async confirmDeleteWithDialog() {
+      try {
+        await api.deleteEmpleado(this.deleteId)
+        this.notification.success('Empleado eliminado correctamente')
+        this.deleteId = null
+        this.deletingEmpleado = null
+        this.loadEmpleados()
+      } catch (err) {
+        this.notification.error('Error al eliminar empleado')
+        console.error(err)
+      }
+    },
     async confirmDelete() {
       try {
         await api.deleteEmpleado(this.deleteId)
@@ -319,6 +358,48 @@ export default {
     },
     handleExported(event) {
       this.notification.success(`¡Exportado a ${event.format}!`, 2000)
+    },
+    handleAdvancedSearch(query) {
+      // query = { text: 'search text', filters: [...] }
+      if (!query.text && query.filters.length === 0) {
+        this.searchQuery = ''
+        return
+      }
+
+      // Implement advanced search filtering
+      const filtered = this.empleados.filter(emp => {
+        // Text search
+        if (query.text) {
+          const text = query.text.toLowerCase()
+          const matches = `${emp.nombre} ${emp.apellido} ${emp.dni} ${emp.correo}`.toLowerCase().includes(text)
+          if (!matches) return false
+        }
+
+        // Field-specific filters
+        for (const filter of query.filters) {
+          const fieldValue = String(emp[filter.field.toLowerCase()] || '').toLowerCase()
+          const filterVal = filter.value.toLowerCase()
+
+          switch (filter.operator) {
+            case 'contains':
+              if (!fieldValue.includes(filterVal)) return false
+              break
+            case 'equals':
+              if (fieldValue !== filterVal) return false
+              break
+            case 'startsWith':
+              if (!fieldValue.startsWith(filterVal)) return false
+              break
+            case 'endsWith':
+              if (!fieldValue.endsWith(filterVal)) return false
+              break
+          }
+        }
+        return true
+      })
+
+      this.filteredEmpleados = filtered
+      this.currentPage = 1
     }
   }
 }
