@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { Usuario } from './usuario.entity';
+import { RolePermission } from './role-permission.entity';
 
 export enum NombreRol {
   ADMIN = 'ADMIN',
@@ -25,4 +26,7 @@ export class Rol {
 
   @OneToMany(() => Usuario, (usuario) => usuario.rol)
   usuarios: Usuario[];
+
+  @OneToMany(() => RolePermission, (rolePermission) => rolePermission.rol)
+  permissions: RolePermission[];
 }

@@ -8,6 +8,7 @@ import { AsistenciaModule } from './modules/asistencia/asistencia.module';
 import { DepartamentoModule } from './modules/departamento/departamento.module';
 import { CargoModule } from './modules/cargo/cargo.module';
 import { LicenciaModule } from './modules/licencia/licencia.module';
+import { PermissionModule } from './modules/permission/permission.module';
 import * as entities from './entities';
 
 @Module({
@@ -33,6 +34,8 @@ import * as entities from './entities';
         entities.TipoLicencia,
         entities.SolicitudLicencia,
         entities.SaldoLicencia,
+        entities.Permission,
+        entities.RolePermission,
       ],
       synchronize: process.env.NODE_ENV !== 'production',
       logging: process.env.NODE_ENV !== 'production',
@@ -43,6 +46,7 @@ import * as entities from './entities';
     DepartamentoModule,
     CargoModule,
     LicenciaModule,
+    PermissionModule,
   ],
 })
 export class AppModule {}

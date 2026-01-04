@@ -63,7 +63,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="empleado in filteredEmpleados" :key="empleado.id" class="table-row">
+            <tr v-for="empleado in paginatedEmpleados" :key="empleado.id" class="table-row">
               <td class="col-name">
                 <div class="employee-cell">
                   <div class="employee-avatar">
@@ -103,6 +103,14 @@
           </tbody>
         </table>
       </div>
+
+      <!-- Pagination Component -->
+      <Pagination
+        v-model="currentPage"
+        :total="filteredEmpleados.length"
+        :items-per-page="itemsPerPage"
+        @update:items-per-page="itemsPerPage = $event"
+      />
     </div>
 
     <!-- Modal -->
@@ -194,9 +202,14 @@
 
 <script>
 import api from '../services/api'
+import { useNotification } from '../services/notification.service'
+import Pagination from '../components/Pagination.vue'
 
 export default {
   name: 'Empleados',
+  components: {
+    Pagination
+  },
   data() {
     return {
       empleados: [],
@@ -205,6 +218,9 @@ export default {
       deleteId: null,
       editingId: null,
       searchQuery: '',
+      currentPage: 1,
+      itemsPerPage: 10,
+      notification: useNotification(),
       formData: {
         nombre: '',
         apellido: '',
@@ -223,6 +239,11 @@ export default {
         emp.dni.toLowerCase().includes(query) ||
         emp.correo.toLowerCase().includes(query)
       )
+    },
+    paginatedEmpleados() {
+      const start = (this.currentPage - 1) * this.itemsPerPage
+      const end = start + this.itemsPerPage
+      return this.filteredEmpleados.slice(start, end)
     }
   },
   mounted() {
@@ -233,9 +254,10 @@ export default {
       try {
         const response = await api.getEmpleados()
         this.empleados = response.data || []
+        this.notification.info('Empleados cargados', 2000)
       } catch (err) {
         console.error('Error cargando empleados:', err)
-        alert('Error al cargar empleados')
+        this.notification.error('Error al cargar empleados')
       }
     },
     editEmpleado(empleado) {
@@ -245,15 +267,19 @@ export default {
     },
     async saveEmpleado() {
       try {
+        const isCreating = !this.editingId
         if (this.editingId) {
           await api.updateEmpleado(this.editingId, this.formData)
+          this.notification.success('Empleado actualizado correctamente')
         } else {
           await api.createEmpleado(this.formData)
+          this.notification.success('Empleado creado correctamente')
         }
         this.closeModal()
         this.loadEmpleados()
       } catch (err) {
-        alert('Error guardando empleado')
+        this.notification.error('Error guardando empleado')
+        console.error(err)
       }
     },
     deleteEmpleado(id) {
@@ -263,11 +289,13 @@ export default {
     async confirmDelete() {
       try {
         await api.deleteEmpleado(this.deleteId)
+        this.notification.success('Empleado eliminado correctamente')
         this.showDeleteConfirm = false
         this.deleteId = null
         this.loadEmpleados()
       } catch (err) {
-        alert('Error eliminando empleado')
+        this.notification.error('Error al eliminar empleado')
+        console.error(err)
       }
     },
     closeModal() {

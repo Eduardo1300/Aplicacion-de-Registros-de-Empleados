@@ -4,4 +4,5 @@ export class LoginResponse {
   rol: string;
   empleadoNombre: string;
   empleadoId: number;
+  permisos?: { resource: string; action: string }[];
 }

@@ -7,3 +7,5 @@ export * from './asistencia.entity';
 export * from './tipoLicencia.entity';
 export * from './solicitudLicencia.entity';
 export * from './saldoLicencia.entity';
+export * from './permission.entity';
+export * from './role-permission.entity';

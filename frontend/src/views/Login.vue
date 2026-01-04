@@ -106,6 +106,7 @@
 
 <script>
 import api from '../services/api'
+import { useNotification } from '../services/notification.service'
 
 export default {
   name: 'Login',
@@ -116,7 +117,8 @@ export default {
         clave: ''
       },
       error: '',
-      loading: false
+      loading: false,
+      notification: useNotification()
     }
   },
   methods: {
@@ -131,9 +133,18 @@ export default {
         localStorage.setItem('token', token)
         localStorage.setItem('usuario', JSON.stringify({ nombreUsuario, rol }))
         
-        this.$router.push('/dashboard')
+        // Mostrar notificación de éxito
+        this.notification.success(`¡Bienvenido ${nombreUsuario}!`)
+        
+        // Pequeño delay para que se vea la notificación antes de navegar
+        setTimeout(() => {
+          this.$router.push('/dashboard')
+        }, 500)
       } catch (err) {
-        this.error = err.response?.data?.message || 'Error en la autenticación'
+        const errorMsg = err.response?.data?.message || 'Error en la autenticación'
+        this.error = errorMsg
+        // Mostrar notificación de error
+        this.notification.error(errorMsg)
       } finally {
         this.loading = false
       }

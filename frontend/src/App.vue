@@ -37,12 +37,18 @@
     <main class="container mt-4">
       <router-view />
     </main>
+    <ToastContainer />
   </div>
 </template>
 
 <script>
+import ToastContainer from './components/ToastContainer.vue'
+
 export default {
   name: 'App',
+  components: {
+    ToastContainer
+  },
   data() {
     return {
       isLoggedIn: false

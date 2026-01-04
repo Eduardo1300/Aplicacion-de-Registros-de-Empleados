@@ -6,6 +6,7 @@ import * as bcrypt from 'bcryptjs';
 import { Usuario } from '../entities/usuario.entity';
 import { LoginDto } from '../dto/login.dto';
 import { LoginResponse } from '../dto/login-response.dto';
+import { PermissionService } from '../modules/permission/permission.service';
 
 @Injectable()
 export class AuthService {
@@ -13,12 +14,13 @@ export class AuthService {
     @InjectRepository(Usuario)
     private usuarioRepository: Repository<Usuario>,
     private jwtService: JwtService,
+    private permissionService: PermissionService,
   ) {}
 
   async login(loginDto: LoginDto): Promise<LoginResponse> {
     const usuario = await this.usuarioRepository.findOne({
       where: { nombreUsuario: loginDto.nombreUsuario },
-      relations: ['rol', 'empleado'],
+      relations: ['rol', 'empleado', 'rol.permissions', 'rol.permissions.permission'],
     });
 
     if (!usuario) {
@@ -36,6 +38,12 @@ export class AuthService {
       role: usuario.rol.nombre,
     });
 
+    // Obtener permisos del usuario basado en su rol
+    const permisos = usuario.rol.permissions.map((rp) => ({
+      resource: rp.permission.resource,
+      action: rp.permission.action,
+    }));
+
     const response: LoginResponse = {
       token,
       nombreUsuario: usuario.nombreUsuario,
@@ -44,6 +52,7 @@ export class AuthService {
         ? `${usuario.empleado.nombre} ${usuario.empleado.apellido}`
         : 'Admin',
       empleadoId: usuario.empleado?.id ?? null,
+      permisos,
     };
 
     return response;
@@ -65,7 +74,7 @@ export class AuthService {
   async validateUser(id: number): Promise<Usuario | null> {
     return this.usuarioRepository.findOne({
       where: { id },
-      relations: ['rol', 'empleado'],
+      relations: ['rol', 'empleado', 'rol.permissions', 'rol.permissions.permission'],
     });
   }
 }
