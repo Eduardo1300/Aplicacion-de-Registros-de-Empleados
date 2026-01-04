@@ -31,6 +31,11 @@
               </router-link>
             </li>
             <li class="nav-item" v-if="isLoggedIn">
+              <router-link to="/graficos" class="nav-link">
+                <i class="bi bi-graph-up"></i> Gráficos
+              </router-link>
+            </li>
+            <li class="nav-item" v-if="isLoggedIn">
               <ThemeToggle />
             </li>
             <li class="nav-item" v-if="isLoggedIn">
