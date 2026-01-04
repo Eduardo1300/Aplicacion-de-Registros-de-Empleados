@@ -27,6 +27,12 @@
       <div class="result-count">
         {{ filteredEmpleados.length }} registros
       </div>
+      <ExportButtons
+        :data="filteredEmpleados"
+        filename="empleados"
+        title="Listado de Empleados"
+        @exported="handleExported"
+      />
     </div>
 
     <!-- Empty State -->
@@ -204,11 +210,13 @@
 import api from '../services/api'
 import { useNotification } from '../services/notification.service'
 import Pagination from '../components/Pagination.vue'
+import ExportButtons from '../components/ExportButtons.vue'
 
 export default {
   name: 'Empleados',
   components: {
-    Pagination
+    Pagination,
+    ExportButtons
   },
   data() {
     return {
@@ -308,6 +316,9 @@ export default {
     },
     getInitials(nombre, apellido) {
       return `${(nombre || '').charAt(0)}${(apellido || '').charAt(0)}`.toUpperCase()
+    },
+    handleExported(event) {
+      this.notification.success(`¡Exportado a ${event.format}!`, 2000)
     }
   }
 }

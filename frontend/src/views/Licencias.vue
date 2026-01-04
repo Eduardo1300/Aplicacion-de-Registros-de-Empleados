@@ -38,7 +38,13 @@
       <button @click="resetFilters" class="btn-reset">
         <i class="bi bi-arrow-counterclockwise"></i> Restablecer
       </button>
-    </div>
+      <ExportButtons
+        :data="filteredLicencias"
+        filename="solicitudes-licencia"
+        title="Solicitudes de Licencia"
+        @exported="handleExported"
+      />
+    </div>    </div>
 
     <!-- Empty State -->
     <div v-if="licencias.length === 0" class="empty-state">
@@ -167,9 +173,14 @@
 
 <script>
 import api from '../services/api'
+import { useNotification } from '../services/notification.service'
+import ExportButtons from '../components/ExportButtons.vue'
 
 export default {
   name: 'Licencias',
+  components: {
+    ExportButtons
+  },
   data() {
     return {
       licencias: [],
@@ -248,6 +259,10 @@ export default {
     },
     getInitials(nombre, apellido) {
       return `${(nombre || '').charAt(0)}${(apellido || '').charAt(0)}`.toUpperCase()
+    },
+    handleExported(event) {
+      const notification = useNotification()
+      notification.success(`¡Exportado a ${event.format}!`, 2000)
     }
   }
 }

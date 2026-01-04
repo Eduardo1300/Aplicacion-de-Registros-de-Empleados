@@ -1,0 +1,279 @@
+<template>
+  <div class="export-buttons">
+    <div class="export-group">
+      <label class="export-label">Descargar:</label>
+      <button
+        @click="handleExportExcel"
+        class="export-btn export-excel"
+        title="Descargar como Excel"
+        :disabled="disabled"
+      >
+        <i class="bi bi-file-earmark-spreadsheet"></i>
+        <span>Excel</span>
+      </button>
+      <button
+        @click="handleExportCSV"
+        class="export-btn export-csv"
+        title="Descargar como CSV"
+        :disabled="disabled"
+      >
+        <i class="bi bi-file-text"></i>
+        <span>CSV</span>
+      </button>
+      <button
+        @click="handleExportPDF"
+        class="export-btn export-pdf"
+        title="Descargar como PDF"
+        :disabled="disabled"
+      >
+        <i class="bi bi-file-earmark-pdf"></i>
+        <span>PDF</span>
+      </button>
+      <button
+        v-if="showPrint"
+        @click="handlePrint"
+        class="export-btn export-print"
+        title="Imprimir"
+        :disabled="disabled"
+      >
+        <i class="bi bi-printer"></i>
+        <span>Imprimir</span>
+      </button>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { computed } from 'vue'
+import { exportToExcel, exportToCSV, exportTableToPDF } from '../services/export'
+
+const props = defineProps({
+  data: {
+    type: Array,
+    default: () => []
+  },
+  tableId: {
+    type: String,
+    default: null
+  },
+  filename: {
+    type: String,
+    default: 'export'
+  },
+  title: {
+    type: String,
+    default: 'Reporte'
+  },
+  disabled: {
+    type: Boolean,
+    default: false
+  },
+  showPrint: {
+    type: Boolean,
+    default: true
+  }
+})
+
+const emit = defineEmits(['exported', 'error'])
+
+const dataToExport = computed(() => {
+  // Si hay datos directos, usarlos
+  if (props.data && props.data.length > 0) {
+    return props.data
+  }
+  
+  // Si hay tableId, extraer datos de la tabla
+  if (props.tableId) {
+    const table = document.getElementById(props.tableId)
+    if (table) {
+      return extractTableData(table)
+    }
+  }
+  
+  return []
+})
+
+/**
+ * Extrae datos de una tabla HTML
+ */
+const extractTableData = (table) => {
+  const headers = Array.from(table.querySelectorAll('th'))
+    .map(th => th.textContent.trim())
+  
+  const rows = Array.from(table.querySelectorAll('tbody tr'))
+    .map(tr => {
+      const cells = Array.from(tr.querySelectorAll('td'))
+        .map(td => td.textContent.trim())
+      
+      const row = {}
+      headers.forEach((header, index) => {
+        row[header] = cells[index] || ''
+      })
+      return row
+    })
+  
+  return rows
+}
+
+/**
+ * Maneja exportación a Excel
+ */
+const handleExportExcel = () => {
+  try {
+    if (props.tableId) {
+      const { exportTableToExcel } = require('../services/export')
+      exportTableToExcel(props.tableId, `${props.filename}.xlsx`, props.title)
+    } else {
+      exportToExcel(dataToExport.value, `${props.filename}.xlsx`, props.title)
+    }
+    emit('exported', { format: 'excel', filename: `${props.filename}.xlsx` })
+  } catch (error) {
+    console.error('Error exportando a Excel:', error)
+    emit('error', error)
+  }
+}
+
+/**
+ * Maneja exportación a CSV
+ */
+const handleExportCSV = () => {
+  try {
+    exportToCSV(dataToExport.value, `${props.filename}.csv`)
+    emit('exported', { format: 'csv', filename: `${props.filename}.csv` })
+  } catch (error) {
+    console.error('Error exportando a CSV:', error)
+    emit('error', error)
+  }
+}
+
+/**
+ * Maneja exportación a PDF
+ */
+const handleExportPDF = () => {
+  try {
+    if (props.tableId) {
+      exportTableToPDF(props.tableId, `${props.filename}.pdf`, props.title)
+    } else {
+      const { generateTableHTML, exportToPDF } = require('../services/export')
+      const html = generateTableHTML(dataToExport.value, null, props.title)
+      exportToPDF(html, `${props.filename}.pdf`)
+    }
+    emit('exported', { format: 'pdf', filename: `${props.filename}.pdf` })
+  } catch (error) {
+    console.error('Error exportando a PDF:', error)
+    emit('error', error)
+  }
+}
+
+/**
+ * Maneja impresión
+ */
+const handlePrint = () => {
+  window.print()
+  emit('exported', { format: 'print' })
+}
+</script>
+
+<style scoped>
+.export-buttons {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.export-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.export-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #4a5568;
+  white-space: nowrap;
+  margin: 0;
+}
+
+.export-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #4a5568;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.export-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.export-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.export-excel {
+  border-color: #10b981;
+  color: #10b981;
+}
+
+.export-excel:hover:not(:disabled) {
+  background: #f0fdf4;
+}
+
+.export-csv {
+  border-color: #f59e0b;
+  color: #f59e0b;
+}
+
+.export-csv:hover:not(:disabled) {
+  background: #fffbeb;
+}
+
+.export-pdf {
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.export-pdf:hover:not(:disabled) {
+  background: #fef2f2;
+}
+
+.export-print {
+  border-color: #3b82f6;
+  color: #3b82f6;
+}
+
+.export-print:hover:not(:disabled) {
+  background: #f0f9ff;
+}
+
+.export-btn i {
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .export-buttons {
+    flex-wrap: wrap;
+  }
+
+  .export-btn {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+
+  .export-label {
+    font-size: 12px;
+  }
+}
+</style>

@@ -42,6 +42,12 @@
       <button @click="resetFilters" class="btn-reset">
         <i class="bi bi-arrow-counterclockwise"></i> Restablecer
       </button>
+      <ExportButtons
+        :data="filteredAsistencias"
+        filename="asistencias"
+        title="Registro de Asistencias"
+        @exported="handleExported"
+      />
     </div>
 
     <!-- Empty State -->
@@ -122,9 +128,14 @@
 
 <script>
 import api from '../services/api'
+import { useNotification } from '../services/notification.service'
+import ExportButtons from '../components/ExportButtons.vue'
 
 export default {
   name: 'Asistencias',
+  components: {
+    ExportButtons
+  },
   data() {
     return {
       asistencias: [],
@@ -200,6 +211,10 @@ export default {
     },
     getInitials(nombre, apellido) {
       return `${(nombre || '').charAt(0)}${(apellido || '').charAt(0)}`.toUpperCase()
+    },
+    handleExported(event) {
+      const notification = useNotification()
+      notification.success(`¡Exportado a ${event.format}!`, 2000)
     }
   }
 }
