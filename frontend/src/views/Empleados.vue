@@ -186,39 +186,38 @@
             </div>
 
             <div class="form-group">
-              <label>Dirección</label>
+              <label>Fecha de Ingreso *</label>
               <input 
-                v-model="formData.direccion" 
-                type="text" 
-                placeholder="Ingrese dirección"
+                v-model="formData.fechaIngreso" 
+                type="date"
+                required
               />
             </div>
 
             <div class="form-group">
-              <label>Puesto</label>
+              <label>Departamento</label>
               <input 
-                v-model="formData.puesto" 
-                type="text" 
-                placeholder="Ingrese puesto"
-              />
-            </div>
-
-            <div class="form-group">
-              <label>Salario</label>
-              <input 
-                v-model.number="formData.salario" 
+                v-model.number="formData.departamentoId" 
                 type="number" 
-                placeholder="Ingrese salario"
-                min="0"
+                placeholder="ID del departamento"
+              />
+            </div>
+
+            <div class="form-group">
+              <label>Cargo</label>
+              <input 
+                v-model.number="formData.cargoId" 
+                type="number" 
+                placeholder="ID del cargo"
               />
             </div>
 
             <div class="form-group">
               <label>Estado</label>
               <select v-model="formData.estado">
-                <option value="activo">Activo</option>
-                <option value="inactivo">Inactivo</option>
-                <option value="licencia">Licencia</option>
+                <option value="Activo">Activo</option>
+                <option value="Inactivo">Inactivo</option>
+                <option value="Licencia">Licencia</option>
               </select>
             </div>
 
@@ -303,11 +302,10 @@ export default {
         dni: '',
         correo: '',
         telefono: '',
-        direccion: '',
-        departamento: null,
-        puesto: '',
-        salario: 0,
-        estado: 'activo'
+        fechaIngreso: '',
+        departamentoId: null,
+        cargoId: null,
+        estado: 'Activo'
       }
     }
   },
@@ -408,11 +406,10 @@ export default {
         dni: '',
         correo: '',
         telefono: '',
-        direccion: '',
-        departamento: null,
-        puesto: '',
-        salario: 0,
-        estado: 'activo'
+        fechaIngreso: '',
+        departamentoId: null,
+        cargoId: null,
+        estado: 'Activo'
       }
       this.editingId = null
     },
