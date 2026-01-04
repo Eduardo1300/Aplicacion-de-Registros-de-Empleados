@@ -176,6 +176,52 @@
               />
             </div>
 
+            <div class="form-group">
+              <label>Teléfono</label>
+              <input 
+                v-model="formData.telefono" 
+                type="text" 
+                placeholder="Ingrese número de teléfono"
+              />
+            </div>
+
+            <div class="form-group">
+              <label>Dirección</label>
+              <input 
+                v-model="formData.direccion" 
+                type="text" 
+                placeholder="Ingrese dirección"
+              />
+            </div>
+
+            <div class="form-group">
+              <label>Puesto</label>
+              <input 
+                v-model="formData.puesto" 
+                type="text" 
+                placeholder="Ingrese puesto"
+              />
+            </div>
+
+            <div class="form-group">
+              <label>Salario</label>
+              <input 
+                v-model.number="formData.salario" 
+                type="number" 
+                placeholder="Ingrese salario"
+                min="0"
+              />
+            </div>
+
+            <div class="form-group">
+              <label>Estado</label>
+              <select v-model="formData.estado">
+                <option value="activo">Activo</option>
+                <option value="inactivo">Inactivo</option>
+                <option value="licencia">Licencia</option>
+              </select>
+            </div>
+
             <div class="modal-actions">
               <button type="button" @click="closeModal" class="btn-cancel">
                 Cancelar
@@ -255,7 +301,13 @@ export default {
         nombre: '',
         apellido: '',
         dni: '',
-        correo: ''
+        correo: '',
+        telefono: '',
+        direccion: '',
+        departamento: null,
+        puesto: '',
+        salario: 0,
+        estado: 'activo'
       }
     }
   },
@@ -350,7 +402,18 @@ export default {
       this.resetForm()
     },
     resetForm() {
-      this.formData = { nombre: '', apellido: '', dni: '', correo: '' }
+      this.formData = { 
+        nombre: '',
+        apellido: '',
+        dni: '',
+        correo: '',
+        telefono: '',
+        direccion: '',
+        departamento: null,
+        puesto: '',
+        salario: 0,
+        estado: 'activo'
+      }
       this.editingId = null
     },
     getInitials(nombre, apellido) {
