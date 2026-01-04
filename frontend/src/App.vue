@@ -48,7 +48,9 @@
       </div>
     </nav>
     <main class="container mt-4">
-      <router-view :key="$route.fullPath" />
+      <transition name="fade" mode="out-in">
+        <router-view :key="$route.fullPath" />
+      </transition>
     </main>
     <ToastContainer />
   </div>
@@ -102,5 +104,16 @@ body {
 
 main {
   min-height: calc(100vh - 60px);
+}
+
+/* Transiciones de vista */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

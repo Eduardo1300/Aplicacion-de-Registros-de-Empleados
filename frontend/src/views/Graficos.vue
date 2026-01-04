@@ -176,6 +176,7 @@ export default {
   data() {
     return {
       notification: useNotification(),
+      isActive: false, // Guard para evitar actualizaciones cuando no está visible
       empleados: [],
       asistencias: [],
       licencias: [],
@@ -264,19 +265,27 @@ export default {
     '$route.path'(newPath, oldPath) {
       console.log('[GRAFICOS] Route changed from', oldPath, 'to', newPath)
       if (newPath !== '/graficos') {
-        console.log('[GRAFICOS] Saliendo de gráficos, limpiando recursos')
+        console.log('[GRAFICOS] 🚪 Saliendo de gráficos, desactivando componente')
+        this.isActive = false
         this.resetAllData()
+      } else {
+        console.log('[GRAFICOS] 🔓 Entrando a gráficos, activando componente')
+        this.isActive = true
+        // Recargar datos cuando vuelve a entrar
+        this.loadData()
       }
     }
   },
   mounted() {
     console.log('[GRAFICOS] Component mounted at', new Date().toLocaleTimeString())
     console.log('[GRAFICOS] Current route:', this.$route.path)
+    this.isActive = true
     this.loadData()
   },
   beforeUnmount() {
-    console.log('[GRAFICOS] Component UNmounting at', new Date().toLocaleTimeString())
+    console.log('[GRAFICOS] 🔴 Component UNmounting at', new Date().toLocaleTimeString())
     console.log('[GRAFICOS] Cleaning up all data...')
+    this.isActive = false
     this.resetAllData()
   },
   methods: {
@@ -305,11 +314,18 @@ export default {
       console.log('[GRAFICOS] Data cleanup completed')
     },
     async loadData() {
+      // Guard: no procesar si el componente no está activo
+      if (!this.isActive) {
+        console.log('[GRAFICOS] ⚠️ loadData ignorado: componente no activo')
+        return
+      }
+
       try {
         const startTime = new Date().getTime()
         console.log('[GRAFICOS] ===== INICIANDO CARGA DE DATOS =====')
         console.log('[GRAFICOS] Timestamp:', new Date().toLocaleTimeString())
         console.log('[GRAFICOS] Route:', this.$route.path)
+        console.log('[GRAFICOS] Component active:', this.isActive)
         
         // Reset datos primero
         this.resetAllData()
@@ -330,6 +346,12 @@ export default {
             return { data: [] }
           })
         ])
+
+        // Guard: Si el componente se desmontó mientras se cargaban datos, no continuar
+        if (!this.isActive) {
+          console.log('[GRAFICOS] ⚠️ Componente desmontado durante carga, abortando...')
+          return
+        }
 
         this.empleados = Array.isArray(empleadosRes.data) ? empleadosRes.data : []
         this.asistencias = Array.isArray(asistenciasRes.data) ? asistenciasRes.data : []
@@ -354,11 +376,13 @@ export default {
         console.log('[GRAFICOS] ===== CARGA COMPLETADA EN', (endTime - startTime) + 'ms =====')
       } catch (error) {
         console.error('[GRAFICOS] ❌ ERROR GENERAL:', error)
-        console.log('[GRAFICOS] Usando datos simulados por defecto...')
-        this.agregarDatosSimulados()
-        this.calculateStats()
-        this.generateCharts()
-        this.notification.error('Error al cargar datos. Usando datos de ejemplo.')
+        if (this.isActive) {
+          console.log('[GRAFICOS] Usando datos simulados por defecto...')
+          this.agregarDatosSimulados()
+          this.calculateStats()
+          this.generateCharts()
+          this.notification.error('Error al cargar datos. Usando datos de ejemplo.')
+        }
       }
     },
 
