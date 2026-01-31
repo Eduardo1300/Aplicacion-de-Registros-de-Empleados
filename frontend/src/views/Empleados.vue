@@ -3,13 +3,20 @@
     <!-- Header -->
     <div class="empleados-header">
       <div class="header-left">
-        <h1 class="page-title">
-          <i class="bi bi-people-fill"></i> Gestión de Empleados
-        </h1>
-        <p class="page-subtitle">Administra la información de todos los empleados</p>
+        <div class="header-icon">
+          <i class="bi bi-people-fill"></i>
+        </div>
+        <div class="header-text">
+          <h1 class="page-title">Gestión de Empleados</h1>
+          <p class="page-subtitle">Administra la información de todos los empleados</p>
+        </div>
       </div>
-      <button @click="showModal = true" class="btn-new">
-        <i class="bi bi-plus-lg"></i> Nuevo Empleado
+      <button @click="openModal()" class="btn-new">
+        <span class="btn-icon">
+          <i class="bi bi-plus-lg"></i>
+        </span>
+        <span class="btn-text">Nuevo Empleado</span>
+        <div class="btn-shine"></div>
       </button>
     </div>
 
@@ -22,16 +29,28 @@
     <!-- Search & Filter Bar -->
     <div class="search-bar">
       <div class="search-input-wrapper">
-        <i class="bi bi-search"></i>
+        <div class="search-icon">
+          <i class="bi bi-search"></i>
+        </div>
         <input 
           type="text" 
           placeholder="Buscar por nombre, DNI o correo..."
           v-model="searchQuery"
           class="search-input"
         />
+        <button v-if="searchQuery" @click="searchQuery = ''" class="clear-btn">
+          <i class="bi bi-x"></i>
+        </button>
       </div>
-      <div class="result-count">
-        {{ filteredEmpleados.length }} registros
+      <div class="result-info">
+        <div class="result-count">
+          <span class="count-number">{{ filteredEmpleados.length }}</span>
+          <span class="count-label">registros</span>
+        </div>
+        <div class="result-badge" v-if="searchQuery">
+          <i class="bi bi-funnel"></i>
+          Filtrado
+        </div>
       </div>
       <ExportButtons
         :data="filteredEmpleados"
@@ -43,24 +62,40 @@
 
     <!-- Empty State -->
     <div v-if="empleados.length === 0" class="empty-state">
-      <div class="empty-icon">
-        <i class="bi bi-inbox"></i>
+      <div class="empty-illustration">
+        <svg viewBox="0 0 200 200" class="empty-svg">
+          <circle cx="100" cy="80" r="40" fill="#f1f5f9"/>
+          <rect x="60" y="130" width="80" height="50" rx="10" fill="#f1f5f9"/>
+          <circle cx="100" cy="80" r="30" fill="#e2e8f0"/>
+          <path d="M85 75 L95 85 L115 65" stroke="#94a3b8" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
       </div>
       <h3>No hay empleados registrados</h3>
       <p>Comienza agregando tu primer empleado al sistema</p>
-      <button @click="showModal = true" class="btn-empty">
+      <button @click="openModal()" class="btn-empty">
         <i class="bi bi-plus-lg"></i> Crear Empleado
       </button>
     </div>
 
     <!-- Table Card -->
     <div v-else class="table-card">
+      <div class="table-header">
+        <div class="table-title">
+          <i class="bi bi-table"></i>
+          <span>Lista de Empleados</span>
+        </div>
+        <div class="table-actions">
+          <span class="action-hint">Los empleados inactivos se muestran en gris</span>
+        </div>
+      </div>
+      
       <div class="table-wrapper">
         <table class="empleados-table">
           <thead>
             <tr>
+              <th class="col-num">#</th>
               <th class="col-name">
-                <i class="bi bi-person"></i> Nombre
+                <i class="bi bi-person"></i> Nombre Completo
               </th>
               <th class="col-dni">
                 <i class="bi bi-id-card"></i> DNI
@@ -71,18 +106,29 @@
               <th class="col-dept">
                 <i class="bi bi-building"></i> Departamento
               </th>
-              <th class="col-actions">Acciones</th>
+              <th class="col-estado">
+                <i class="bi bi-toggle-on"></i> Estado
+              </th>
+              <th class="col-actions">
+                <i class="bi bi-three-dots"></i> Acciones
+              </th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="empleado in paginatedEmpleados" :key="empleado.id" class="table-row">
+            <tr v-for="(empleado, index) in paginatedEmpleados" :key="empleado.id" 
+                class="table-row"
+                :class="{ 'row-inactive': empleado.estado === 'Inactivo' }">
+              <td class="col-num">
+                <span class="row-number">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</span>
+              </td>
               <td class="col-name">
                 <div class="employee-cell">
-                  <div class="employee-avatar">
+                  <div class="employee-avatar" :class="getAvatarClass(empleado.estado)">
                     {{ getInitials(empleado.nombre, empleado.apellido) }}
                   </div>
                   <div class="employee-info">
                     <span class="employee-name">{{ empleado.nombre }} {{ empleado.apellido }}</span>
+                    <span class="employee-meta">{{ empleado.cargo?.nombre || 'Sin cargo' }}</span>
                   </div>
                 </div>
               </td>
@@ -90,26 +136,47 @@
                 <span class="badge-dni">{{ empleado.dni }}</span>
               </td>
               <td class="col-email">
-                <span class="email-text">{{ empleado.correo }}</span>
+                <div class="email-cell">
+                  <i class="bi bi-envelope-at"></i>
+                  <span class="email-text">{{ empleado.correo || '-' }}</span>
+                </div>
               </td>
               <td class="col-dept">
-                <span class="dept-badge">{{ empleado.departamento?.nombre || '-' }}</span>
+                <span class="dept-badge" :class="getDeptClass(empleado.departamento?.nombre)">
+                  <i class="bi bi-building"></i>
+                  {{ empleado.departamento?.nombre || '-' }}
+                </span>
+              </td>
+              <td class="col-estado">
+                <span class="estado-chip" :class="getEstadoClass(empleado.estado)">
+                  <span class="chip-dot"></span>
+                  {{ empleado.estado }}
+                </span>
               </td>
               <td class="col-actions">
-                <button 
-                  @click="editEmpleado(empleado)" 
-                  class="btn-action btn-edit"
-                  title="Editar"
-                >
-                  <i class="bi bi-pencil-fill"></i>
-                </button>
-                <button 
-                  @click="confirmDeleteDialog(empleado)" 
-                  class="btn-action btn-delete"
-                  title="Eliminar"
-                >
-                  <i class="bi bi-trash-fill"></i>
-                </button>
+                <div class="action-buttons">
+                  <button 
+                    @click="editEmpleado(empleado)" 
+                    class="btn-action btn-edit"
+                    title="Editar"
+                  >
+                    <i class="bi bi-pencil-fill"></i>
+                  </button>
+                  <button 
+                    @click="confirmDeleteDialog(empleado)" 
+                    class="btn-action btn-delete"
+                    title="Eliminar"
+                  >
+                    <i class="bi bi-trash-fill"></i>
+                  </button>
+                  <button 
+                    @click="viewEmpleado(empleado)"
+                    class="btn-action btn-view"
+                    title="Ver detalles"
+                  >
+                    <i class="bi bi-eye-fill"></i>
+                  </button>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -127,130 +194,166 @@
 
     <!-- Modal -->
     <transition name="modal">
-      <div v-if="showModal" class="modal-overlay">
+      <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
         <div class="modal-content">
           <div class="modal-header">
-            <h2>{{ editingId ? 'Editar Empleado' : 'Nuevo Empleado' }}</h2>
+            <div class="modal-title-wrapper">
+              <div class="modal-icon" :class="editingId ? 'edit' : 'add'">
+                <i :class="editingId ? 'bi bi-pencil' : 'bi bi-person-plus'"></i>
+              </div>
+              <h2>{{ editingId ? 'Editar Empleado' : 'Nuevo Empleado' }}</h2>
+            </div>
             <button type="button" class="btn-close" @click="closeModal">
               <i class="bi bi-x-lg"></i>
             </button>
           </div>
 
           <form @submit.prevent="saveEmpleado" class="modal-form">
-            <div class="form-group">
-              <label>Nombre</label>
-              <input 
-                v-model="formData.nombre" 
-                type="text" 
-                placeholder="Ingrese nombre"
-                required 
-              />
+            <div class="form-row">
+              <div class="form-group">
+                <label>
+                  <i class="bi bi-person"></i> Nombre
+                </label>
+                <input 
+                  v-model="formData.nombre" 
+                  type="text" 
+                  placeholder="Ingrese nombre"
+                  required 
+                />
+              </div>
+
+              <div class="form-group">
+                <label>
+                  <i class="bi bi-person"></i> Apellido
+                </label>
+                <input 
+                  v-model="formData.apellido" 
+                  type="text" 
+                  placeholder="Ingrese apellido"
+                  required 
+                />
+              </div>
             </div>
 
-            <div class="form-group">
-              <label>Apellido</label>
-              <input 
-                v-model="formData.apellido" 
-                type="text" 
-                placeholder="Ingrese apellido"
-                required 
-              />
+            <div class="form-row">
+              <div class="form-group">
+                <label>
+                  <i class="bi bi-id-card"></i> DNI
+                </label>
+                <input 
+                  v-model="formData.dni" 
+                  type="text" 
+                  placeholder="Ingrese DNI"
+                  required 
+                />
+              </div>
+
+              <div class="form-group">
+                <label>
+                  <i class="bi bi-envelope"></i> Correo Electrónico
+                </label>
+                <input 
+                  v-model="formData.correo" 
+                  type="email" 
+                  placeholder="correo@ejemplo.com"
+                />
+              </div>
             </div>
 
-            <div class="form-group">
-              <label>DNI</label>
-              <input 
-                v-model="formData.dni" 
-                type="text" 
-                placeholder="Ingrese DNI"
-                required 
-              />
+            <div class="form-row">
+              <div class="form-group">
+                <label>
+                  <i class="bi bi-telephone"></i> Teléfono
+                </label>
+                <input 
+                  v-model="formData.telefono" 
+                  type="text" 
+                  placeholder="Ingrese número de teléfono"
+                />
+              </div>
+
+              <div class="form-group">
+                <label>
+                  <i class="bi bi-calendar"></i> Fecha de Ingreso
+                </label>
+                <input 
+                  v-model="formData.fechaIngreso" 
+                  type="date"
+                  required
+                />
+              </div>
             </div>
 
-            <div class="form-group">
-              <label>Correo Electrónico</label>
-              <input 
-                v-model="formData.correo" 
-                type="email" 
-                placeholder="correo@ejemplo.com"
-              />
+            <div class="form-row">
+              <div class="form-group">
+                <label>
+                  <i class="bi bi-building"></i> Departamento
+                </label>
+                <div class="select-wrapper">
+                  <select v-model.number="formData.departamentoId">
+                    <option :value="null">Seleccionar departamento</option>
+                    <option v-for="dept in departamentos" :key="dept.id" :value="dept.id">
+                      {{ dept.nombre }}
+                    </option>
+                  </select>
+                  <i class="bi bi-chevron-down"></i>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>
+                  <i class="bi bi-briefcase"></i> Cargo
+                </label>
+                <div class="select-wrapper">
+                  <select v-model.number="formData.cargoId">
+                    <option :value="null">Seleccionar cargo</option>
+                    <option v-for="cargo in cargos" :key="cargo.id" :value="cargo.id">
+                      {{ cargo.nombre }}
+                    </option>
+                  </select>
+                  <i class="bi bi-chevron-down"></i>
+                </div>
+              </div>
             </div>
 
-            <div class="form-group">
-              <label>Teléfono</label>
-              <input 
-                v-model="formData.telefono" 
-                type="text" 
-                placeholder="Ingrese número de teléfono"
-              />
-            </div>
-
-            <div class="form-group">
-              <label>Fecha de Ingreso *</label>
-              <input 
-                v-model="formData.fechaIngreso" 
-                type="date"
-                required
-              />
-            </div>
-
-            <div class="form-group">
-              <label>Departamento</label>
-              <input 
-                v-model.number="formData.departamentoId" 
-                type="number" 
-                placeholder="ID del departamento"
-              />
-            </div>
-
-            <div class="form-group">
-              <label>Cargo</label>
-              <input 
-                v-model.number="formData.cargoId" 
-                type="number" 
-                placeholder="ID del cargo"
-              />
-            </div>
-
-            <div class="form-group">
-              <label>Estado</label>
-              <select v-model="formData.estado">
-                <option value="Activo">Activo</option>
-                <option value="Inactivo">Inactivo</option>
-                <option value="Licencia">Licencia</option>
-              </select>
+            <div class="form-group full-width">
+              <label>
+                <i class="bi bi-toggle-on"></i> Estado
+              </label>
+              <div class="radio-group">
+                <label class="radio-item" :class="{ active: formData.estado === 'Activo' }">
+                  <input type="radio" v-model="formData.estado" value="Activo" />
+                  <span class="radio-icon">
+                    <i class="bi bi-check-circle-fill"></i>
+                  </span>
+                  <span class="radio-label">Activo</span>
+                </label>
+                <label class="radio-item" :class="{ active: formData.estado === 'Inactivo' }">
+                  <input type="radio" v-model="formData.estado" value="Inactivo" />
+                  <span class="radio-icon">
+                    <i class="bi bi-x-circle-fill"></i>
+                  </span>
+                  <span class="radio-label">Inactivo</span>
+                </label>
+                <label class="radio-item" :class="{ active: formData.estado === 'Licencia' }">
+                  <input type="radio" v-model="formData.estado" value="Licencia" />
+                  <span class="radio-icon">
+                    <i class="bi bi-pause-circle-fill"></i>
+                  </span>
+                  <span class="radio-label">Licencia</span>
+                </label>
+              </div>
             </div>
 
             <div class="modal-actions">
               <button type="button" @click="closeModal" class="btn-cancel">
-                Cancelar
+                <i class="bi bi-x-lg"></i> Cancelar
               </button>
               <button type="submit" class="btn-submit">
                 <i class="bi bi-check-lg"></i> {{ editingId ? 'Actualizar' : 'Guardar' }}
               </button>
             </div>
           </form>
-        </div>
-      </div>
-    </transition>
-
-    <!-- Delete Confirmation Modal -->
-    <transition name="modal">
-      <div v-if="showDeleteConfirm" class="modal-overlay">
-        <div class="modal-confirm">
-          <div class="confirm-icon">
-            <i class="bi bi-exclamation-circle"></i>
-          </div>
-          <h3>Confirmar eliminación</h3>
-          <p>¿Está seguro de que desea eliminar este empleado? Esta acción no se puede deshacer.</p>
-          <div class="confirm-actions">
-            <button @click="showDeleteConfirm = false" class="btn-cancel">
-              Cancelar
-            </button>
-            <button @click="confirmDelete" class="btn-delete-confirm">
-              <i class="bi bi-trash-fill"></i> Eliminar
-            </button>
-          </div>
         </div>
       </div>
     </transition>
@@ -306,7 +409,9 @@ export default {
         departamentoId: null,
         cargoId: null,
         estado: 'Activo'
-      }
+      },
+      departamentos: [],
+      cargos: []
     }
   },
   computed: {
@@ -317,7 +422,7 @@ export default {
       return this.empleados.filter(emp => 
         `${emp.nombre} ${emp.apellido}`.toLowerCase().includes(query) ||
         emp.dni.toLowerCase().includes(query) ||
-        emp.correo.toLowerCase().includes(query)
+        emp.correo?.toLowerCase().includes(query)
       )
     },
     paginatedEmpleados() {
@@ -328,6 +433,8 @@ export default {
   },
   mounted() {
     this.loadEmpleados()
+    this.loadDepartamentos()
+    this.loadCargos()
   },
   methods: {
     async loadEmpleados() {
@@ -340,10 +447,33 @@ export default {
         this.notification.error('Error al cargar empleados')
       }
     },
+    async loadDepartamentos() {
+      try {
+        const response = await api.getDepartamentos()
+        this.departamentos = response.data || []
+      } catch (err) {
+        console.error('Error cargando departamentos:', err)
+      }
+    },
+    async loadCargos() {
+      try {
+        const response = await api.getCargos()
+        this.cargos = response.data || []
+      } catch (err) {
+        console.error('Error cargando cargos:', err)
+      }
+    },
+    openModal() {
+      this.resetForm()
+      this.showModal = true
+    },
     editEmpleado(empleado) {
       this.editingId = empleado.id
       this.formData = { ...empleado }
       this.showModal = true
+    },
+    viewEmpleado(empleado) {
+      this.notification.info(`Viendo detalles de ${empleado.nombre} ${empleado.apellido}`)
     },
     async saveEmpleado() {
       try {
@@ -362,10 +492,6 @@ export default {
         console.error(err)
       }
     },
-    deleteEmpleado(id) {
-      this.deleteId = id
-      this.showDeleteConfirm = true
-    },
     confirmDeleteDialog(empleado) {
       this.deleteId = empleado.id
       this.deletingEmpleado = empleado
@@ -377,18 +503,6 @@ export default {
         this.notification.success('Empleado eliminado correctamente')
         this.deleteId = null
         this.deletingEmpleado = null
-        this.loadEmpleados()
-      } catch (err) {
-        this.notification.error('Error al eliminar empleado')
-        console.error(err)
-      }
-    },
-    async confirmDelete() {
-      try {
-        await api.deleteEmpleado(this.deleteId)
-        this.notification.success('Empleado eliminado correctamente')
-        this.showDeleteConfirm = false
-        this.deleteId = null
         this.loadEmpleados()
       } catch (err) {
         this.notification.error('Error al eliminar empleado')
@@ -416,28 +530,44 @@ export default {
     getInitials(nombre, apellido) {
       return `${(nombre || '').charAt(0)}${(apellido || '').charAt(0)}`.toUpperCase()
     },
+    getAvatarClass(estado) {
+      return estado === 'Activo' ? 'avatar-active' : 'avatar-inactive'
+    },
+    getDeptClass(dept) {
+      const classes = {
+        'Recursos Humanos': 'dept-rh',
+        'Tecnología': 'dept-tech',
+        'Ventas': 'dept-sales',
+        'Contabilidad': 'dept-accounting',
+        'Marketing': 'dept-marketing'
+      }
+      return classes[dept] || 'dept-default'
+    },
+    getEstadoClass(estado) {
+      return {
+        'Activo': 'estado-activo',
+        'Inactivo': 'estado-inactivo',
+        'Licencia': 'estado-licencia'
+      }[estado] || ''
+    },
     handleExported(event) {
       this.notification.success(`¡Exportado a ${event.format}!`, 2000)
     },
     handleAdvancedSearch(query) {
-      // query = { text: 'search text', filters: [...] }
       if (!query.text && query.filters.length === 0) {
         this.searchQuery = ''
         return
       }
 
-      // Implement advanced search filtering
       const filtered = this.empleados.filter(emp => {
-        // Text search
         if (query.text) {
           const text = query.text.toLowerCase()
           const matches = `${emp.nombre} ${emp.apellido} ${emp.dni} ${emp.correo}`.toLowerCase().includes(text)
           if (!matches) return false
         }
 
-        // Field-specific filters
         for (const filter of query.filters) {
-          const fieldValue = String(emp[filter.field.toLowerCase()] || '').toLowerCase()
+          const fieldValue = String(emp[filter.field?.toLowerCase()] || '').toLowerCase()
           const filterVal = filter.value.toLowerCase()
 
           switch (filter.operator) {
@@ -473,43 +603,55 @@ export default {
 }
 
 .empleados-container {
-  background: linear-gradient(135deg, #f5f7fa 0%, #f0f4f8 100%);
+  background: #f8fafc;
   min-height: 100vh;
-  padding: 32px 20px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 32px 24px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 /* Header */
 .empleados-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   gap: 20px;
   margin-bottom: 28px;
   flex-wrap: wrap;
 }
 
 .header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header-icon {
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 26px;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.header-text {
   flex: 1;
-  min-width: 250px;
 }
 
 .page-title {
-  font-size: 32px;
+  font-size: 28px;
   font-weight: 700;
-  color: #2d3748;
-  margin: 0 0 8px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.page-title i {
-  color: #667eea;
+  color: #1e293b;
+  margin: 0 0 6px;
+  letter-spacing: -0.5px;
 }
 
 .page-subtitle {
-  color: #718096;
+  color: #64748b;
   font-size: 14px;
   margin: 0;
 }
@@ -518,20 +660,49 @@ export default {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
-  padding: 12px 24px;
-  border-radius: 10px;
+  padding: 14px 24px;
+  border-radius: 12px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  position: relative;
+  overflow: hidden;
 }
 
 .btn-new:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.btn-new .btn-icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-new .btn-text {
+  position: relative;
+  z-index: 1;
+}
+
+.btn-shine {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.btn-new:hover .btn-shine {
+  left: 100%;
 }
 
 /* Search Bar */
@@ -545,80 +716,141 @@ export default {
 
 .search-input-wrapper {
   flex: 1;
-  min-width: 250px;
+  min-width: 280px;
   position: relative;
   display: flex;
   align-items: center;
   background: white;
-  border-radius: 10px;
-  padding: 0 14px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+  border: 2px solid #e2e8f0;
+  transition: all 0.2s ease;
 }
 
-.search-input-wrapper i {
-  color: #a0aec0;
-  margin-right: 10px;
+.search-input-wrapper:focus-within {
+  border-color: #667eea;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+.search-icon {
+  width: 44px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
   font-size: 16px;
 }
 
 .search-input {
   flex: 1;
   border: none;
-  padding: 12px 0;
+  padding: 14px 0;
   font-size: 14px;
   background: transparent;
   outline: none;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: inherit;
 }
 
 .search-input::placeholder {
-  color: #cbd5e0;
+  color: #cbd5e1;
+}
+
+.clear-btn {
+  width: 36px;
+  height: 36px;
+  margin-right: 8px;
+  background: #f1f5f9;
+  border: none;
+  border-radius: 8px;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.clear-btn:hover {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
+.result-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .result-count {
   background: white;
-  padding: 8px 12px;
-  border-radius: 8px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.count-number {
+  font-size: 20px;
+  font-weight: 700;
+  color: #667eea;
+}
+
+.count-label {
   font-size: 13px;
-  color: #718096;
-  font-weight: 500;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  color: #64748b;
+}
+
+.result-badge {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 /* Empty State */
 .empty-state {
   background: white;
-  border-radius: 14px;
+  border-radius: 20px;
   padding: 60px 40px;
   text-align: center;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e2e8f0;
 }
 
-.empty-icon {
-  font-size: 64px;
-  color: #cbd5e0;
-  margin-bottom: 20px;
+.empty-illustration {
+  margin-bottom: 24px;
+}
+
+.empty-svg {
+  width: 120px;
+  height: 120px;
 }
 
 .empty-state h3 {
-  font-size: 20px;
-  color: #2d3748;
-  margin-bottom: 8px;
+  font-size: 22px;
+  color: #1e293b;
+  margin-bottom: 10px;
   font-weight: 600;
 }
 
 .empty-state p {
-  color: #718096;
-  margin-bottom: 24px;
-  font-size: 14px;
+  color: #64748b;
+  margin-bottom: 28px;
+  font-size: 15px;
 }
 
 .btn-empty {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
-  padding: 12px 24px;
-  border-radius: 10px;
+  padding: 14px 28px;
+  border-radius: 12px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -636,9 +868,37 @@ export default {
 /* Table Card */
 .table-card {
   background: white;
-  border-radius: 14px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e2e8f0;
   overflow: hidden;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e2e8f0;
+  background: #fafbfc;
+}
+
+.table-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.table-title i {
+  color: #667eea;
+}
+
+.action-hint {
+  font-size: 13px;
+  color: #94a3b8;
 }
 
 .table-wrapper {
@@ -651,109 +911,215 @@ export default {
 }
 
 .empleados-table thead {
-  background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+  background: linear-gradient(135deg, #667eea08 0%, #764ba208 100%);
   border-bottom: 2px solid #e2e8f0;
 }
 
 .empleados-table th {
-  padding: 14px 16px;
+  padding: 16px 20px;
   text-align: left;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
-  color: #4a5568;
+  color: #64748b;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  white-space: nowrap;
 }
 
 .empleados-table th i {
-  margin-right: 6px;
+  margin-right: 8px;
   color: #667eea;
 }
 
 .table-row {
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid #f1f5f9;
   transition: all 0.2s ease;
 }
 
 .table-row:hover {
-  background: #f7fafc;
+  background: #f8fafc;
+}
+
+.table-row.row-inactive {
+  background: #f8fafc;
+  opacity: 0.7;
+}
+
+.table-row.row-inactive .employee-name {
+  color: #64748b;
 }
 
 .empleados-table td {
-  padding: 14px 16px;
+  padding: 16px 20px;
   font-size: 14px;
-  color: #2d3748;
+  color: #334155;
+  vertical-align: middle;
 }
 
-.col-name { width: 25%; }
-.col-dni { width: 15%; }
-.col-email { width: 25%; }
-.col-dept { width: 20%; }
-.col-actions { width: 15%; text-align: center; }
+.col-num { width: 60px; text-align: center; }
+.col-name { width: 28%; }
+.col-dni { width: 12%; }
+.col-email { width: 20%; }
+.col-dept { width: 15%; }
+.col-estado { width: 12%; }
+.col-actions { width: 100px; text-align: center; }
+
+.row-number {
+  background: #f1f5f9;
+  color: #64748b;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+}
 
 .employee-cell {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .employee-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 600;
-  font-size: 12px;
+  font-size: 14px;
   flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.employee-avatar.avatar-active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.employee-avatar.avatar-inactive {
+  background: #e2e8f0;
+  color: #64748b;
 }
 
 .employee-info {
   flex: 1;
+  min-width: 0;
 }
 
 .employee-name {
   display: block;
   font-weight: 600;
-  color: #2d3748;
+  color: #1e293b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.employee-meta {
+  display: block;
+  font-size: 12px;
+  color: #94a3b8;
+  margin-top: 2px;
 }
 
 .badge-dni {
   background: #f0f4ff;
   color: #667eea;
-  padding: 4px 10px;
-  border-radius: 6px;
+  padding: 6px 12px;
+  border-radius: 8px;
   font-size: 12px;
   font-weight: 600;
-  font-family: 'Monaco', 'Courier New', monospace;
+  font-family: 'SF Mono', 'Monaco', monospace;
+}
+
+.email-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.email-cell i {
+  color: #94a3b8;
+  font-size: 14px;
 }
 
 .email-text {
-  color: #718096;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .dept-badge {
-  background: #e8f6f0;
-  color: #10b981;
-  padding: 4px 10px;
-  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.dept-badge i {
+  font-size: 12px;
+}
+
+.dept-rh { background: #fef3c7; color: #92400e; }
+.dept-tech { background: #dbeafe; color: #1e40af; }
+.dept-sales { background: #dcfce7; color: #166534; }
+.dept-accounting { background: #f3e8ff; color: #7c3aed; }
+.dept-marketing { background: #fce7f3; color: #be185d; }
+.dept-default { background: #f1f5f9; color: #475569; }
+
+.estado-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 20px;
   font-size: 12px;
   font-weight: 600;
+}
+
+.estado-chip.estado-activo {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.estado-chip.estado-inactivo {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.estado-chip.estado-licencia {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.chip-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 6px;
 }
 
 .btn-action {
   background: none;
   border: none;
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
   cursor: pointer;
   transition: all 0.2s ease;
   font-size: 14px;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
 }
@@ -778,6 +1144,16 @@ export default {
   transform: scale(1.1);
 }
 
+.btn-view {
+  color: #3b82f6;
+  background: #dbeafe;
+}
+
+.btn-view:hover {
+  background: #bfdbfe;
+  transform: scale(1.1);
+}
+
 /* Modal Styles */
 .modal-overlay {
   position: fixed;
@@ -785,42 +1161,34 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(15, 23, 42, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
   padding: 20px;
+  backdrop-filter: blur(4px);
 }
 
 .modal-content {
   background: white;
-  border-radius: 14px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  border-radius: 24px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   width: 100%;
-  max-width: 500px;
-  animation: slideUp 0.3s ease-out;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: modalSlide 0.3s ease-out;
 }
 
-.modal-confirm {
-  background: white;
-  border-radius: 14px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  padding: 40px 30px;
-  text-align: center;
-  width: 100%;
-  max-width: 400px;
-  animation: slideUp 0.3s ease-out;
-}
-
-@keyframes slideUp {
+@keyframes modalSlide {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(20px) scale(0.95);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
@@ -828,101 +1196,230 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 24px;
+  padding: 24px;
   border-bottom: 1px solid #e2e8f0;
+}
+
+.modal-title-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.modal-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+}
+
+.modal-icon.add {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.modal-icon.edit {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
 }
 
 .modal-header h2 {
   font-size: 20px;
   font-weight: 700;
-  color: #2d3748;
+  color: #1e293b;
   margin: 0;
 }
 
 .btn-close {
-  background: none;
+  background: #f1f5f9;
   border: none;
-  font-size: 20px;
-  color: #a0aec0;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
   cursor: pointer;
-  padding: 0;
-  width: 32px;
-  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 6px;
+  color: #64748b;
   transition: all 0.2s ease;
 }
 
 .btn-close:hover {
-  background: #f0f4f8;
-  color: #2d3748;
+  background: #e2e8f0;
+  color: #1e293b;
 }
 
 .modal-form {
   padding: 24px;
 }
 
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 4px;
+}
+
 .form-group {
-  margin-bottom: 18px;
+  margin-bottom: 16px;
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1;
 }
 
 .form-group label {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-size: 13px;
   font-weight: 600;
-  color: #2d3748;
-  margin-bottom: 8px;
+  color: #475569;
+  margin-bottom: 10px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
+}
+
+.form-group label i {
+  color: #667eea;
+  font-size: 14px;
 }
 
 .form-group input {
   width: 100%;
-  padding: 10px 14px;
+  padding: 12px 16px;
   border: 2px solid #e2e8f0;
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 14px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   transition: all 0.2s ease;
+  font-family: inherit;
 }
 
 .form-group input:focus {
   outline: none;
   border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
 }
 
 .form-group input::placeholder {
-  color: #cbd5e0;
+  color: #cbd5e1;
+}
+
+.select-wrapper {
+  position: relative;
+}
+
+.select-wrapper select {
+  width: 100%;
+  padding: 12px 16px;
+  padding-right: 40px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 14px;
+  appearance: none;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.select-wrapper select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+.select-wrapper i {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.radio-group {
+  display: flex;
+  gap: 12px;
+}
+
+.radio-item {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.radio-item input {
+  display: none;
+}
+
+.radio-item .radio-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  background: #f1f5f9;
+  color: #94a3b8;
+  transition: all 0.2s ease;
+}
+
+.radio-item.active {
+  border-color: #667eea;
+  background: #f0f4ff;
+}
+
+.radio-item.active .radio-icon {
+  background: #667eea;
+  color: white;
+}
+
+.radio-item .radio-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #475569;
 }
 
 .modal-actions {
   display: flex;
   gap: 12px;
-  margin-top: 28px;
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #e2e8f0;
 }
 
 .btn-cancel,
 .btn-submit {
   flex: 1;
-  padding: 12px 16px;
+  padding: 14px 20px;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 8px;
   font-size: 14px;
 }
 
 .btn-cancel {
-  background: #f0f4f8;
-  color: #4a5568;
+  background: #f1f5f9;
+  color: #475569;
 }
 
 .btn-cancel:hover {
@@ -940,52 +1437,6 @@ export default {
   box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
 }
 
-/* Confirmation Modal */
-.confirm-icon {
-  font-size: 56px;
-  color: #f59e0b;
-  margin-bottom: 16px;
-}
-
-.modal-confirm h3 {
-  font-size: 18px;
-  color: #2d3748;
-  margin-bottom: 8px;
-  font-weight: 600;
-}
-
-.modal-confirm p {
-  color: #718096;
-  font-size: 14px;
-  margin-bottom: 24px;
-}
-
-.confirm-actions {
-  display: flex;
-  gap: 12px;
-}
-
-.btn-delete-confirm {
-  flex: 1;
-  padding: 10px 16px;
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-}
-
-.btn-delete-confirm:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
-}
-
 /* Transitions */
 .modal-enter-active, .modal-leave-active {
   transition: opacity 0.3s ease;
@@ -996,14 +1447,29 @@ export default {
 }
 
 /* Responsive */
+@media (max-width: 1024px) {
+  .col-name { width: 30%; }
+  .col-email { width: 22%; }
+  .col-dni { width: 13%; }
+  .col-dept { width: 15%; }
+  .col-estado { width: 12%; }
+  .col-actions { width: 90px; }
+}
+
 @media (max-width: 768px) {
   .empleados-container {
-    padding: 20px 16px;
+    padding: 24px 16px;
   }
 
   .empleados-header {
     flex-direction: column;
     align-items: stretch;
+    gap: 16px;
+  }
+
+  .header-left {
+    flex-direction: column;
+    text-align: center;
   }
 
   .btn-new {
@@ -1012,44 +1478,48 @@ export default {
   }
 
   .page-title {
-    font-size: 26px;
+    font-size: 24px;
   }
 
   .search-bar {
     flex-direction: column;
+    align-items: stretch;
   }
 
   .search-input-wrapper {
     min-width: 100%;
   }
 
-  .result-count {
-    width: 100%;
-    text-align: center;
+  .result-info {
+    justify-content: center;
   }
 
-  .col-name { width: 40%; }
-  .col-dni { width: 20%; }
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .radio-group {
+    flex-direction: column;
+  }
+
+  .empleados-table th,
+  .empleados-table td {
+    padding: 12px 14px;
+  }
+
   .col-email { display: none; }
   .col-dept { display: none; }
-  .col-actions { width: 20%; }
-
-  .table-row:not(:hover) .btn-action {
-    padding: 6px;
-  }
 
   .modal-content {
-    max-width: 100%;
-  }
-
-  .empty-state {
-    padding: 40px 20px;
+    max-height: 100vh;
+    border-radius: 20px 20px 0 0;
+    margin-top: auto;
   }
 }
 
 @media (max-width: 480px) {
   .empleados-container {
-    padding: 16px 12px;
+    padding: 20px 12px;
   }
 
   .page-title {
@@ -1057,30 +1527,33 @@ export default {
   }
 
   .empleados-table {
+    font-size: 13px;
+  }
+
+  .col-num { display: none; }
+
+  .employee-avatar {
+    width: 36px;
+    height: 36px;
     font-size: 12px;
   }
 
-  .empleados-table th,
-  .empleados-table td {
-    padding: 10px 8px;
+  .employee-cell {
+    gap: 10px;
   }
 
-  .col-name { width: 50%; }
-  .col-dni { width: 30%; }
-  .col-actions { width: 20%; }
+  .action-buttons {
+    gap: 4px;
+  }
 
-  .employee-avatar {
+  .btn-action {
     width: 32px;
     height: 32px;
-    font-size: 11px;
+    font-size: 12px;
   }
 
-  .employee-cell {
-    gap: 8px;
-  }
-
-  .modal-confirm {
-    padding: 30px 20px;
+  .empty-state {
+    padding: 40px 24px;
   }
 }
 </style>
