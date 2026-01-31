@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-      <div class="container-fluid">
+      <div class="container-fluid px-4">
         <router-link to="/" class="navbar-brand">
           <i class="bi bi-people-fill"></i> Sistema de Empleados
         </router-link>
@@ -47,7 +47,7 @@
         </div>
       </div>
     </nav>
-    <main class="container mt-4">
+    <main class="main-content">
       <transition name="fade" mode="out-in">
         <router-view :key="$route.fullPath" />
       </transition>
@@ -96,14 +96,19 @@ export default {
 <style>
 body {
   background-color: #f8f9fa;
+  margin: 0;
+  min-height: 100vh;
 }
 
 .navbar {
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-main {
-  min-height: calc(100vh - 60px);
+.main-content {
+  width: 100%;
+  min-height: calc(100vh - 56px);
+  padding: 0;
+  margin: 0;
 }
 
 /* Transiciones de vista */

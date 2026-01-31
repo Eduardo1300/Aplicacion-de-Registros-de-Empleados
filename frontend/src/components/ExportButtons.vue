@@ -45,7 +45,7 @@
 
 <script setup>
 import { computed } from 'vue'
-import { exportToExcel, exportToCSV, exportTableToPDF } from '../services/export'
+import { exportToExcel, exportToCSV, exportTableToPDF, generateTableHTML } from '../services/export'
 
 const props = defineProps({
   data: {
@@ -77,12 +77,10 @@ const props = defineProps({
 const emit = defineEmits(['exported', 'error'])
 
 const dataToExport = computed(() => {
-  // Si hay datos directos, usarlos
   if (props.data && props.data.length > 0) {
-    return props.data
+    return props.data.map(item => flattenObject(item))
   }
   
-  // Si hay tableId, extraer datos de la tabla
   if (props.tableId) {
     const table = document.getElementById(props.tableId)
     if (table) {
@@ -93,9 +91,29 @@ const dataToExport = computed(() => {
   return []
 })
 
-/**
- * Extrae datos de una tabla HTML
- */
+const flattenObject = (obj, prefix = '') => {
+  const result = {}
+  
+  for (const key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      const newKey = prefix ? `${prefix}_${key}` : key
+      const value = obj[key]
+      
+      if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
+        Object.assign(result, flattenObject(value, newKey))
+      } else {
+        if (value !== null && typeof value === 'object' && Array.isArray(value)) {
+          result[newKey] = value.length + ' elementos'
+        } else {
+          result[newKey] = value !== null ? value : ''
+        }
+      }
+    }
+  }
+  
+  return result
+}
+
 const extractTableData = (table) => {
   const headers = Array.from(table.querySelectorAll('th'))
     .map(th => th.textContent.trim())
@@ -115,13 +133,9 @@ const extractTableData = (table) => {
   return rows
 }
 
-/**
- * Maneja exportación a Excel
- */
 const handleExportExcel = () => {
   try {
     if (props.tableId) {
-      const { exportTableToExcel } = require('../services/export')
       exportTableToExcel(props.tableId, `${props.filename}.xlsx`, props.title)
     } else {
       exportToExcel(dataToExport.value, `${props.filename}.xlsx`, props.title)
@@ -133,9 +147,6 @@ const handleExportExcel = () => {
   }
 }
 
-/**
- * Maneja exportación a CSV
- */
 const handleExportCSV = () => {
   try {
     exportToCSV(dataToExport.value, `${props.filename}.csv`)
@@ -146,17 +157,17 @@ const handleExportCSV = () => {
   }
 }
 
-/**
- * Maneja exportación a PDF
- */
 const handleExportPDF = async () => {
   try {
     if (props.tableId) {
       await exportTableToPDF(props.tableId, `${props.filename}.pdf`, props.title)
     } else {
-      const { generateTableHTML, exportToPDF } = require('../services/export')
-      const html = generateTableHTML(dataToExport.value, null, props.title)
-      await exportToPDF(html, `${props.filename}.pdf`)
+      const flattenedData = dataToExport.value
+      if (flattenedData.length > 0) {
+        const columns = Object.keys(flattenedData[0])
+        const html = generateTableHTML(flattenedData, columns, props.title)
+        await exportToPDF(html, `${props.filename}.pdf`)
+      }
     }
     emit('exported', { format: 'pdf', filename: `${props.filename}.pdf` })
   } catch (error) {
@@ -165,9 +176,6 @@ const handleExportPDF = async () => {
   }
 }
 
-/**
- * Maneja impresión
- */
 const handlePrint = () => {
   window.print()
   emit('exported', { format: 'print' })
