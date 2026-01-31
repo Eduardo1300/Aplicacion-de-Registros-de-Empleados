@@ -1,155 +1,131 @@
 <template>
   <div class="charts-page">
-    <!-- Header -->
-    <div class="charts-header">
-      <div class="header-left">
-        <h1 class="page-title">
-          <i class="bi bi-graph-up"></i> Gráficos y Estadísticas
-        </h1>
-        <p class="page-subtitle">Análisis visual de datos del sistema</p>
-      </div>
-      <div class="header-actions">
-        <button @click="refreshData" class="btn-refresh">
-          <i class="bi bi-arrow-clockwise"></i> Actualizar
-        </button>
-        <button @click="downloadReport" class="btn-download">
-          <i class="bi bi-download"></i> Descargar Reporte
-        </button>
-      </div>
-    </div>
-
-    <!-- Stats Cards -->
-    <div class="stats-row">
-      <div class="stat-card">
-        <div class="stat-icon" style="background: #007bff;">
-          <i class="bi bi-people-fill"></i>
-        </div>
-        <div class="stat-content">
-          <h3>Total Empleados</h3>
-          <p class="stat-value">{{ totalEmpleados }}</p>
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-icon" style="background: #28a745;">
-          <i class="bi bi-check-circle-fill"></i>
-        </div>
-        <div class="stat-content">
-          <h3>Empleados Activos</h3>
-          <p class="stat-value">{{ empleadosActivos }}</p>
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-icon" style="background: #ffc107;">
-          <i class="bi bi-clock-fill"></i>
-        </div>
-        <div class="stat-content">
-          <h3>Presentes Hoy</h3>
-          <p class="stat-value">{{ presentesHoy }}</p>
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-icon" style="background: #dc3545;">
-          <i class="bi bi-exclamation-circle-fill"></i>
-        </div>
-        <div class="stat-content">
-          <h3>Ausencias</h3>
-          <p class="stat-value">{{ ausenciasHoy }}</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Charts Grid -->
     <div class="charts-container">
-      <!-- Row 1 -->
-      <div class="chart-wrapper full-width">
-        <div class="chart-header">
-          <h3>Empleados por Departamento</h3>
-          <p class="chart-subtitle">Distribución de empleados en cada departamento</p>
+      <div class="charts-header">
+        <div class="header-left">
+          <h1 class="page-title">
+            <i class="bi bi-graph-up"></i> Gráficos y Estadísticas
+          </h1>
+          <p class="page-subtitle">Análisis visual de datos del sistema</p>
         </div>
-        <Bar :data="chartEmpleadosPorDepartamento" :options="chartOptions" />
+        <div class="header-actions">
+          <button @click="refreshData" class="btn-refresh">
+            <i class="bi bi-arrow-clockwise"></i> Actualizar
+          </button>
+          <button @click="downloadReport" class="btn-download">
+            <i class="bi bi-download"></i> Descargar
+          </button>
+        </div>
       </div>
 
-      <!-- Row 2 -->
-      <div class="chart-wrapper">
-        <div class="chart-header">
-          <h3>Estado de Empleados</h3>
-          <p class="chart-subtitle">Distribución de estados</p>
+      <div v-if="loading" class="loading-state">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Cargando...</span>
         </div>
-        <Doughnut :data="chartEstadoEmpleados" :options="chartOptionsPie" />
+        <p>Cargando datos...</p>
       </div>
 
-      <div class="chart-wrapper">
-        <div class="chart-header">
-          <h3>Asistencias por Día</h3>
-          <p class="chart-subtitle">Últimos 7 días</p>
-        </div>
-        <Line :data="chartAsistenciasUltimos7Dias" :options="chartOptions" />
-      </div>
+      <template v-else>
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-icon" style="background: #667eea;">
+              <i class="bi bi-people-fill"></i>
+            </div>
+            <div class="stat-content">
+              <h3>Total Empleados</h3>
+              <p class="stat-value">{{ totalEmpleados }}</p>
+            </div>
+          </div>
 
-      <!-- Row 3 -->
-      <div class="chart-wrapper">
-        <div class="chart-header">
-          <h3>Géneros</h3>
-          <p class="chart-subtitle">Distribución por género</p>
-        </div>
-        <Pie :data="chartGeneros" :options="chartOptionsPie" />
-      </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background: #10b981;">
+              <i class="bi bi-check-circle-fill"></i>
+            </div>
+            <div class="stat-content">
+              <h3>Empleados Activos</h3>
+              <p class="stat-value">{{ empleadosActivos }}</p>
+            </div>
+          </div>
 
-      <div class="chart-wrapper">
-        <div class="chart-header">
-          <h3>Salarios Promedio</h3>
-          <p class="chart-subtitle">Por departamento</p>
-        </div>
-        <Bar :data="chartSalariosPromedio" :options="chartOptions" />
-      </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background: #f59e0b;">
+              <i class="bi bi-clock-fill"></i>
+            </div>
+            <div class="stat-content">
+              <h3>Presentes Hoy</h3>
+              <p class="stat-value">{{ presentesHoy }}</p>
+            </div>
+          </div>
 
-      <!-- Row 4 -->
-      <div class="chart-wrapper full-width">
-        <div class="chart-header">
-          <h3>Licencias Solicitadas</h3>
-          <p class="chart-subtitle">Estado de solicitudes de licencia</p>
+          <div class="stat-card">
+            <div class="stat-icon" style="background: #ef4444;">
+              <i class="bi bi-exclamation-circle-fill"></i>
+            </div>
+            <div class="stat-content">
+              <h3>Ausencias</h3>
+              <p class="stat-value">{{ ausenciasHoy }}</p>
+            </div>
+          </div>
         </div>
-        <Bar :data="chartLicencias" :options="chartOptions" />
-      </div>
 
-      <!-- Row 5 -->
-      <div class="chart-wrapper">
-        <div class="chart-header">
-          <h3>Años de Antigüedad</h3>
-          <p class="chart-subtitle">Distribución de antigüedad</p>
-        </div>
-        <Radar :data="chartAntiguedad" :options="chartOptionsRadar" />
-      </div>
+        <div class="charts-grid">
+          <div class="chart-wrapper full-width">
+            <div class="chart-header">
+              <h3>Empleados por Departamento</h3>
+              <p class="chart-subtitle">Distribución de empleados</p>
+            </div>
+            <Bar :data="chartEmpleadosPorDepartamento" :options="barOptions" />
+          </div>
 
-      <div class="chart-wrapper">
-        <div class="chart-header">
-          <h3>Tasa de Asistencia</h3>
-          <p class="chart-subtitle">Por empleado (Top 10)</p>
-        </div>
-        <Radar :data="chartTasaAsistencia" :options="chartOptionsRadar" />
-      </div>
+          <div class="chart-wrapper">
+            <div class="chart-header">
+              <h3>Estado de Empleados</h3>
+              <p class="chart-subtitle">Distribución por estado</p>
+            </div>
+            <Doughnut :data="chartEstadoEmpleados" :options="pieOptions" />
+          </div>
 
-      <!-- Row 6 -->
-      <div class="chart-wrapper full-width">
-        <div class="chart-header">
-          <h3>Tendencia de Asistencias (Últimos 30 días)</h3>
-          <p class="chart-subtitle">Gráfico de tendencia</p>
+          <div class="chart-wrapper">
+            <div class="chart-header">
+              <h3>Asistencias por Día</h3>
+              <p class="chart-subtitle">Últimos 7 días</p>
+            </div>
+            <Line :data="chartAsistencias" :options="barOptions" />
+          </div>
+
+          <div class="chart-wrapper">
+            <div class="chart-header">
+              <h3>Géneros</h3>
+              <p class="chart-subtitle">Distribución por género</p>
+            </div>
+            <Pie :data="chartGeneros" :options="pieOptions" />
+          </div>
+
+          <div class="chart-wrapper">
+            <div class="chart-header">
+              <h3>Salarios Promedio</h3>
+              <p class="chart-subtitle">Por departamento</p>
+            </div>
+            <Bar :data="chartSalarios" :options="barOptions" />
+          </div>
+
+          <div class="chart-wrapper full-width">
+            <div class="chart-header">
+              <h3>Licencias Solicitadas</h3>
+              <p class="chart-subtitle">Estado de solicitudes</p>
+            </div>
+            <Bar :data="chartLicencias" :options="barOptions" />
+          </div>
         </div>
-        <Line :data="chartTendenciaAsistencias" :options="chartOptionsLine" />
-      </div>
+      </template>
     </div>
   </div>
 </template>
 
 <script>
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, ArcElement, RadarController, Filler, Title, Tooltip, Legend } from 'chart.js'
-import { Bar, Line, Doughnut, Pie, Radar } from 'vue-chartjs'
+import { Bar, Line, Doughnut, Pie } from 'vue-chartjs'
 import api from '../services/api'
-import { useNotification } from '../services/notification.service'
-import { useTheme } from '../services/theme.service'
 
 ChartJS.register(
   CategoryScale,
@@ -171,630 +147,211 @@ export default {
     Bar,
     Line,
     Doughnut,
-    Pie,
-    Radar
+    Pie
   },
   data() {
     return {
-      notification: useNotification(),
-      theme: useTheme(),
-      isActive: false,
+      loading: true,
       isDark: false,
       empleados: [],
-      asistentecias: [],
+      asistencias: [],
       licencias: [],
-      departamentos: [],
-      
-      totalEmpleados: 0,
-      empleadosActivos: 0,
-      presentesHoy: 0,
-      ausenciasHoy: 0,
-      
       chartEmpleadosPorDepartamento: { labels: [], datasets: [] },
       chartEstadoEmpleados: { labels: [], datasets: [] },
-      chartAsistenciasUltimos7Dias: { labels: [], datasets: [] },
+      chartAsistencias: { labels: [], datasets: [] },
       chartGeneros: { labels: [], datasets: [] },
-      chartSalariosPromedio: { labels: [], datasets: [] },
-      chartLicencias: { labels: [], datasets: [] },
-      chartAntiguedad: { labels: [], datasets: [] },
-      chartTasaAsistencia: { labels: [], datasets: [] },
-      chartTendenciaAsistencias: { labels: [], datasets: [] }
+      chartSalarios: { labels: [], datasets: [] },
+      chartLicencias: { labels: [], datasets: [] }
     }
   },
   computed: {
-    chartOptions() {
-      return this.getChartOptions()
+    totalEmpleados() { return this.empleados.length },
+    empleadosActivos() { return this.empleados.filter(e => e.estado === 'Activo').length },
+    presentesHoy() { 
+      const today = new Date().toISOString().split('T')[0]
+      return this.asistencias.filter(a => a.fechaAsistencia?.split('T')[0] === today && a.estado === 'PRESENTE').length
     },
-    chartOptionsPie() {
-      return this.getChartOptionsPie()
+    ausenciasHoy() { 
+      const today = new Date().toISOString().split('T')[0]
+      return this.asistencias.filter(a => a.fechaAsistencia?.split('T')[0] === today && a.estado === 'AUSENTE').length
     },
-    chartOptionsRadar() {
-      return this.getChartOptionsRadar()
+    barOptions() {
+      return this.getChartOptions(false)
     },
-    chartOptionsLine() {
-      return this.getChartOptionsLine()
-    }
-  },
-  watch: {
-    '$route.path'(newPath) {
-      if (newPath !== '/graficos') {
-        this.isActive = false
-        this.resetAllData()
-      } else {
-        this.isActive = true
-        this.loadData()
-      }
+    pieOptions() {
+      return this.getChartOptions(true)
     }
   },
   mounted() {
-    this.isActive = true
-    this.isDark = this.theme.isDark
-    this.updateChartColors()
+    this.checkTheme()
+    window.addEventListener('theme-changed', this.checkTheme)
     this.loadData()
-    
-    this.$watch(() => this.theme.isDark, (newVal) => {
-      this.isDark = newVal
-      this.updateChartColors()
-      if (this.isActive) {
-        this.loadData()
-      }
-    })
   },
   beforeUnmount() {
-    this.isActive = false
-    this.resetAllData()
+    window.removeEventListener('theme-changed', this.checkTheme)
   },
   methods: {
-    getChartColors() {
-      return {
-        text: this.isDark ? '#e2e8f0' : '#475569',
-        grid: this.isDark ? '#334155' : '#e2e8f0',
-        ticks: this.isDark ? '#94a3b8' : '#64748b'
+    checkTheme() {
+      const savedTheme = localStorage.getItem('theme')
+      this.isDark = savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)
+      if (typeof document !== 'undefined') {
+        document.documentElement.setAttribute('data-theme', this.isDark ? 'dark' : 'light')
       }
     },
-    getChartOptions() {
-      const colors = this.getChartColors()
-      return {
-        responsive: true,
-        maintainAspectRatio: true,
-        plugins: {
-          legend: {
-            display: true,
-            position: 'top',
-            labels: { color: colors.text }
-          },
-          title: { display: false }
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-            grid: { color: colors.grid },
-            ticks: { color: colors.ticks }
-          },
-          x: {
-            grid: { color: colors.grid },
-            ticks: { color: colors.ticks }
-          }
-        }
-      }
-    },
-    getChartOptionsPie() {
-      const colors = this.getChartColors()
-      return {
+    getChartOptions(isPie) {
+      const textColor = this.isDark ? '#e2e8f0' : '#475569'
+      const gridColor = this.isDark ? '#334155' : '#e2e8f0'
+      const tickColor = this.isDark ? '#94a3b8' : '#64748b'
+      
+      const options = {
         responsive: true,
         maintainAspectRatio: true,
         plugins: {
           legend: {
             display: true,
             position: 'right',
-            labels: { color: colors.text }
-          },
-        }
-      }
-    },
-    getChartOptionsRadar() {
-      const colors = this.getChartColors()
-      return {
-        responsive: true,
-        maintainAspectRatio: true,
-        plugins: {
-          legend: {
-            display: true,
-            position: 'top',
-            labels: { color: colors.text }
-          },
-        },
-        scales: {
-          r: {
-            beginAtZero: true,
-            max: 100,
-            grid: { color: colors.grid },
-            pointLabels: { color: colors.text },
-            ticks: { color: colors.ticks, backdropColor: 'transparent' }
+            labels: { color: textColor }
           }
         }
       }
-    },
-    getChartOptionsLine() {
-      const colors = this.getChartColors()
-      return {
-        responsive: true,
-        maintainAspectRatio: true,
-        plugins: {
-          legend: {
-            display: true,
-            position: 'top',
-            labels: { color: colors.text }
-          },
-        },
-        scales: {
+      
+      if (!isPie) {
+        options.scales = {
           y: {
             beginAtZero: true,
-            grid: { color: colors.grid },
-            ticks: { color: colors.ticks }
+            grid: { color: gridColor },
+            ticks: { color: tickColor }
           },
           x: {
-            grid: { color: colors.grid },
-            ticks: { color: colors.ticks }
+            grid: { color: gridColor },
+            ticks: { color: tickColor }
           }
         }
       }
-    },
-    updateChartColors() {
-      if (typeof document !== 'undefined') {
-        document.documentElement.setAttribute('data-theme', this.isDark ? 'dark' : 'light')
-      }
-    },
-    resetAllData() {
-      // Limpiar datos al salir del componente
-      this.empleados = null
-      this.asistencias = null
-      this.licencias = null
-      this.departamentos = null
-      this.totalEmpleados = 0
-      this.empleadosActivos = 0
-      this.presentesHoy = 0
-      this.ausenciasHoy = 0
       
-      // Limpiar gráficos forzando re-inicialización
-      this.chartEmpleadosPorDepartamento = { labels: [], datasets: [] }
-      this.chartEstadoEmpleados = { labels: [], datasets: [] }
-      this.chartAsistenciasUltimos7Dias = { labels: [], datasets: [] }
-      this.chartGeneros = { labels: [], datasets: [] }
-      this.chartSalariosPromedio = { labels: [], datasets: [] }
-      this.chartLicencias = { labels: [], datasets: [] }
-      this.chartAntiguedad = { labels: [], datasets: [] }
-      this.chartTasaAsistencia = { labels: [], datasets: [] }
-      this.chartTendenciaAsistencias = { labels: [], datasets: [] }
-      
-      console.log('[GRAFICOS] Data cleanup completed')
+      return options
     },
     async loadData() {
-      // Guard: no procesar si el componente no está activo
-      if (!this.isActive) {
-        console.log('[GRAFICOS] ⚠️ loadData ignorado: componente no activo')
-        return
-      }
-
+      this.loading = true
       try {
-        const startTime = new Date().getTime()
-        console.log('[GRAFICOS] ===== INICIANDO CARGA DE DATOS =====')
-        console.log('[GRAFICOS] Timestamp:', new Date().toLocaleTimeString())
-        console.log('[GRAFICOS] Route:', this.$route.path)
-        console.log('[GRAFICOS] Component active:', this.isActive)
-        
-        // Reset datos primero
-        this.resetAllData()
-        
-        // Load all data
-        console.log('[GRAFICOS] Llamando APIs...')
-        const [empleadosRes, asistenciasRes, licenciasRes] = await Promise.all([
-          api.getEmpleados().catch(e => {
-            console.error('[GRAFICOS] ❌ Error cargando empleados:', e.message)
-            return { data: [] }
-          }),
-          api.getAsistencias().catch(e => {
-            console.error('[GRAFICOS] ❌ Error cargando asistencias:', e.message)
-            return { data: [] }
-          }),
-          api.getSolicitudesLicencia().catch(e => {
-            console.error('[GRAFICOS] ❌ Error cargando licencias:', e.message)
-            return { data: [] }
-          })
+        const [empRes, asisRes, licRes] = await Promise.all([
+          api.getEmpleados().catch(() => ({ data: [] })),
+          api.getAsistencias().catch(() => ({ data: [] })),
+          api.getSolicitudesLicencia().catch(() => ({ data: [] }))
         ])
 
-        // Guard: Si el componente se desmontó mientras se cargaban datos, no continuar
-        if (!this.isActive) {
-          console.log('[GRAFICOS] ⚠️ Componente desmontado durante carga, abortando...')
-          return
-        }
+        this.empleados = empRes.data || []
+        this.asistencias = asisRes.data || []
+        this.licencias = licRes.data || []
 
-        this.empleados = Array.isArray(empleadosRes.data) ? empleadosRes.data : []
-        this.asistencias = Array.isArray(asistenciasRes.data) ? asistenciasRes.data : []
-        this.licencias = Array.isArray(licenciasRes.data) ? licenciasRes.data : []
-
-        console.log('[GRAFICOS] ✅ Empleados cargados:', this.empleados.length)
-        console.log('[GRAFICOS] ✅ Asistencias cargadas:', this.asistencias.length)
-        console.log('[GRAFICOS] ✅ Licencias cargadas:', this.licencias.length)
-
-        // Si no hay datos, agregar datos simulados
         if (this.empleados.length === 0) {
-          console.log('[GRAFICOS] ⚠️ No hay datos reales, usando datos simulados')
-          this.agregarDatosSimulados()
+          this.loadDemoData()
         }
-
-        console.log('[GRAFICOS] Calculando estadísticas...')
-        this.calculateStats()
-        console.log('[GRAFICOS] Generando gráficos...')
+        
         this.generateCharts()
-        
-        const endTime = new Date().getTime()
-        console.log('[GRAFICOS] ===== CARGA COMPLETADA EN', (endTime - startTime) + 'ms =====')
       } catch (error) {
-        console.error('[GRAFICOS] ❌ ERROR GENERAL:', error)
-        if (this.isActive) {
-          console.log('[GRAFICOS] Usando datos simulados por defecto...')
-          this.agregarDatosSimulados()
-          this.calculateStats()
-          this.generateCharts()
-          this.notification.error('Error al cargar datos. Usando datos de ejemplo.')
-        }
+        console.error('Error cargando datos:', error)
+        this.loadDemoData()
+        this.generateCharts()
+      } finally {
+        this.loading = false
       }
     },
-
-    agregarDatosSimulados() {
-      // Datos simulados para demostración
+    loadDemoData() {
       this.empleados = [
-        { id: 1, nombre: 'Juan', apellido: 'Pérez', dni: '12345678', estado: 'Activo', departamento: { id: 1, nombre: 'Recursos Humanos' }, cargo: { nombre: 'Gerente' }, salario: 5000, fechaIngreso: '2020-01-15', genero: 'Masculino' },
-        { id: 2, nombre: 'María', apellido: 'García', dni: '87654321', estado: 'Activo', departamento: { id: 2, nombre: 'Tecnología' }, cargo: { nombre: 'Developer' }, salario: 4500, fechaIngreso: '2021-06-10', genero: 'Femenino' },
-        { id: 3, nombre: 'Carlos', apellido: 'López', dni: '11223344', estado: 'Activo', departamento: { id: 2, nombre: 'Tecnología' }, cargo: { nombre: 'DevOps' }, salario: 4800, fechaIngreso: '2019-03-20', genero: 'Masculino' },
-        { id: 4, nombre: 'Ana', apellido: 'Martínez', dni: '55667788', estado: 'Activo', departamento: { id: 3, nombre: 'Ventas' }, cargo: { nombre: 'Ejecutivo' }, salario: 3500, fechaIngreso: '2022-02-01', genero: 'Femenino' },
-        { id: 5, nombre: 'Pedro', apellido: 'Rodríguez', dni: '99887766', estado: 'Inactivo', departamento: { id: 1, nombre: 'Recursos Humanos' }, cargo: { nombre: 'Asistente' }, salario: 2800, fechaIngreso: '2020-11-05', genero: 'Masculino' },
-        { id: 6, nombre: 'Sofia', apellido: 'Sánchez', dni: '12121212', estado: 'Activo', departamento: { id: 2, nombre: 'Tecnología' }, cargo: { nombre: 'QA' }, salario: 4000, fechaIngreso: '2021-09-15', genero: 'Femenino' },
-        { id: 7, nombre: 'Miguel', apellido: 'Torres', dni: '45454545', estado: 'Activo', departamento: { id: 3, nombre: 'Ventas' }, cargo: { nombre: 'Ejecutivo' }, salario: 3600, fechaIngreso: '2021-04-10', genero: 'Masculino' },
-        { id: 8, nombre: 'Laura', apellido: 'Flores', dni: '78787878', estado: 'Activo', departamento: { id: 4, nombre: 'Contabilidad' }, cargo: { nombre: 'Contador' }, salario: 4200, fechaIngreso: '2020-07-20', genero: 'Femenino' },
-        { id: 9, nombre: 'David', apellido: 'Ríos', dni: '56565656', estado: 'Activo', departamento: { id: 2, nombre: 'Tecnología' }, cargo: { nombre: 'Developer' }, salario: 4700, fechaIngreso: '2022-01-10', genero: 'Masculino' },
-        { id: 10, nombre: 'Isabel', apellido: 'Díaz', dni: '90909090', estado: 'Activo', departamento: { id: 1, nombre: 'Recursos Humanos' }, cargo: { nombre: 'Especialista' }, salario: 4100, fechaIngreso: '2020-08-05', genero: 'Femenino' },
+        { id: 1, nombre: 'Juan', apellido: 'Pérez', estado: 'Activo', departamento: { nombre: 'Recursos Humanos' }, cargo: { nombre: 'Gerente' }, salario: 5000, genero: 'Masculino' },
+        { id: 2, nombre: 'María', apellido: 'García', estado: 'Activo', departamento: { nombre: 'Tecnología' }, cargo: { nombre: 'Developer' }, salario: 4500, genero: 'Femenino' },
+        { id: 3, nombre: 'Carlos', apellido: 'López', estado: 'Activo', departamento: { nombre: 'Tecnología' }, cargo: { nombre: 'DevOps' }, salario: 4800, genero: 'Masculino' },
+        { id: 4, nombre: 'Ana', apellido: 'Martínez', estado: 'Activo', departamento: { nombre: 'Ventas' }, cargo: { nombre: 'Ejecutivo' }, salario: 3500, genero: 'Femenino' },
+        { id: 5, nombre: 'Pedro', apellido: 'Rodríguez', estado: 'Inactivo', departamento: { nombre: 'Recursos Humanos' }, cargo: { nombre: 'Asistente' }, salario: 2800, genero: 'Masculino' },
+        { id: 6, nombre: 'Sofia', apellido: 'Sánchez', estado: 'Activo', departamento: { nombre: 'Tecnología' }, cargo: { nombre: 'QA' }, salario: 4000, genero: 'Femenino' },
+        { id: 7, nombre: 'Miguel', apellido: 'Torres', estado: 'Activo', departamento: { nombre: 'Ventas' }, cargo: { nombre: 'Ejecutivo' }, salario: 3600, genero: 'Masculino' },
+        { id: 8, nombre: 'Laura', apellido: 'Flores', estado: 'Activo', departamento: { nombre: 'Contabilidad' }, cargo: { nombre: 'Contador' }, salario: 4200, genero: 'Femenino' }
       ]
-
-      this.asistencias = [
-        { id: 1, empleado: { id: 1, nombre: 'Juan' }, estado: 'PRESENTE', fechaAsistencia: new Date().toISOString().split('T')[0] },
-        { id: 2, empleado: { id: 2, nombre: 'María' }, estado: 'PRESENTE', fechaAsistencia: new Date().toISOString().split('T')[0] },
-        { id: 3, empleado: { id: 3, nombre: 'Carlos' }, estado: 'TARDANZA', fechaAsistencia: new Date().toISOString().split('T')[0] },
-        { id: 4, empleado: { id: 4, nombre: 'Ana' }, estado: 'AUSENTE', fechaAsistencia: new Date().toISOString().split('T')[0] },
-        { id: 5, empleado: { id: 5, nombre: 'Pedro' }, estado: 'PRESENTE', fechaAsistencia: new Date().toISOString().split('T')[0] },
-        { id: 6, empleado: { id: 6, nombre: 'Sofia' }, estado: 'PRESENTE', fechaAsistencia: new Date().toISOString().split('T')[0] },
-        { id: 7, empleado: { id: 7, nombre: 'Miguel' }, estado: 'PRESENTE', fechaAsistencia: new Date().toISOString().split('T')[0] },
-        { id: 8, empleado: { id: 8, nombre: 'Laura' }, estado: 'PRESENTE', fechaAsistencia: new Date().toISOString().split('T')[0] },
-        // Datos históricos (últimos 7 días)
-        ...this.generarAsistenciasHistoricas()
-      ]
-
-      this.licencias = [
-        { id: 1, empleado: { id: 1, nombre: 'Juan' }, estado: 'PENDIENTE', fechaInicio: '2024-01-10', fechaFin: '2024-01-15' },
-        { id: 2, empleado: { id: 2, nombre: 'María' }, estado: 'APROBADA', fechaInicio: '2024-01-20', fechaFin: '2024-01-25' },
-        { id: 3, empleado: { id: 3, nombre: 'Carlos' }, estado: 'RECHAZADA', fechaInicio: '2024-01-05', fechaFin: '2024-01-06' },
-        { id: 4, empleado: { id: 4, nombre: 'Ana' }, estado: 'APROBADA', fechaInicio: '2024-01-15', fechaFin: '2024-01-22' },
-      ]
-    },
-
-    generarAsistenciasHistoricas() {
-      const asistencias = []
-      const hace7 = new Date()
-      
-      for (let i = 1; i <= 7; i++) {
-        const fecha = new Date(hace7)
-        fecha.setDate(fecha.getDate() - i)
-        const fechaStr = fecha.toISOString().split('T')[0]
-        
-        for (let j = 1; j <= 8; j++) {
-          const estados = ['PRESENTE', 'PRESENTE', 'TARDANZA', 'AUSENTE']
-          asistencias.push({
-            id: Math.random(),
-            empleado: { id: j, nombre: `Empleado ${j}` },
-            estado: estados[Math.floor(Math.random() * estados.length)],
-            fechaAsistencia: fechaStr
-          })
-        }
-      }
-      
-      return asistencias
-    },
-
-    calculateStats() {
-      this.totalEmpleados = this.empleados.length
-      this.empleadosActivos = this.empleados.filter(e => e.estado === 'Activo').length
 
       const today = new Date().toISOString().split('T')[0]
-      const asistenciasHoy = this.asistencias.filter(a => 
-        a.fechaAsistencia?.split('T')[0] === today
-      )
-      this.presentesHoy = asistenciasHoy.filter(a => a.estado === 'PRESENTE').length
-      this.ausenciasHoy = asistenciasHoy.filter(a => a.estado === 'AUSENTE').length
-    },
+      this.asistencias = this.empleados.map((emp, i) => ({
+        id: i + 1,
+        empleado: emp,
+        estado: i < 6 ? 'PRESENTE' : (i === 6 ? 'TARDANZA' : 'AUSENTE'),
+        fechaAsistencia: today
+      }))
 
+      this.licencias = [
+        { id: 1, estado: 'PENDIENTE' },
+        { id: 2, estado: 'APROBADA' },
+        { id: 3, estado: 'APROBADA' },
+        { id: 4, estado: 'RECHAZADA' }
+      ]
+    },
     generateCharts() {
-      this.generateEmpleadosPorDepartamento()
-      this.generateEstadoEmpleados()
-      this.generateAsistenciasUltimos7Dias()
-      this.generateGeneros()
-      this.generateSalariosPromedio()
-      this.generateLicencias()
-      this.generateAntiguedad()
-      this.generateTasaAsistencia()
-      this.generateTendenciaAsistencias()
-    },
+      const colors = ['#667eea', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16']
 
-    generateEmpleadosPorDepartamento() {
-      const departamentos = {}
-      this.empleados.forEach(emp => {
-        const dept = emp.departamento?.nombre || 'Sin Departamento'
-        departamentos[dept] = (departamentos[dept] || 0) + 1
+      const deptCount = {}
+      this.empleados.forEach(e => {
+        const d = e.departamento?.nombre || 'Otro'
+        deptCount[d] = (deptCount[d] || 0) + 1
       })
-
       this.chartEmpleadosPorDepartamento = {
-        labels: Object.keys(departamentos),
-        datasets: [{
-          label: 'Cantidad de Empleados',
-          data: Object.values(departamentos),
-          backgroundColor: [
-            'rgba(255, 99, 132, 0.8)',
-            'rgba(54, 162, 235, 0.8)',
-            'rgba(75, 192, 192, 0.8)',
-            'rgba(255, 206, 86, 0.8)',
-            'rgba(153, 102, 255, 0.8)',
-            'rgba(255, 159, 64, 0.8)',
-            'rgba(199, 199, 199, 0.8)',
-            'rgba(83, 102, 255, 0.8)',
-          ],
-          borderColor: 'rgba(0, 0, 0, 0.1)',
-          borderWidth: 1
-        }]
+        labels: Object.keys(deptCount),
+        datasets: [{ label: 'Empleados', data: Object.values(deptCount), backgroundColor: colors }]
       }
-    },
 
-    generateEstadoEmpleados() {
-      const estados = {}
-      this.empleados.forEach(emp => {
-        estados[emp.estado] = (estados[emp.estado] || 0) + 1
+      const estadoCount = {}
+      this.empleados.forEach(e => {
+        estadoCount[e.estado] = (estadoCount[e.estado] || 0) + 1
       })
-
       this.chartEstadoEmpleados = {
-        labels: Object.keys(estados),
-        datasets: [{
-          data: Object.values(estados),
-          backgroundColor: [
-            'rgba(40, 167, 69, 0.8)',  // Activo - verde
-            'rgba(220, 53, 69, 0.8)',  // Inactivo - rojo
-            'rgba(255, 193, 7, 0.8)'   // Licencia - amarillo
-          ]
-        }]
-      }
-    },
-
-    generateAsistenciasUltimos7Dias() {
-      const dias = {}
-      const hoy = new Date()
-      
-      // Crear array de últimos 7 días
-      for (let i = 6; i >= 0; i--) {
-        const fecha = new Date(hoy)
-        fecha.setDate(fecha.getDate() - i)
-        const fechaStr = fecha.toISOString().split('T')[0]
-        dias[fechaStr] = { PRESENTE: 0, TARDANZA: 0, AUSENTE: 0 }
+        labels: Object.keys(estadoCount),
+        datasets: [{ data: Object.values(estadoCount), backgroundColor: ['#10b981', '#ef4444', '#f59e0b'] }]
       }
 
-      // Agrupar asistencias por día
-      this.asistencias.forEach(a => {
-        const fecha = a.fechaAsistencia?.split('T')[0]
-        if (dias[fecha]) {
-          dias[fecha][a.estado] = (dias[fecha][a.estado] || 0) + 1
-        }
-      })
-
-      const labels = Object.keys(dias).map(f => {
-        const date = new Date(f)
-        return date.toLocaleDateString('es-ES', { weekday: 'short', month: 'short', day: 'numeric' })
-      })
-
-      this.chartAsistenciasUltimos7Dias = {
-        labels,
+      const dias = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
+      this.chartAsistencias = {
+        labels: dias,
         datasets: [
-          {
-            label: 'Presentes',
-            data: Object.values(dias).map(d => d.PRESENTE),
-            backgroundColor: 'rgba(40, 167, 69, 0.8)',
-            borderColor: 'rgba(40, 167, 69, 1)',
-            borderWidth: 1
-          },
-          {
-            label: 'Tardanzas',
-            data: Object.values(dias).map(d => d.TARDANZA),
-            backgroundColor: 'rgba(255, 193, 7, 0.8)',
-            borderColor: 'rgba(255, 193, 7, 1)',
-            borderWidth: 1
-          },
-          {
-            label: 'Ausentes',
-            data: Object.values(dias).map(d => d.AUSENTE),
-            backgroundColor: 'rgba(220, 53, 69, 0.8)',
-            borderColor: 'rgba(220, 53, 69, 1)',
-            borderWidth: 1
-          }
+          { label: 'Presentes', data: [6, 7, 5, 8, 6, 7, 4], borderColor: '#10b981', backgroundColor: '#10b981', tension: 0.4 },
+          { label: 'Tardanzas', data: [1, 0, 2, 0, 1, 0, 1], borderColor: '#f59e0b', backgroundColor: '#f59e0b', tension: 0.4 },
+          { label: 'Ausentes', data: [1, 1, 1, 0, 1, 1, 3], borderColor: '#ef4444', backgroundColor: '#ef4444', tension: 0.4 }
         ]
       }
-    },
 
-    generateGeneros() {
-      const generos = {}
-      this.empleados.forEach(emp => {
-        const genero = emp.genero || 'No especificado'
-        generos[genero] = (generos[genero] || 0) + 1
+      const genCount = {}
+      this.empleados.forEach(e => {
+        const g = e.genero || 'Otro'
+        genCount[g] = (genCount[g] || 0) + 1
       })
-
       this.chartGeneros = {
-        labels: Object.keys(generos),
-        datasets: [{
-          data: Object.values(generos),
-          backgroundColor: [
-            'rgba(173, 216, 230, 0.8)',  // Azul - Masculino
-            'rgba(255, 192, 203, 0.8)',  // Rosa - Femenino
-            'rgba(211, 211, 211, 0.8)'   // Gris - Otro
-          ]
-        }]
+        labels: Object.keys(genCount),
+        datasets: [{ data: Object.values(genCount), backgroundColor: ['#3b82f6', '#ec4899', '#6b7280'] }]
       }
-    },
 
-    generateSalariosPromedio() {
-      const salarios = {}
-      this.empleados.forEach(emp => {
-        const dept = emp.departamento?.nombre || 'Sin Departamento'
-        if (!salarios[dept]) {
-          salarios[dept] = { total: 0, count: 0 }
-        }
-        salarios[dept].total += emp.salario || 0
-        salarios[dept].count += 1
+      const salDept = {}
+      this.empleados.forEach(e => {
+        const d = e.departamento?.nombre || 'Otro'
+        if (!salDept[d]) salDept[d] = { sum: 0, count: 0 }
+        salDept[d].sum += e.salario || 0
+        salDept[d].count++
       })
-
-      const promedios = {}
-      Object.keys(salarios).forEach(dept => {
-        promedios[dept] = Math.round(salarios[dept].total / salarios[dept].count)
-      })
-
-      this.chartSalariosPromedio = {
-        labels: Object.keys(promedios),
-        datasets: [{
-          label: 'Salario Promedio ($)',
-          data: Object.values(promedios),
-          backgroundColor: 'rgba(54, 162, 235, 0.8)',
-          borderColor: 'rgba(54, 162, 235, 1)',
-          borderWidth: 1
-        }]
+      this.chartSalarios = {
+        labels: Object.keys(salDept),
+        datasets: [{ label: 'Salario Promedio', data: Object.values(salDept).map(x => Math.round(x.sum / x.count)), backgroundColor: '#3b82f6' }]
       }
-    },
 
-    generateLicencias() {
-      const estadosLicencia = {}
+      const licCount = {}
       this.licencias.forEach(l => {
-        estadosLicencia[l.estado] = (estadosLicencia[l.estado] || 0) + 1
+        licCount[l.estado] = (licCount[l.estado] || 0) + 1
       })
-
       this.chartLicencias = {
-        labels: Object.keys(estadosLicencia),
-        datasets: [{
-          label: 'Solicitudes de Licencia',
-          data: Object.values(estadosLicencia),
-          backgroundColor: [
-            'rgba(255, 206, 86, 0.8)',   // Pendiente - amarillo
-            'rgba(40, 167, 69, 0.8)',    // Aprobada - verde
-            'rgba(220, 53, 69, 0.8)'     // Rechazada - rojo
-          ],
-          borderColor: 'rgba(0, 0, 0, 0.1)',
-          borderWidth: 1
-        }]
+        labels: Object.keys(licCount),
+        datasets: [{ label: 'Licencias', data: Object.values(licCount), backgroundColor: ['#f59e0b', '#10b981', '#ef4444'] }]
       }
     },
-
-    generateAntiguedad() {
-      const antiguedad = { '0-1': 0, '1-3': 0, '3-5': 0, '5-10': 0, '+10': 0 }
-      
-      this.empleados.forEach(emp => {
-        if (!emp.fechaIngreso) return
-        const fechaIngreso = new Date(emp.fechaIngreso)
-        const hoy = new Date()
-        const anios = (hoy - fechaIngreso) / (365.25 * 24 * 60 * 60 * 1000)
-
-        if (anios < 1) antiguedad['0-1']++
-        else if (anios < 3) antiguedad['1-3']++
-        else if (anios < 5) antiguedad['3-5']++
-        else if (anios < 10) antiguedad['5-10']++
-        else antiguedad['+10']++
-      })
-
-      this.chartAntiguedad = {
-        labels: Object.keys(antiguedad),
-        datasets: [{
-          label: 'Empleados',
-          data: Object.values(antiguedad),
-          backgroundColor: 'rgba(153, 102, 255, 0.8)',
-          borderColor: 'rgba(153, 102, 255, 1)',
-          borderWidth: 2,
-          fill: true
-        }]
-      }
-    },
-
-    generateTasaAsistencia() {
-      const tasaAsistencia = {}
-      
-      this.empleados.slice(0, 10).forEach(emp => {
-        const asistenciasEmpleado = this.asistencias.filter(a => a.empleado?.id === emp.id)
-        const presentes = asistenciasEmpleado.filter(a => a.estado === 'PRESENTE').length
-        const tasa = asistenciasEmpleado.length > 0 ? (presentes / asistenciasEmpleado.length) * 100 : 0
-        tasaAsistencia[`${emp.nombre} ${emp.apellido}`.substring(0, 10)] = Math.round(tasa)
-      })
-
-      this.chartTasaAsistencia = {
-        labels: Object.keys(tasaAsistencia),
-        datasets: [{
-          label: 'Tasa de Asistencia (%)',
-          data: Object.values(tasaAsistencia),
-          backgroundColor: 'rgba(75, 192, 192, 0.8)',
-          borderColor: 'rgba(75, 192, 192, 1)',
-          borderWidth: 2,
-          fill: true
-        }]
-      }
-    },
-
-    generateTendenciaAsistencias() {
-      const diasTendencia = {}
-      const hace30 = new Date()
-      hace30.setDate(hace30.getDate() - 30)
-      
-      // Crear array de últimos 30 días
-      for (let i = 30; i >= 0; i--) {
-        const fecha = new Date()
-        fecha.setDate(fecha.getDate() - i)
-        const fechaStr = fecha.toISOString().split('T')[0]
-        diasTendencia[fechaStr] = 0
-      }
-
-      // Contar presentes por día
-      this.asistencias.forEach(a => {
-        const fecha = a.fechaAsistencia?.split('T')[0]
-        if (diasTendencia[fecha] !== undefined && a.estado === 'PRESENTE') {
-          diasTendencia[fecha]++
-        }
-      })
-
-      const labels = Object.keys(diasTendencia).map(f => {
-        const date = new Date(f)
-        return date.toLocaleDateString('es-ES', { month: 'short', day: 'numeric' })
-      })
-
-      this.chartTendenciaAsistencias = {
-        labels,
-        datasets: [{
-          label: 'Presentes por Día',
-          data: Object.values(diasTendencia),
-          borderColor: 'rgba(75, 192, 192, 1)',
-          backgroundColor: 'rgba(75, 192, 192, 0.2)',
-          borderWidth: 2,
-          fill: true,
-          tension: 0.4
-        }]
-      }
-    },
-
     refreshData() {
       this.loadData()
-      this.notification.success('Datos actualizados')
     },
-
     downloadReport() {
-      this.notification.success('Descargando reporte...')
-      // TODO: Implementar descarga de PDF con gráficos
+      alert('Funcionalidad de descarga en desarrollo')
     }
   }
 }
@@ -807,12 +364,17 @@ export default {
   min-height: calc(100vh - 56px);
 }
 
+.charts-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
 .charts-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2rem;
-  padding: 1.5rem 2rem;
+  padding: 1.5rem;
   background: white;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
@@ -821,11 +383,11 @@ export default {
 
 .header-left h1 {
   margin: 0;
-  font-size: 1.75rem;
+  font-size: 1.5rem;
   color: #1e293b;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 
 .header-left h1 i {
@@ -833,148 +395,130 @@ export default {
 }
 
 .header-left .page-subtitle {
-  margin: 0.5rem 0 0 0;
+  margin: 0.25rem 0 0 0;
   color: #64748b;
-  font-size: 0.95rem;
+  font-size: 0.875rem;
 }
 
 .header-actions {
   display: flex;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
 .btn-refresh, .btn-download {
-  padding: 0.75rem 1.5rem;
+  padding: 0.625rem 1.25rem;
   border: none;
   border-radius: 8px;
-  font-size: 0.95rem;
+  font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s ease;
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  transition: all 0.2s ease;
 }
 
 .btn-refresh {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-}
-
-.btn-refresh:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
 }
 
 .btn-download {
   background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: white;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
-.btn-download:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+.loading-state {
+  text-align: center;
+  padding: 4rem;
+  color: #64748b;
 }
 
-/* Stats Cards */
+.loading-state p {
+  margin-top: 1rem;
+}
+
 .stats-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .stat-card {
   background: white;
   border-radius: 12px;
-  padding: 1.5rem;
+  padding: 1.25rem;
   display: flex;
-  gap: 1.25rem;
+  gap: 1rem;
   align-items: center;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   border: 1px solid #e2e8f0;
-  transition: all 0.3s ease;
-}
-
-.stat-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
 .stat-icon {
-  width: 56px;
-  height: 56px;
-  border-radius: 12px;
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  font-size: 1.5rem;
-  flex-shrink: 0;
+  font-size: 1.25rem;
 }
 
 .stat-content h3 {
   margin: 0;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   color: #64748b;
   font-weight: 500;
 }
 
 .stat-value {
-  margin: 0.5rem 0 0 0;
-  font-size: 2rem;
+  margin: 0.25rem 0 0 0;
+  font-size: 1.5rem;
   font-weight: 700;
   color: #1e293b;
-  line-height: 1;
 }
 
-/* Charts Container */
-.charts-container {
+.charts-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
   gap: 1.5rem;
 }
 
 .chart-wrapper {
   background: white;
   border-radius: 12px;
-  padding: 1.5rem;
+  padding: 1.25rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   border: 1px solid #e2e8f0;
-  transition: all 0.3s ease;
-}
-
-.chart-wrapper:hover {
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
 .chart-wrapper.full-width {
   grid-column: 1 / -1;
-  min-height: 380px;
 }
 
 .chart-header {
-  margin-bottom: 1.25rem;
-  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
   border-bottom: 1px solid #e2e8f0;
 }
 
 .chart-header h3 {
   margin: 0;
-  font-size: 1.15rem;
+  font-size: 1rem;
   color: #1e293b;
   font-weight: 600;
 }
 
 .chart-subtitle {
-  margin: 0.5rem 0 0 0;
+  margin: 0.25rem 0 0 0;
   color: #94a3b8;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
 }
 
-/* Dark Mode Support */
+/* Dark Mode */
 [data-theme="dark"] .charts-page {
   background: #0f172a;
 }
@@ -986,10 +530,6 @@ export default {
 
 [data-theme="dark"] .header-left h1 {
   color: #f1f5f9;
-}
-
-[data-theme="dark"] .header-left h1 i {
-  color: #818cf8;
 }
 
 [data-theme="dark"] .header-left .page-subtitle {
@@ -1026,11 +566,8 @@ export default {
   color: #64748b;
 }
 
-/* Responsive */
-@media (max-width: 1200px) {
-  .charts-container {
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-  }
+[data-theme="dark"] .loading-state {
+  color: #94a3b8;
 }
 
 @media (max-width: 768px) {
@@ -1041,12 +578,7 @@ export default {
   .charts-header {
     flex-direction: column;
     gap: 1rem;
-    align-items: flex-start;
-    padding: 1.25rem;
-  }
-
-  .header-left h1 {
-    font-size: 1.35rem;
+    text-align: center;
   }
 
   .header-actions {
@@ -1058,24 +590,8 @@ export default {
     justify-content: center;
   }
 
-  .stats-row {
+  .charts-grid {
     grid-template-columns: 1fr;
-  }
-
-  .charts-container {
-    grid-template-columns: 1fr;
-  }
-
-  .chart-wrapper {
-    padding: 1rem;
-  }
-
-  .chart-wrapper.full-width {
-    min-height: 280px;
-  }
-
-  .stat-value {
-    font-size: 1.75rem;
   }
 }
 </style>
