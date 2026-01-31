@@ -149,6 +149,7 @@ import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement
 import { Bar, Line, Doughnut, Pie, Radar } from 'vue-chartjs'
 import api from '../services/api'
 import { useNotification } from '../services/notification.service'
+import { useTheme } from '../services/theme.service'
 
 ChartJS.register(
   CategoryScale,
@@ -176,19 +177,19 @@ export default {
   data() {
     return {
       notification: useNotification(),
-      isActive: false, // Guard para evitar actualizaciones cuando no está visible
+      theme: useTheme(),
+      isActive: false,
+      isDark: false,
       empleados: [],
-      asistencias: [],
+      asistentecias: [],
       licencias: [],
       departamentos: [],
       
-      // Computed stats
       totalEmpleados: 0,
       empleadosActivos: 0,
       presentesHoy: 0,
       ausenciasHoy: 0,
       
-      // Charts data
       chartEmpleadosPorDepartamento: { labels: [], datasets: [] },
       chartEstadoEmpleados: { labels: [], datasets: [] },
       chartAsistenciasUltimos7Dias: { labels: [], datasets: [] },
@@ -197,98 +198,153 @@ export default {
       chartLicencias: { labels: [], datasets: [] },
       chartAntiguedad: { labels: [], datasets: [] },
       chartTasaAsistencia: { labels: [], datasets: [] },
-      chartTendenciaAsistencias: { labels: [], datasets: [] },
-      
-      // Chart options
-      chartOptions: {
+      chartTendenciaAsistencias: { labels: [], datasets: [] }
+    }
+  },
+  computed: {
+    chartOptions() {
+      return this.getChartOptions()
+    },
+    chartOptionsPie() {
+      return this.getChartOptionsPie()
+    },
+    chartOptionsRadar() {
+      return this.getChartOptionsRadar()
+    },
+    chartOptionsLine() {
+      return this.getChartOptionsLine()
+    }
+  },
+  watch: {
+    '$route.path'(newPath) {
+      if (newPath !== '/graficos') {
+        this.isActive = false
+        this.resetAllData()
+      } else {
+        this.isActive = true
+        this.loadData()
+      }
+    }
+  },
+  mounted() {
+    this.isActive = true
+    this.isDark = this.theme.isDark
+    this.updateChartColors()
+    this.loadData()
+    
+    this.$watch(() => this.theme.isDark, (newVal) => {
+      this.isDark = newVal
+      this.updateChartColors()
+      if (this.isActive) {
+        this.loadData()
+      }
+    })
+  },
+  beforeUnmount() {
+    this.isActive = false
+    this.resetAllData()
+  },
+  methods: {
+    getChartColors() {
+      return {
+        text: this.isDark ? '#e2e8f0' : '#475569',
+        grid: this.isDark ? '#334155' : '#e2e8f0',
+        ticks: this.isDark ? '#94a3b8' : '#64748b'
+      }
+    },
+    getChartOptions() {
+      const colors = this.getChartColors()
+      return {
         responsive: true,
         maintainAspectRatio: true,
         plugins: {
           legend: {
             display: true,
             position: 'top',
+            labels: { color: colors.text }
           },
-          title: {
-            display: false
-          }
+          title: { display: false }
         },
         scales: {
           y: {
-            beginAtZero: true
+            beginAtZero: true,
+            grid: { color: colors.grid },
+            ticks: { color: colors.ticks }
+          },
+          x: {
+            grid: { color: colors.grid },
+            ticks: { color: colors.ticks }
           }
         }
-      },
-      chartOptionsPie: {
+      }
+    },
+    getChartOptionsPie() {
+      const colors = this.getChartColors()
+      return {
         responsive: true,
         maintainAspectRatio: true,
         plugins: {
           legend: {
             display: true,
             position: 'right',
+            labels: { color: colors.text }
           },
         }
-      },
-      chartOptionsRadar: {
+      }
+    },
+    getChartOptionsRadar() {
+      const colors = this.getChartColors()
+      return {
         responsive: true,
         maintainAspectRatio: true,
         plugins: {
           legend: {
             display: true,
             position: 'top',
+            labels: { color: colors.text }
           },
         },
         scales: {
           r: {
             beginAtZero: true,
-            max: 100
+            max: 100,
+            grid: { color: colors.grid },
+            pointLabels: { color: colors.text },
+            ticks: { color: colors.ticks, backdropColor: 'transparent' }
           }
         }
-      },
-      chartOptionsLine: {
+      }
+    },
+    getChartOptionsLine() {
+      const colors = this.getChartColors()
+      return {
         responsive: true,
         maintainAspectRatio: true,
         plugins: {
           legend: {
             display: true,
             position: 'top',
+            labels: { color: colors.text }
           },
         },
         scales: {
           y: {
-            beginAtZero: true
+            beginAtZero: true,
+            grid: { color: colors.grid },
+            ticks: { color: colors.ticks }
+          },
+          x: {
+            grid: { color: colors.grid },
+            ticks: { color: colors.ticks }
           }
         }
       }
-    }
-  },
-  watch: {
-    '$route.path'(newPath, oldPath) {
-      console.log('[GRAFICOS] Route changed from', oldPath, 'to', newPath)
-      if (newPath !== '/graficos') {
-        console.log('[GRAFICOS] 🚪 Saliendo de gráficos, desactivando componente')
-        this.isActive = false
-        this.resetAllData()
-      } else {
-        console.log('[GRAFICOS] 🔓 Entrando a gráficos, activando componente')
-        this.isActive = true
-        // Recargar datos cuando vuelve a entrar
-        this.loadData()
+    },
+    updateChartColors() {
+      if (typeof document !== 'undefined') {
+        document.documentElement.setAttribute('data-theme', this.isDark ? 'dark' : 'light')
       }
-    }
-  },
-  mounted() {
-    console.log('[GRAFICOS] Component mounted at', new Date().toLocaleTimeString())
-    console.log('[GRAFICOS] Current route:', this.$route.path)
-    this.isActive = true
-    this.loadData()
-  },
-  beforeUnmount() {
-    console.log('[GRAFICOS] 🔴 Component UNmounting at', new Date().toLocaleTimeString())
-    console.log('[GRAFICOS] Cleaning up all data...')
-    this.isActive = false
-    this.resetAllData()
-  },
-  methods: {
+    },
     resetAllData() {
       // Limpiar datos al salir del componente
       this.empleados = null
@@ -747,8 +803,8 @@ export default {
 <style scoped>
 .charts-page {
   padding: 2rem;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  min-height: 100vh;
+  background: #f1f5f9;
+  min-height: calc(100vh - 56px);
 }
 
 .charts-header {
@@ -759,21 +815,26 @@ export default {
   padding: 1.5rem 2rem;
   background: white;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e2e8f0;
 }
 
 .header-left h1 {
   margin: 0;
-  font-size: 2rem;
-  color: #333;
+  font-size: 1.75rem;
+  color: #1e293b;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.75rem;
+}
+
+.header-left h1 i {
+  color: #667eea;
 }
 
 .header-left .page-subtitle {
   margin: 0.5rem 0 0 0;
-  color: #666;
+  color: #64748b;
   font-size: 0.95rem;
 }
 
@@ -787,6 +848,7 @@ export default {
   border: none;
   border-radius: 8px;
   font-size: 0.95rem;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
@@ -795,31 +857,31 @@ export default {
 }
 
 .btn-refresh {
-  background: #17a2b8;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
 .btn-refresh:hover {
-  background: #138496;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(23, 162, 184, 0.3);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
 }
 
 .btn-download {
-  background: #28a745;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: white;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
 .btn-download:hover {
-  background: #218838;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
 }
 
 /* Stats Cards */
 .stats-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 1.5rem;
   margin-bottom: 2rem;
 }
@@ -829,82 +891,139 @@ export default {
   border-radius: 12px;
   padding: 1.5rem;
   display: flex;
-  gap: 1.5rem;
+  gap: 1.25rem;
   align-items: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e2e8f0;
   transition: all 0.3s ease;
 }
 
 .stat-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
 .stat-icon {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
   font-size: 1.5rem;
+  flex-shrink: 0;
 }
 
 .stat-content h3 {
   margin: 0;
-  font-size: 0.95rem;
-  color: #666;
+  font-size: 0.9rem;
+  color: #64748b;
   font-weight: 500;
 }
 
 .stat-value {
   margin: 0.5rem 0 0 0;
   font-size: 2rem;
-  font-weight: bold;
-  color: #333;
+  font-weight: 700;
+  color: #1e293b;
+  line-height: 1;
 }
 
 /* Charts Container */
 .charts-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+  gap: 1.5rem;
 }
 
 .chart-wrapper {
   background: white;
   border-radius: 12px;
-  padding: 2rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e2e8f0;
   transition: all 0.3s ease;
 }
 
 .chart-wrapper:hover {
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
 .chart-wrapper.full-width {
   grid-column: 1 / -1;
-  min-height: 400px;
+  min-height: 380px;
 }
 
 .chart-header {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
   padding-bottom: 1rem;
-  border-bottom: 2px solid #f0f0f0;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .chart-header h3 {
   margin: 0;
-  font-size: 1.3rem;
-  color: #333;
+  font-size: 1.15rem;
+  color: #1e293b;
+  font-weight: 600;
 }
 
 .chart-subtitle {
   margin: 0.5rem 0 0 0;
-  color: #999;
-  font-size: 0.9rem;
+  color: #94a3b8;
+  font-size: 0.85rem;
+}
+
+/* Dark Mode Support */
+[data-theme="dark"] .charts-page {
+  background: #0f172a;
+}
+
+[data-theme="dark"] .charts-header {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .header-left h1 {
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] .header-left h1 i {
+  color: #818cf8;
+}
+
+[data-theme="dark"] .header-left .page-subtitle {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .stat-card {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .stat-content h3 {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .stat-value {
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] .chart-wrapper {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .chart-header {
+  border-color: #334155;
+}
+
+[data-theme="dark"] .chart-header h3 {
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] .chart-subtitle {
+  color: #64748b;
 }
 
 /* Responsive */
@@ -923,10 +1042,11 @@ export default {
     flex-direction: column;
     gap: 1rem;
     align-items: flex-start;
+    padding: 1.25rem;
   }
 
   .header-left h1 {
-    font-size: 1.5rem;
+    font-size: 1.35rem;
   }
 
   .header-actions {
@@ -951,7 +1071,11 @@ export default {
   }
 
   .chart-wrapper.full-width {
-    min-height: 300px;
+    min-height: 280px;
+  }
+
+  .stat-value {
+    font-size: 1.75rem;
   }
 }
 </style>

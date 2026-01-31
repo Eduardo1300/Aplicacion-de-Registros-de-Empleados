@@ -302,3 +302,231 @@ code {
   color: #64748b;
 }
 
+/* Cards and containers dark mode */
+[data-theme="dark"] .card {
+  background-color: #1e293b;
+  color: #e2e8f0;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .card-header {
+  background-color: #1e293b;
+  border-color: #334155;
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] .card-body {
+  color: #e2e8f0;
+}
+
+/* Stats cards */
+[data-theme="dark"] .stat-card {
+  background-color: #1e293b;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .stat-card h3,
+[data-theme="dark"] .stat-card h4,
+[data-theme="dark"] .stat-card h5 {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .stat-card .stat-value {
+  color: #f1f5f9;
+}
+
+/* Filter bars and search inputs */
+[data-theme="dark"] .filter-bar,
+[data-theme="dark"] .search-bar {
+  background-color: #1e293b;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .filter-item label {
+  color: #94a3b8;
+}
+
+/* Table headers */
+[data-theme="dark"] .table thead th {
+  background-color: #1e293b;
+  color: #f1f5f9;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .empleados-table th,
+[data-theme="dark"] .asistencias-table th,
+[data-theme="dark"] .licencias-table th {
+  color: #f1f5f9 !important;
+}
+
+[data-theme="dark"] .empleados-table th i,
+[data-theme="dark"] .asistencias-table th i,
+[data-theme="dark"] .licencias-table th i {
+  color: #818cf8 !important;
+}
+
+/* Stat badges and chips */
+[data-theme="dark"] .stat-badge {
+  background-color: #1e293b;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .estado-chip {
+  color: #f1f5f9;
+}
+
+/* Buttons outline */
+[data-theme="dark"] .btn-outline-primary {
+  border-color: #667eea;
+  color: #a5b4fc;
+}
+
+[data-theme="dark"] .btn-outline-primary:hover {
+  background-color: #667eea;
+  border-color: #667eea;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .btn-outline-success {
+  border-color: #10b981;
+  color: #6ee7b7;
+}
+
+[data-theme="dark"] .btn-outline-success:hover {
+  background-color: #10b981;
+  border-color: #10b981;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .btn-outline-danger {
+  border-color: #ef4444;
+  color: #fca5a5;
+}
+
+[data-theme="dark"] .btn-outline-danger:hover {
+  background-color: #ef4444;
+  border-color: #ef4444;
+  color: #ffffff;
+}
+
+/* Empty states */
+[data-theme="dark"] .empty-state {
+  background-color: #1e293b;
+  border-color: #334155;
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] .empty-state h3 {
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] .empty-state p {
+  color: #94a3b8;
+}
+
+/* Export buttons */
+[data-theme="dark"] .export-btn {
+  background-color: #1e293b;
+  border-color: #475569;
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] .export-btn:hover:not(:disabled) {
+  background-color: #334155;
+  border-color: #64748b;
+}
+
+/* Modal body text */
+[data-theme="dark"] .modal-body p {
+  color: #cbd5e1;
+}
+
+[data-theme="dark"] .modal-body label {
+  color: #e2e8f0;
+}
+
+/* Info items in view modals */
+[data-theme="dark"] .info-label {
+  color: #64748b !important;
+}
+
+[data-theme="dark"] .info-value {
+  color: #f1f5f9 !important;
+}
+
+[data-theme="dark"] .section-title {
+  color: #94a3b8;
+}
+
+/* Toast notifications dark mode */
+[data-theme="dark"] .toast {
+  background-color: #1e293b;
+  color: #e2e8f0;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .toast-header {
+  background-color: #1e293b;
+  color: #f1f5f9;
+  border-color: #334155;
+}
+
+/* Progress bars */
+[data-theme="dark"] .progress {
+  background-color: #334155;
+}
+
+/* List groups */
+[data-theme="dark"] .list-group-item {
+  background-color: #1e293b;
+  border-color: #334155;
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] .list-group-item:hover {
+  background-color: #334155;
+}
+
+/* Tabs */
+[data-theme="dark"] .nav-tabs .nav-link {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .nav-tabs .nav-link:hover {
+  color: #e2e8f0;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .nav-tabs .nav-link.active {
+  background-color: #1e293b;
+  border-color: #334155 #334155 #1e293b;
+  color: #f1f5f9;
+}
+
+/* Close buttons in modals */
+[data-theme="dark"] .btn-close {
+  filter: invert(1);
+}
+
+/* Chart containers */
+[data-theme="dark"] .chart-wrapper {
+  background-color: #1e293b;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .chart-header {
+  border-color: #334155;
+}
+
+/* Input groups */
+[data-theme="dark"] .input-group-text {
+  background-color: #334155;
+  border-color: #475569;
+  color: #e2e8f0;
+}
+
+/* Custom select dropdown arrows */
+[data-theme="dark"] .select-wrapper select {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+}
+
