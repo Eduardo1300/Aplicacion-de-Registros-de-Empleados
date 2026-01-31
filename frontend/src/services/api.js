@@ -78,6 +78,23 @@ export default {
     return apiClient.delete(`/departamento/${id}`)
   },
 
+  // Cargo endpoints
+  getCargos() {
+    return apiClient.get('/cargo')
+  },
+  getCargo(id) {
+    return apiClient.get(`/cargo/${id}`)
+  },
+  createCargo(data) {
+    return apiClient.post('/cargo', data)
+  },
+  updateCargo(id, data) {
+    return apiClient.put(`/cargo/${id}`, data)
+  },
+  deleteCargo(id) {
+    return apiClient.delete(`/cargo/${id}`)
+  },
+
   // Licencia endpoints
   getSolicitudesLicencia() {
     return apiClient.get('/solicitud-licencia')

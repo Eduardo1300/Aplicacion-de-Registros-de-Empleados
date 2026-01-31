@@ -369,6 +369,91 @@
       confirmation-text="ELIMINAR"
       @confirmed="confirmDeleteWithDialog"
     />
+
+    <!-- View Employee Details Modal -->
+    <transition name="modal">
+      <div v-if="showViewModal" class="modal-overlay" @click.self="closeViewModal">
+        <div class="modal-content view-modal">
+          <div class="modal-header view-header">
+            <div class="view-avatar" :class="getAvatarClass(viewEmployee?.estado)">
+              <i class="bi bi-person-fill"></i>
+            </div>
+            <div class="view-title">
+              <h2>{{ viewEmployee?.nombre }} {{ viewEmployee?.apellido }}</h2>
+              <span class="view-subtitle">{{ viewEmployee?.cargo?.nombre || 'Sin cargo asignado' }}</span>
+            </div>
+            <button type="button" class="btn-close" @click="closeViewModal">
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+
+          <div class="modal-body view-body">
+            <div class="info-section">
+              <h4 class="section-title">
+                <i class="bi bi-card-text"></i> Información Personal
+              </h4>
+              <div class="info-grid">
+                <div class="info-item">
+                  <span class="info-label">DNI</span>
+                  <span class="info-value">{{ viewEmployee?.dni || '-' }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Correo</span>
+                  <span class="info-value">{{ viewEmployee?.correo || '-' }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Teléfono</span>
+                  <span class="info-value">{{ viewEmployee?.telefono || '-' }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Fecha de Ingreso</span>
+                  <span class="info-value">{{ formatDate(viewEmployee?.fechaIngreso) }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="info-section">
+              <h4 class="section-title">
+                <i class="bi bi-building"></i> Información Laboral
+              </h4>
+              <div class="info-grid">
+                <div class="info-item">
+                  <span class="info-label">Departamento</span>
+                  <span class="info-value">{{ viewEmployee?.departamento?.nombre || '-' }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Cargo</span>
+                  <span class="info-value">{{ viewEmployee?.cargo?.nombre || '-' }}</span>
+                </div>
+                <div class="info-item full-width">
+                  <span class="info-label">Estado</span>
+                  <span class="estado-chip" :class="getEstadoClass(viewEmployee?.estado)">
+                    <span class="chip-dot"></span>
+                    {{ viewEmployee?.estado || '-' }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div v-if="viewEmployee?.observaciones" class="info-section">
+              <h4 class="section-title">
+                <i class="bi bi-sticky"></i> Observaciones
+              </h4>
+              <p class="observaciones-text">{{ viewEmployee.observaciones }}</p>
+            </div>
+          </div>
+
+          <div class="modal-footer view-footer">
+            <button @click="editFromView" class="btn-edit-from-view">
+              <i class="bi bi-pencil"></i> Editar Empleado
+            </button>
+            <button @click="closeViewModal" class="btn-close-view">
+              <i class="bi bi-x-lg"></i> Cerrar
+            </button>
+          </div>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -393,8 +478,10 @@ export default {
       empleados: [],
       showModal: false,
       showDeleteConfirm: false,
+      showViewModal: false,
       deleteId: null,
       editingId: null,
+      viewEmployee: null,
       searchQuery: '',
       currentPage: 1,
       itemsPerPage: 10,
@@ -473,7 +560,26 @@ export default {
       this.showModal = true
     },
     viewEmpleado(empleado) {
-      this.notification.info(`Viendo detalles de ${empleado.nombre} ${empleado.apellido}`)
+      this.viewEmployee = empleado
+      this.showViewModal = true
+    },
+    closeViewModal() {
+      this.showViewModal = false
+      this.viewEmployee = null
+    },
+    editFromView() {
+      if (this.viewEmployee) {
+        this.editEmpleado(this.viewEmployee)
+        this.closeViewModal()
+      }
+    },
+    formatDate(date) {
+      if (!date) return '-'
+      return new Date(date).toLocaleDateString('es-ES', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric'
+      })
     },
     async saveEmpleado() {
       try {
@@ -559,36 +665,53 @@ export default {
         return
       }
 
-      const filtered = this.empleados.filter(emp => {
-        if (query.text) {
-          const text = query.text.toLowerCase()
-          const matches = `${emp.nombre} ${emp.apellido} ${emp.dni} ${emp.correo}`.toLowerCase().includes(text)
-          if (!matches) return false
-        }
+      this.searchQuery = query.text || ''
+      
+      let filtered = this.empleados
+      
+      if (query.text) {
+        const text = query.text.toLowerCase()
+        filtered = filtered.filter(emp => 
+          `${emp.nombre} ${emp.apellido} ${emp.dni} ${emp.correo || ''}`.toLowerCase().includes(text)
+        )
+      }
 
-        for (const filter of query.filters) {
-          const fieldValue = String(emp[filter.field?.toLowerCase()] || '').toLowerCase()
-          const filterVal = filter.value.toLowerCase()
+      if (query.filters.length > 0) {
+        filtered = filtered.filter(emp => {
+          for (const filter of query.filters) {
+            let fieldValue = ''
+            const fieldName = filter.field?.toLowerCase()
+            
+            if (fieldName === 'nombre') fieldValue = emp.nombre || ''
+            else if (fieldName === 'apellido') fieldValue = emp.apellido || ''
+            else if (fieldName === 'dni') fieldValue = emp.dni || ''
+            else if (fieldName === 'correo') fieldValue = emp.correo || ''
+            else if (fieldName === 'departamento') fieldValue = emp.departamento?.nombre || ''
+            else if (fieldName === 'estado') fieldValue = emp.estado || ''
+            else fieldValue = String(emp[fieldName] || '')
+            
+            const filterVal = filter.value.toLowerCase()
+            const fieldValueLower = fieldValue.toLowerCase()
 
-          switch (filter.operator) {
-            case 'contains':
-              if (!fieldValue.includes(filterVal)) return false
-              break
-            case 'equals':
-              if (fieldValue !== filterVal) return false
-              break
-            case 'startsWith':
-              if (!fieldValue.startsWith(filterVal)) return false
-              break
-            case 'endsWith':
-              if (!fieldValue.endsWith(filterVal)) return false
-              break
+            switch (filter.operator) {
+              case 'contains':
+                if (!fieldValueLower.includes(filterVal)) return false
+                break
+              case 'equals':
+                if (fieldValueLower !== filterVal) return false
+                break
+              case 'startsWith':
+                if (!fieldValueLower.startsWith(filterVal)) return false
+                break
+              case 'endsWith':
+                if (!fieldValueLower.endsWith(filterVal)) return false
+                break
+            }
           }
-        }
-        return true
-      })
+          return true
+        })
+      }
 
-      this.filteredEmpleados = filtered
       this.currentPage = 1
     }
   }
@@ -1554,6 +1677,234 @@ export default {
 
   .empty-state {
     padding: 40px 24px;
+  }
+}
+
+/* View Modal Styles */
+.view-modal {
+  max-width: 520px;
+}
+
+.view-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 28px;
+  background: linear-gradient(135deg, #667eea08 0%, #764ba208 100%);
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.view-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  flex-shrink: 0;
+}
+
+.view-avatar.avatar-active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+}
+
+.view-avatar.avatar-inactive {
+  background: #e2e8f0;
+  color: #64748b;
+}
+
+.view-title {
+  flex: 1;
+}
+
+.view-title h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 6px;
+}
+
+.view-subtitle {
+  font-size: 14px;
+  color: #64748b;
+}
+
+.view-body {
+  padding: 28px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.info-section {
+  margin-bottom: 24px;
+}
+
+.info-section:last-child {
+  margin-bottom: 0;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #475569;
+  margin: 0 0 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.section-title i {
+  color: #667eea;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.info-item.full-width {
+  grid-column: 1 / -1;
+}
+
+.info-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.info-value {
+  font-size: 14px;
+  color: #1e293b;
+  font-weight: 500;
+}
+
+.observaciones-text {
+  background: #f8fafc;
+  padding: 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  color: #475569;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.view-footer {
+  display: flex;
+  gap: 12px;
+  padding: 20px 28px;
+  border-top: 1px solid #e2e8f0;
+  background: #fafbfc;
+  border-radius: 0 0 24px 24px;
+}
+
+.btn-edit-from-view,
+.btn-close-view {
+  flex: 1;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.btn-edit-from-view {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.btn-edit-from-view:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+}
+
+.btn-close-view {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.btn-close-view:hover {
+  background: #e2e8f0;
+}
+
+@media (max-width: 480px) {
+  .empleados-container {
+    padding: 20px 12px;
+  }
+
+  .page-title {
+    font-size: 22px;
+  }
+
+  .empleados-table {
+    font-size: 13px;
+  }
+
+  .col-num { display: none; }
+
+  .employee-avatar {
+    width: 36px;
+    height: 36px;
+    font-size: 12px;
+  }
+
+  .employee-cell {
+    gap: 10px;
+  }
+
+  .action-buttons {
+    gap: 4px;
+  }
+
+  .btn-action {
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
+  }
+
+  .empty-state {
+    padding: 40px 24px;
+  }
+
+  .view-modal {
+    max-width: 100%;
+    margin: 0;
+    border-radius: 20px 20px 0 0;
+    max-height: 90vh;
+  }
+
+  .view-header {
+    flex-direction: column;
+    text-align: center;
+    padding: 24px;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .view-footer {
+    flex-direction: column;
   }
 }
 </style>
