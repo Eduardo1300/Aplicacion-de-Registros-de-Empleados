@@ -57,6 +57,11 @@ export default {
     return apiClient.post('/auth/register', data)
   },
 
+  // Auth Empleado endpoints
+  loginEmpleado(credentials) {
+    return apiClient.post('/auth/login-empleado', credentials)
+  },
+
   // Empleado endpoints
   getEmpleados() {
     return apiClient.get('/empleado')
