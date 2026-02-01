@@ -70,12 +70,15 @@
           filename="solicitudes-licencia"
           title="Solicitudes de Licencia"
           @exported="handleExported"
-        />
-      </div>
+      />
     </div>
+  </div>
+
+    <!-- Loading State -->
+    <Loading :loading="loading" text="Cargando licencias..." />
 
     <!-- Empty State -->
-    <div v-if="licencias.length === 0" class="empty-state">
+    <div v-if="licencias.length === 0 && !loading" class="empty-state">
       <div class="empty-illustration">
         <svg viewBox="0 0 200 200" class="empty-svg">
           <rect x="40" y="60" width="120" height="80" rx="8" fill="#f1f5f9"/>
@@ -92,7 +95,7 @@
     </div>
 
     <!-- Table Card -->
-    <div v-else class="table-card">
+    <div v-if="licencias.length > 0 && !loading" class="table-card">
       <div class="table-header">
         <div class="table-title">
           <i class="bi bi-calendar-range"></i>
@@ -282,15 +285,18 @@
 import api from '../services/api'
 import { useNotification } from '../services/notification.service'
 import ExportButtons from '../components/ExportButtons.vue'
+import Loading from '../components/Loading.vue'
 
 export default {
   name: 'Licencias',
   components: {
-    ExportButtons
+    ExportButtons,
+    Loading
   },
   data() {
     return {
       licencias: [],
+      loading: false,
       filterEstado: '',
       showConfirm: false,
       confirmAction: '',
@@ -318,11 +324,16 @@ export default {
   },
   methods: {
     async loadLicencias() {
+      this.loading = true
       try {
         const response = await api.getSolicitudesLicencia()
         this.licencias = response.data || []
       } catch (err) {
         console.error('Error:', err)
+        const notification = useNotification()
+        notification.error('Error al cargar licencias')
+      } finally {
+        this.loading = false
       }
     },
     mostrarConfirmacion(accion, id) {
@@ -332,6 +343,7 @@ export default {
       this.showConfirm = true
     },
     async confirmarAccion() {
+      this.loading = true
       try {
         if (this.confirmAction === 'aprobar') {
           await api.aprobarLicencia(this.confirmId)
@@ -345,6 +357,8 @@ export default {
       } catch (err) {
         const notification = useNotification()
         notification.error(`Error ${this.confirmAction === 'aprobar' ? 'aprobando' : 'rechazando'} licencia`)
+      } finally {
+        this.loading = false
       }
     },
     viewLicencia(licencia) {

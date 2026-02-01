@@ -50,8 +50,11 @@
       />
     </div>
 
+    <!-- Loading State -->
+    <Loading :loading="loading" text="Cargando asistencias..." />
+
     <!-- Empty State -->
-    <div v-if="asistencias.length === 0" class="empty-state">
+    <div v-if="asistencias.length === 0 && !loading" class="empty-state">
       <div class="empty-icon">
         <i class="bi bi-inbox"></i>
       </div>
@@ -60,7 +63,7 @@
     </div>
 
     <!-- Table Card -->
-    <div v-else class="table-card">
+    <div v-if="asistencias.length > 0 && !loading" class="table-card">
       <div class="table-wrapper">
         <table class="asistencias-table">
           <thead>
@@ -130,15 +133,18 @@
 import api from '../services/api'
 import { useNotification } from '../services/notification.service'
 import ExportButtons from '../components/ExportButtons.vue'
+import Loading from '../components/Loading.vue'
 
 export default {
   name: 'Asistencias',
   components: {
-    ExportButtons
+    ExportButtons,
+    Loading
   },
   data() {
     return {
       asistencias: [],
+      loading: false,
       filterDate: '',
       filterEstado: ''
     }
@@ -167,11 +173,16 @@ export default {
   },
   methods: {
     async loadAsistencias() {
+      this.loading = true
       try {
         const response = await api.getAsistencias()
         this.asistencias = response.data || []
       } catch (err) {
         console.error('Error:', err)
+        const notification = useNotification()
+        notification.error('Error al cargar asistencias')
+      } finally {
+        this.loading = false
       }
     },
     formatDate(date) {

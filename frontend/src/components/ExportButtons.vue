@@ -1,12 +1,11 @@
 <template>
   <div class="export-buttons">
     <div class="export-group">
-      <label class="export-label">Descargar:</label>
       <button
         @click="handleExportExcel"
         class="export-btn export-excel"
         title="Descargar como Excel"
-        :disabled="disabled"
+        :disabled="disabled || !hasData"
       >
         <i class="bi bi-file-earmark-spreadsheet"></i>
         <span>Excel</span>
@@ -15,7 +14,7 @@
         @click="handleExportCSV"
         class="export-btn export-csv"
         title="Descargar como CSV"
-        :disabled="disabled"
+        :disabled="disabled || !hasData"
       >
         <i class="bi bi-file-text"></i>
         <span>CSV</span>
@@ -24,7 +23,7 @@
         @click="handleExportPDF"
         class="export-btn export-pdf"
         title="Descargar como PDF"
-        :disabled="disabled"
+        :disabled="disabled || !hasData"
       >
         <i class="bi bi-file-earmark-pdf"></i>
         <span>PDF</span>
@@ -76,6 +75,18 @@ const props = defineProps({
 
 const emit = defineEmits(['exported', 'error'])
 
+const hasData = computed(() => {
+  if (props.data && props.data.length > 0) return true
+  if (props.tableId) {
+    const table = document.getElementById(props.tableId)
+    if (table) {
+      const rows = table.querySelectorAll('tbody tr')
+      return rows.length > 0
+    }
+  }
+  return false
+})
+
 const dataToExport = computed(() => {
   if (props.data && props.data.length > 0) {
     return props.data.map(item => flattenObject(item))
@@ -105,7 +116,7 @@ const flattenObject = (obj, prefix = '') => {
         if (value !== null && typeof value === 'object' && Array.isArray(value)) {
           result[newKey] = value.length + ' elementos'
         } else {
-          result[newKey] = value !== null ? value : ''
+          result[newKey] = value !== null ? String(value) : ''
         }
       }
     }
@@ -134,6 +145,10 @@ const extractTableData = (table) => {
 }
 
 const handleExportExcel = () => {
+  if (!hasData.value) {
+    console.warn('No data to export')
+    return
+  }
   try {
     if (props.tableId) {
       exportTableToExcel(props.tableId, `${props.filename}.xlsx`, props.title)
@@ -148,6 +163,10 @@ const handleExportExcel = () => {
 }
 
 const handleExportCSV = () => {
+  if (!hasData.value) {
+    console.warn('No data to export')
+    return
+  }
   try {
     exportToCSV(dataToExport.value, `${props.filename}.csv`)
     emit('exported', { format: 'csv', filename: `${props.filename}.csv` })
@@ -158,6 +177,10 @@ const handleExportCSV = () => {
 }
 
 const handleExportPDF = async () => {
+  if (!hasData.value) {
+    console.warn('No data to export')
+    return
+  }
   try {
     if (props.tableId) {
       await exportTableToPDF(props.tableId, `${props.filename}.pdf`, props.title)

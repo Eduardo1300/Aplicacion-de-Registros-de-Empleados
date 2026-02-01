@@ -60,8 +60,11 @@
       />
     </div>
 
+    <!-- Loading State -->
+    <Loading :loading="loading" text="Cargando empleados..." />
+
     <!-- Empty State -->
-    <div v-if="empleados.length === 0" class="empty-state">
+    <div v-if="empleados.length === 0 && !loading" class="empty-state">
       <div class="empty-illustration">
         <svg viewBox="0 0 200 200" class="empty-svg">
           <circle cx="100" cy="80" r="40" fill="#f1f5f9"/>
@@ -78,7 +81,7 @@
     </div>
 
     <!-- Table Card -->
-    <div v-else class="table-card">
+    <div v-if="empleados.length > 0 && !loading" class="table-card">
       <div class="table-header">
         <div class="table-title">
           <i class="bi bi-table"></i>
@@ -464,6 +467,7 @@ import Pagination from '../components/Pagination.vue'
 import ExportButtons from '../components/ExportButtons.vue'
 import AdvancedSearch from '../components/AdvancedSearch.vue'
 import ConfirmDialog from '../components/ConfirmDialog.vue'
+import Loading from '../components/Loading.vue'
 
 export default {
   name: 'Empleados',
@@ -471,11 +475,13 @@ export default {
     Pagination,
     ExportButtons,
     AdvancedSearch,
-    ConfirmDialog
+    ConfirmDialog,
+    Loading
   },
   data() {
     return {
       empleados: [],
+      loading: false,
       showModal: false,
       showDeleteConfirm: false,
       showViewModal: false,
@@ -525,13 +531,15 @@ export default {
   },
   methods: {
     async loadEmpleados() {
+      this.loading = true
       try {
         const response = await api.getEmpleados()
         this.empleados = response.data || []
-        this.notification.info('Empleados cargados', 2000)
       } catch (err) {
         console.error('Error cargando empleados:', err)
         this.notification.error('Error al cargar empleados')
+      } finally {
+        this.loading = false
       }
     },
     async loadDepartamentos() {
@@ -540,6 +548,7 @@ export default {
         this.departamentos = response.data || []
       } catch (err) {
         console.error('Error cargando departamentos:', err)
+        this.notification.error('Error al cargar departamentos')
       }
     },
     async loadCargos() {
@@ -548,6 +557,7 @@ export default {
         this.cargos = response.data || []
       } catch (err) {
         console.error('Error cargando cargos:', err)
+        this.notification.error('Error al cargar cargos')
       }
     },
     openModal() {
@@ -582,6 +592,7 @@ export default {
       })
     },
     async saveEmpleado() {
+      this.loading = true
       try {
         const isCreating = !this.editingId
         if (this.editingId) {
@@ -596,6 +607,8 @@ export default {
       } catch (err) {
         this.notification.error('Error guardando empleado')
         console.error(err)
+      } finally {
+        this.loading = false
       }
     },
     confirmDeleteDialog(empleado) {
@@ -604,6 +617,7 @@ export default {
       this.$refs.confirmDialog.show()
     },
     async confirmDeleteWithDialog() {
+      this.loading = true
       try {
         await api.deleteEmpleado(this.deleteId)
         this.notification.success('Empleado eliminado correctamente')
@@ -613,6 +627,8 @@ export default {
       } catch (err) {
         this.notification.error('Error al eliminar empleado')
         console.error(err)
+      } finally {
+        this.loading = false
       }
     },
     closeModal() {
