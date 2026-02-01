@@ -33,6 +33,9 @@ export class Asistencia {
   @CreateDateColumn()
   fechaCreacion: Date;
 
+  @Column({ type: 'int', nullable: true })
+  empleado_id: number;
+
   @ManyToOne(() => Empleado, (empleado) => empleado.asistencias)
   @JoinColumn({ name: 'empleado_id' })
   empleado: Empleado;

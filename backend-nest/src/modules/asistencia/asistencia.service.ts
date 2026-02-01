@@ -70,4 +70,91 @@ export class AsistenciaService {
       .leftJoinAndSelect('a.empleado', 'empleado')
       .getMany();
   }
+
+  // Métodos para empleados
+  async getHoy(empleadoId: number) {
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    const mañana = new Date(hoy);
+    mañana.setDate(mañana.getDate() + 1);
+
+    const asistencia = await this.asistenciaRepository.findOne({
+      where: {
+        empleado: { id: empleadoId },
+        fechaAsistencia: hoy,
+      },
+    });
+
+    return asistencia || null;
+  }
+
+  async marcarEntrada(empleadoId: number) {
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+
+    const existente = await this.asistenciaRepository.findOne({
+      where: {
+        empleado: { id: empleadoId },
+        fechaAsistencia: hoy,
+      },
+    });
+
+    if (existente?.horaEntrada) {
+      throw new BadRequestException('Ya registraste la entrada hoy');
+    }
+
+    const ahora = new Date().toTimeString().split(' ')[0].substring(0, 8);
+
+    if (existente) {
+      existente.horaEntrada = ahora;
+      return this.asistenciaRepository.save(existente);
+    }
+
+    const nueva = this.asistenciaRepository.create({
+      empleado: { id: empleadoId },
+      fechaAsistencia: hoy,
+      horaEntrada: ahora,
+      estado: ahora > '08:15:00' ? EstadoAsistencia.TARDANZA : EstadoAsistencia.PRESENTE,
+    });
+
+    return this.asistenciaRepository.save(nueva);
+  }
+
+  async marcarSalida(empleadoId: number) {
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+
+    const asistencia = await this.asistenciaRepository.findOne({
+      where: {
+        empleado: { id: empleadoId },
+        fechaAsistencia: hoy,
+      },
+    });
+
+    if (!asistencia) {
+      throw new BadRequestException('No has registrado la entrada hoy');
+    }
+
+    if (asistencia.horaSalida) {
+      throw new BadRequestException('Ya registraste la salida hoy');
+    }
+
+    const ahora = new Date().toTimeString().split(' ')[0].substring(0, 8);
+    asistencia.horaSalida = ahora;
+
+    return this.asistenciaRepository.save(asistencia);
+  }
+
+  async getHistorial(empleadoId: number, mes?: number, año?: number) {
+    const query = this.asistenciaRepository.createQueryBuilder('a')
+      .where('a.empleado_id = :empleadoId', { empleadoId })
+      .orderBy('a.fechaAsistencia', 'DESC');
+
+    if (mes && año) {
+      query.andWhere('EXTRACT(MONTH FROM a.fechaAsistencia) = :mes', { mes })
+        .andWhere('EXTRACT(YEAR FROM a.fechaAsistencia) = :año', { año });
+    }
+
+    return query.getMany();
+  }
 }

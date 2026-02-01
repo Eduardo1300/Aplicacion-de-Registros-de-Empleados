@@ -32,6 +32,15 @@ export class Empleado {
   @Column({ type: 'varchar', length: 50, default: 'Activo' })
   estado: string;
 
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  password_hash: string;
+
+  @Column({ type: 'int', default: 15 })
+  dias_vacaciones: number;
+
+  @Column({ type: 'int', default: 0 })
+  dias_vacaciones_usados: number;
+
   @CreateDateColumn()
   fechaCreacion: Date;
 

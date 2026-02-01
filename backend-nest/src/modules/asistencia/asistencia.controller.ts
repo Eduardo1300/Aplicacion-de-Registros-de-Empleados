@@ -1,5 +1,6 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, Query, UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from '../../auth';
+import { Controller, Get, Post, Put, Delete, Param, Body, Query, UseGuards, Request } from '@nestjs/common';
+import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
+import { EmpleadoJwtAuthGuard } from '../../auth/empleado-jwt-auth.guard';
 import { AsistenciaService } from './asistencia.service';
 import { CreateAsistenciaDto } from '../../dto/create-asistencia.dto';
 
@@ -52,5 +53,34 @@ export class AsistenciaController {
     @Param('fechaFin') fechaFin: string,
   ) {
     return this.asistenciaService.findByFechaRango(new Date(fechaInicio), new Date(fechaFin));
+  }
+
+  // Endpoints para empleados
+  @Get('hoy')
+  @UseGuards(EmpleadoJwtAuthGuard)
+  async getHoy(@Request() req) {
+    const empleadoId = req.user.id || req.user.sub;
+    return this.asistenciaService.getHoy(empleadoId);
+  }
+
+  @Post('entrada')
+  @UseGuards(EmpleadoJwtAuthGuard)
+  async marcarEntrada(@Request() req) {
+    const empleadoId = req.user.id || req.user.sub;
+    return this.asistenciaService.marcarEntrada(empleadoId);
+  }
+
+  @Post('salida')
+  @UseGuards(EmpleadoJwtAuthGuard)
+  async marcarSalida(@Request() req) {
+    const empleadoId = req.user.id || req.user.sub;
+    return this.asistenciaService.marcarSalida(empleadoId);
+  }
+
+  @Get('historial')
+  @UseGuards(EmpleadoJwtAuthGuard)
+  async getHistorial(@Request() req, @Query('mes') mes?: number, @Query('año') año?: number) {
+    const empleadoId = req.user.id || req.user.sub;
+    return this.asistenciaService.getHistorial(empleadoId, mes, año);
   }
 }

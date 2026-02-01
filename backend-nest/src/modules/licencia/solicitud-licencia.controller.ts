@@ -1,5 +1,6 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, UseGuards, Request } from '@nestjs/common';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
+import { EmpleadoJwtAuthGuard } from '../../auth/empleado-jwt-auth.guard';
 import { SolicitudLicenciaService } from './solicitud-licencia.service';
 
 @Controller('api/solicitud-licencia')
@@ -54,5 +55,13 @@ export class SolicitudLicenciaController {
   @UseGuards(JwtAuthGuard)
   async delete(@Param('id') id: string) {
     return this.solicitudService.delete(Number(id));
+  }
+
+  // Endpoints para empleados
+  @Get('mis')
+  @UseGuards(EmpleadoJwtAuthGuard)
+  async misSolicitudes(@Request() req) {
+    const empleadoId = req.user.id || req.user.sub;
+    return this.solicitudService.findByEmpleado(empleadoId);
   }
 }
