@@ -6,10 +6,10 @@ const apiClient = axios.create({
   baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json'
-  }
+  },
+  timeout: 10000
 })
 
-// Interceptor para agregar token JWT
 apiClient.interceptors.request.use(config => {
   const token = localStorage.getItem('token')
   if (token) {
@@ -17,6 +17,36 @@ apiClient.interceptors.request.use(config => {
   }
   return config
 }, error => Promise.reject(error))
+
+apiClient.interceptors.response.use(
+  response => response,
+  error => {
+    if (error.response) {
+      switch (error.response.status) {
+        case 401:
+          localStorage.removeItem('token')
+          if (window.location.pathname !== '/login') {
+            window.location.href = '/login'
+          }
+          break
+        case 403:
+          console.error('Acceso prohibido')
+          break
+        case 404:
+          console.error('Recurso no encontrado')
+          break
+        case 500:
+          console.error('Error del servidor')
+          break
+      }
+    } else if (error.request) {
+      console.error('Error de conexión: no se recibió respuesta del servidor')
+    } else if (error.code === 'ECONNABORTED') {
+      console.error('Timeout: la solicitud tardó demasiado')
+    }
+    return Promise.reject(error)
+  }
+)
 
 export default {
   // Auth endpoints
