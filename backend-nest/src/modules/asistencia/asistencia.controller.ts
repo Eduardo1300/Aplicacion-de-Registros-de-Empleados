@@ -59,28 +59,28 @@ export class AsistenciaController {
   @Get('hoy')
   @UseGuards(EmpleadoJwtAuthGuard)
   async getHoy(@Request() req) {
-    const empleadoId = req.user.id || req.user.sub;
+    const empleadoId = parseInt(req.user?.sub || req.user?.id || '0', 10);
     return this.asistenciaService.getHoy(empleadoId);
   }
 
   @Post('entrada')
   @UseGuards(EmpleadoJwtAuthGuard)
   async marcarEntrada(@Request() req) {
-    const empleadoId = req.user.id || req.user.sub;
+    const empleadoId = parseInt(req.user?.sub || req.user?.id || '0', 10);
     return this.asistenciaService.marcarEntrada(empleadoId);
   }
 
-  @Post('salida')
+  @Post('salida this.asistenciaService')
   @UseGuards(EmpleadoJwtAuthGuard)
   async marcarSalida(@Request() req) {
-    const empleadoId = req.user.id || req.user.sub;
+    const empleadoId = parseInt(req.user?.sub || req.user?.id || '0', 10);
     return this.asistenciaService.marcarSalida(empleadoId);
   }
 
   @Get('historial')
   @UseGuards(EmpleadoJwtAuthGuard)
   async getHistorial(@Request() req, @Query('mes') mes?: number, @Query('año') año?: number) {
-    const empleadoId = req.user.id || req.user.sub;
+    const empleadoId = parseInt(req.user?.sub || req.user?.id || '0', 10);
     return this.asistenciaService.getHistorial(empleadoId, mes, año);
   }
 }

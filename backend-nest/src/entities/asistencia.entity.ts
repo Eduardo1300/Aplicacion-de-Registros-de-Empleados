@@ -15,11 +15,11 @@ export class Asistencia {
   @Column({ type: 'date' })
   fechaAsistencia: Date;
 
-  @Column({ type: 'time', nullable: true })
-  horaEntrada: string;
+  @Column({ type: 'time', nullable: true, name: 'hora_entrada' })
+  hora_entrada: string;
 
-  @Column({ type: 'time', nullable: true })
-  horaSalida: string;
+  @Column({ type: 'time', nullable: true, name: 'hora_salida' })
+  hora_salida: string;
 
   @Column({ type: 'enum', enum: EstadoAsistencia })
   estado: EstadoAsistencia;

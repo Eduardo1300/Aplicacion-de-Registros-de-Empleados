@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -19,9 +19,9 @@ export class EmpleadoJwtStrategy extends PassportStrategy(Strategy, 'empleado-jw
   }
 
   async validate(payload: any) {
-    if (payload.role !== 'empleado') {
-      return null;
+    if (!payload.sub) {
+      throw new UnauthorizedException('Token inválido');
     }
-    return this.empleadoRepository.findOne({ where: { id: payload.sub } });
+    return { id: payload.sub, dni: payload.dni, role: payload.role };
   }
 }

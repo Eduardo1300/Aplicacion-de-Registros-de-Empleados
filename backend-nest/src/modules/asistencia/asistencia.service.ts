@@ -73,19 +73,16 @@ export class AsistenciaService {
 
   // Métodos para empleados
   async getHoy(empleadoId: number) {
-    const hoy = new Date();
-    hoy.setHours(0, 0, 0, 0);
-    const mañana = new Date(hoy);
-    mañana.setDate(mañana.getDate() + 1);
-
-    const asistencia = await this.asistenciaRepository.findOne({
-      where: {
-        empleado: { id: empleadoId },
-        fechaAsistencia: hoy,
-      },
-    });
-
-    return asistencia || null;
+    try {
+      const result = await this.asistenciaRepository.query(
+        `SELECT * FROM "asistencias" WHERE empleado_id = $1 AND DATE("fechaAsistencia") = CURRENT_DATE`,
+        [empleadoId]
+      );
+      return result.length > 0 ? result[0] : null;
+    } catch (error) {
+      console.error('Error en getHoy:', error);
+      return null;
+    }
   }
 
   async marcarEntrada(empleadoId: number) {
@@ -94,26 +91,26 @@ export class AsistenciaService {
 
     const existente = await this.asistenciaRepository.findOne({
       where: {
-        empleado: { id: empleadoId },
+        empleado_id: empleadoId,
         fechaAsistencia: hoy,
       },
     });
 
-    if (existente?.horaEntrada) {
+    if (existente?.hora_entrada) {
       throw new BadRequestException('Ya registraste la entrada hoy');
     }
 
     const ahora = new Date().toTimeString().split(' ')[0].substring(0, 8);
 
     if (existente) {
-      existente.horaEntrada = ahora;
+      existente.hora_entrada = ahora;
       return this.asistenciaRepository.save(existente);
     }
 
     const nueva = this.asistenciaRepository.create({
-      empleado: { id: empleadoId },
+      empleado_id: empleadoId,
       fechaAsistencia: hoy,
-      horaEntrada: ahora,
+      hora_entrada: ahora,
       estado: ahora > '08:15:00' ? EstadoAsistencia.TARDANZA : EstadoAsistencia.PRESENTE,
     });
 
@@ -126,7 +123,7 @@ export class AsistenciaService {
 
     const asistencia = await this.asistenciaRepository.findOne({
       where: {
-        empleado: { id: empleadoId },
+        empleado_id: empleadoId,
         fechaAsistencia: hoy,
       },
     });
@@ -135,12 +132,12 @@ export class AsistenciaService {
       throw new BadRequestException('No has registrado la entrada hoy');
     }
 
-    if (asistencia.horaSalida) {
+    if (asistencia.hora_salida) {
       throw new BadRequestException('Ya registraste la salida hoy');
     }
 
     const ahora = new Date().toTimeString().split(' ')[0].substring(0, 8);
-    asistencia.horaSalida = ahora;
+    asistencia.hora_salida = ahora;
 
     return this.asistenciaRepository.save(asistencia);
   }

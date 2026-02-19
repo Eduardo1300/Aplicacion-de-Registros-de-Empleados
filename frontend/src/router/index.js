@@ -97,33 +97,73 @@ const router = createRouter({
   routes
 })
 
-// Guard para rutas protegidas (admin)
+// Guard principal - verificar tipo de usuario
 router.beforeEach((to, from, next) => {
-  const isLoggedIn = !!localStorage.getItem('token')
+  const tokenAdmin = localStorage.getItem('token')
+  const tokenEmpleado = localStorage.getItem('empleadoToken')
   
-  if (to.meta.requiresAuth && !isLoggedIn) {
-    next('/login')
-  } else if (to.path === '/login' && isLoggedIn) {
+  // Si intenta acceder a rutas de empleado con token de admin
+  if (to.path.startsWith('/empleado/') && tokenAdmin) {
     next('/dashboard')
-  } else {
-    next()
+    return
   }
-})
-
-// Guard para rutas de empleado
-router.beforeEach((to, from, next) => {
-  if (to.meta.requiresAuthEmpleado) {
-    const isEmpleadoLoggedIn = !!localStorage.getItem('empleadoToken')
-    if (!isEmpleadoLoggedIn) {
-      next('/empleado/login')
-    } else {
-      next()
-    }
-  } else if (to.path === '/empleado/login' && !!localStorage.getItem('empleadoToken')) {
+  
+  // Si intenta acceder a rutas de admin con token de empleado
+  if (!to.path.startsWith('/empleado/') && !to.path.startsWith('/login') && 
+      to.path !== '/' && tokenEmpleado && !tokenAdmin) {
     next('/empleado/dashboard')
-  } else {
-    next()
+    return
   }
+  
+  // Rutas que requieren auth de admin
+  if (to.meta.requiresAuth) {
+    if (!tokenAdmin) {
+      next('/login')
+      return
+    }
+    if (to.path === '/login') {
+      next('/dashboard')
+      return
+    }
+  }
+  
+  // Rutas que requieren auth de empleado
+  if (to.meta.requiresAuthEmpleado) {
+    if (!tokenEmpleado) {
+      next('/empleado/login')
+      return
+    }
+    if (to.path === '/empleado/login') {
+      next('/empleado/dashboard')
+      return
+    }
+  }
+  
+  // Login de admin
+  if (to.path === '/login' && tokenAdmin) {
+    next('/dashboard')
+    return
+  }
+  
+  // Login de empleado
+  if (to.path === '/empleado/login' && tokenEmpleado) {
+    next('/empleado/dashboard')
+    return
+  }
+  
+  // Redirección root
+  if (to.path === '/') {
+    if (tokenAdmin) {
+      next('/dashboard')
+    } else if (tokenEmpleado) {
+      next('/empleado/dashboard')
+    } else {
+      next('/login')
+    }
+    return
+  }
+  
+  next()
 })
 
 // Scroll a top cuando cambia de ruta

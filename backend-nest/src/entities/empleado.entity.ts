@@ -11,10 +11,10 @@ export class Empleado {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar', length: 255, charset: 'utf8mb4' })
   nombre: string;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar', length: 255, charset: 'utf8mb4' })
   apellido: string;
 
   @Column({ type: 'varchar', length: 255, unique: true })

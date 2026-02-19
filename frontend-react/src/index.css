@@ -1,0 +1,280 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: #f8fafc;
+}
+
+#app {
+  min-height: 100vh;
+}
+
+/* Gradient backgrounds */
+.bg-gradient-purple { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+.bg-gradient-green { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+.bg-gradient-yellow { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+.bg-gradient-red { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+.bg-gradient-blue { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
+.bg-gradient-indigo { background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); }
+
+/* Gradient shadows */
+.shadow-gradient-purple { box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3); }
+.shadow-gradient-green { box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
+.shadow-gradient-yellow { box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3); }
+.shadow-gradient-blue { box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); }
+.shadow-red-500 { box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3); }
+.shadow-gradient-blue { box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); }
+
+.main-content {
+  padding: 1.5rem;
+  min-height: calc(100vh - 56px);
+}
+
+.page-header {
+  @apply flex justify-between items-center mb-6;
+}
+
+.header-left {
+  @apply flex items-center gap-4;
+}
+
+.header-icon {
+  @apply w-12 h-12 rounded-xl flex items-center justify-center text-white text-xl;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.header-text h1 {
+  @apply text-2xl font-bold text-gray-800 m-0;
+}
+
+.header-text p {
+  @apply text-gray-500 text-sm m-0;
+}
+
+.btn-new {
+  @apply px-4 py-2 rounded-lg text-white font-medium flex items-center gap-2 transition-all;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.btn-new:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+}
+
+.search-bar {
+  @apply flex gap-4 mb-6 items-center;
+}
+
+.search-input-wrapper {
+  @apply relative flex-1 max-w-md;
+}
+
+.search-input-wrapper input {
+  @apply w-full px-4 py-2 pl-10 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent;
+}
+
+.search-input-wrapper i {
+  @apply absolute left-3 top-1/2 -translate-y-1/2 text-gray-400;
+}
+
+.table-card {
+  @apply bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden;
+}
+
+.data-table {
+  @apply w-full;
+}
+
+.data-table th {
+  @apply px-4 py-3 text-left text-sm font-semibold text-gray-600 bg-gray-50 border-b;
+}
+
+.data-table td {
+  @apply px-4 py-3 text-sm text-gray-700 border-b;
+}
+
+.data-table tr:hover {
+  @apply bg-gray-50;
+}
+
+.badge {
+  @apply px-2 py-1 rounded-full text-xs font-medium;
+}
+
+.badge-success {
+  @apply bg-green-100 text-green-700;
+}
+
+.badge-warning {
+  @apply bg-yellow-100 text-yellow-700;
+}
+
+.badge-danger {
+  @apply bg-red-100 text-red-700;
+}
+
+.badge-info {
+  @apply bg-blue-100 text-blue-700;
+}
+
+.badge-secondary {
+  @apply bg-gray-100 text-gray-700;
+}
+
+.employee-cell {
+  @apply flex items-center gap-3;
+}
+
+.employee-avatar {
+  @apply w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.action-buttons {
+  @apply flex gap-2;
+}
+
+.btn-action {
+  @apply w-8 h-8 rounded-lg flex items-center justify-center text-sm transition-all;
+}
+
+.btn-action:hover {
+  @apply bg-gray-100;
+}
+
+.btn-delete:hover {
+  @apply bg-red-50 text-red-600;
+}
+
+.modal-overlay {
+  @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50;
+}
+
+.modal-content {
+  @apply bg-white rounded-xl shadow-xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto;
+}
+
+.modal-header {
+  @apply flex justify-between items-center p-4 border-b;
+}
+
+.modal-header h3 {
+  @apply text-lg font-semibold m-0;
+}
+
+.modal-header button {
+  @apply bg-transparent border-none cursor-pointer text-xl text-gray-500;
+}
+
+.modal-form {
+  @apply p-4;
+}
+
+.form-group {
+  @apply mb-4;
+}
+
+.form-group label {
+  @apply block text-sm font-medium text-gray-700 mb-1;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  @apply w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500;
+}
+
+.form-row {
+  @apply grid grid-cols-2 gap-4;
+}
+
+.modal-actions {
+  @apply flex justify-end gap-3 mt-6;
+}
+
+.btn-cancel {
+  @apply px-4 py-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50;
+}
+
+.btn-submit {
+  @apply px-4 py-2 rounded-lg text-white;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.loading-state {
+  @apply flex justify-center items-center py-12;
+}
+
+.empty-state {
+  @apply text-center py-12;
+}
+
+.empty-state i {
+  @apply text-6xl text-gray-300 mb-4;
+}
+
+.empty-state h3 {
+  @apply text-xl font-semibold text-gray-700 mb-2;
+}
+
+.empty-state p {
+  @apply text-gray-500 mb-4;
+}
+
+.stat-card {
+  @apply bg-white rounded-xl p-4 flex items-center gap-4 shadow-sm border border-gray-100;
+}
+
+.stat-icon {
+  @apply w-12 h-12 rounded-xl flex items-center justify-center text-white text-xl;
+}
+
+.stat-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+.stat-success { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+.stat-warning { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+.stat-danger { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+.stat-info { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
+
+.stats-grid {
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6;
+}
+
+.chart-card {
+  @apply bg-white rounded-xl p-4 shadow-sm border border-gray-100;
+}
+
+.chart-container {
+  @apply h-80;
+}
+
+.alert {
+  @apply p-3 rounded-lg mb-4;
+}
+
+.alert-success {
+  @apply bg-green-100 text-green-700;
+}
+
+@keyframes slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.3s ease-out;
+}

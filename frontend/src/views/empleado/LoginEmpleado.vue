@@ -90,8 +90,8 @@
 </template>
 
 <script>
-import api from '../services/api'
-import { useNotification } from '../services/notification.service'
+import authEmpleado from '../../services/authEmpleado.js'
+import { useNotification } from '../../services/notification.service.js'
 
 export default {
   name: 'LoginEmpleado',
@@ -112,7 +112,7 @@ export default {
       this.error = ''
 
       try {
-        const response = await api.loginEmpleado(this.form)
+        const response = await authEmpleado.loginEmpleado(this.form)
         localStorage.setItem('empleadoToken', response.data.token)
         localStorage.setItem('empleadoUser', JSON.stringify(response.data.empleado))
         

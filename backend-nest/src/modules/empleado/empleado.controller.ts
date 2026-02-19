@@ -2,10 +2,18 @@ import { Controller, Get, Post, Put, Delete, Param, Body, UseGuards } from '@nes
 import { JwtAuthGuard } from '../../auth';
 import { EmpleadoService } from './empleado.service';
 import { CreateEmpleadoDto } from '../../dto/create-empleado.dto';
+import * as bcrypt from 'bcryptjs';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Empleado } from '../../entities/empleado.entity';
 
 @Controller('api/empleado')
 export class EmpleadoController {
-  constructor(private empleadoService: EmpleadoService) {}
+  constructor(
+    private empleadoService: EmpleadoService,
+    @InjectRepository(Empleado)
+    private empleadoRepository: Repository<Empleado>,
+  ) {}
 
   @Get()
   async findAll() {
