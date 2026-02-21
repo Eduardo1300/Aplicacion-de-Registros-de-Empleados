@@ -9,6 +9,7 @@ import { DepartamentoModule } from './modules/departamento/departamento.module';
 import { CargoModule } from './modules/cargo/cargo.module';
 import { LicenciaModule } from './modules/licencia/licencia.module';
 import { PermissionModule } from './modules/permission/permission.module';
+import { AppController } from './app.controller';
 import * as entities from './entities';
 
 @Module({
@@ -40,6 +41,7 @@ import * as entities from './entities';
       synchronize: process.env.NODE_ENV !== 'production',
       logging: process.env.NODE_ENV !== 'production',
     }),
+    TypeOrmModule.forFeature([entities.Empleado, entities.Asistencia, entities.SolicitudLicencia]),
     AuthModule,
     EmpleadoModule,
     AsistenciaModule,
@@ -48,5 +50,6 @@ import * as entities from './entities';
     LicenciaModule,
     PermissionModule,
   ],
+  controllers: [AppController],
 })
 export class AppModule {}
