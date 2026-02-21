@@ -10,6 +10,22 @@ const apiClient = axios.create({
   timeout: 10000
 })
 
+const empleadoClient = axios.create({
+  baseURL: API_URL,
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  timeout: 10000
+})
+
+empleadoClient.interceptors.request.use(config => {
+  const token = localStorage.getItem('empleadoToken')
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
+}, error => Promise.reject(error))
+
 apiClient.interceptors.request.use(config => {
   const token = localStorage.getItem('token')
   if (token) {
@@ -87,6 +103,16 @@ export default {
   getEstadisticas: () => apiClient.get('/estadisticas'),
   getEstadisticasDepartamento: (id) => apiClient.get(`/estadisticas/departamento/${id}`),
 
+  getTiposLicencia: () => apiClient.get('/tipo-licencia'),
+
   getAuditoria: () => apiClient.get('/auditoria'),
-  getAuditoriaByEntity: (entity) => apiClient.get(`/auditoria?entity=${entity}`)
+  getAuditoriaByEntity: (entity) => apiClient.get(`/auditoria?entity=${entity}`),
+
+  marcarEntrada: () => empleadoClient.post('/asistencia/entrada'),
+  marcarSalida: () => empleadoClient.post('/asistencia/salida'),
+  getMisAsistencias: (mes, año) => empleadoClient.get('/asistencia/historial', { params: { mes, año } }),
+  getMiPerfil: () => empleadoClient.get('/empleado/me'),
+  
+  misSolicitudesLicencia: () => empleadoClient.get('/solicitud-licencia/mis'),
+  crearSolicitudLicencia: (data) => empleadoClient.post('/solicitud-licencia', data),
 }
