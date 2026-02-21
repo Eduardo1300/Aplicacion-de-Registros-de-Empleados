@@ -40,8 +40,31 @@ export class SolicitudLicenciaService {
     });
   }
 
-  async create(solicitudData: Partial<SolicitudLicencia>): Promise<SolicitudLicencia> {
-    const solicitud = this.solicitudRepository.create(solicitudData);
+  async create(solicitudData: Partial<SolicitudLicencia> & { empleadoId?: number; tipoLicenciaId?: number }): Promise<SolicitudLicencia> {
+    const solicitud = new SolicitudLicencia();
+    solicitud.fechaInicio = solicitudData.fechaInicio as Date;
+    solicitud.fechaFin = solicitudData.fechaFin as Date;
+    solicitud.razon = (solicitudData.razon || solicitudData['razón'] || '') as string;
+    solicitud.observaciones = solicitudData.observaciones as string;
+    solicitud.afectaSaldo = solicitudData.afectaSaldo ?? true;
+    solicitud.estado = 'PENDIENTE';
+    
+    if (solicitudData.empleado) {
+      solicitud.empleado = typeof solicitudData.empleado === 'number' 
+        ? { id: solicitudData.empleado } as any
+        : solicitudData.empleado;
+    } else if (solicitudData.empleadoId) {
+      solicitud.empleado = { id: solicitudData.empleadoId } as any;
+    }
+    
+    if (solicitudData.tipoLicencia) {
+      solicitud.tipoLicencia = typeof solicitudData.tipoLicencia === 'number'
+        ? { id: solicitudData.tipoLicencia } as any
+        : solicitudData.tipoLicencia;
+    } else if (solicitudData.tipoLicenciaId) {
+      solicitud.tipoLicencia = { id: solicitudData.tipoLicenciaId } as any;
+    }
+
     return this.solicitudRepository.save(solicitud);
   }
 

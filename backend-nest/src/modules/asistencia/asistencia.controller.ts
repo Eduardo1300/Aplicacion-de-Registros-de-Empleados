@@ -70,7 +70,7 @@ export class AsistenciaController {
     return this.asistenciaService.marcarEntrada(empleadoId);
   }
 
-  @Post('salida this.asistenciaService')
+  @Post('salida')
   @UseGuards(EmpleadoJwtAuthGuard)
   async marcarSalida(@Request() req) {
     const empleadoId = parseInt(req.user?.sub || req.user?.id || '0', 10);

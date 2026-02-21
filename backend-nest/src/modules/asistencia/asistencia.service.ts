@@ -43,7 +43,14 @@ export class AsistenciaService {
   }
 
   async create(createAsistenciaDto: CreateAsistenciaDto): Promise<Asistencia> {
-    const asistencia = this.asistenciaRepository.create(createAsistenciaDto);
+    const asistencia = new Asistencia();
+    asistencia.empleado_id = createAsistenciaDto.empleadoId;
+    asistencia.fechaAsistencia = createAsistenciaDto.fechaAsistencia;
+    asistencia.hora_entrada = (createAsistenciaDto.horaEntrada || createAsistenciaDto.hora_entrada) as string;
+    asistencia.hora_salida = (createAsistenciaDto.horaSalida || createAsistenciaDto.hora_salida) as string;
+    asistencia.estado = createAsistenciaDto.estado;
+    asistencia.minutosTardanza = createAsistenciaDto.minutosTardanza as number;
+    asistencia.observaciones = createAsistenciaDto.observaciones as string;
     return this.asistenciaRepository.save(asistencia);
   }
 
