@@ -1,5 +1,5 @@
 import jsPDF from 'jspdf'
-import 'jspdf-autotable'
+import autoTable from 'jspdf-autotable'
 
 export const exportToPDF = (title, columns, data, filename = 'reporte') => {
   const doc = new jsPDF()
@@ -19,7 +19,7 @@ export const exportToPDF = (title, columns, data, filename = 'reporte') => {
     })
   )
   
-  doc.autoTable({
+  autoTable(doc, {
     head: [columns.map(col => col.title)],
     body: tableData,
     startY: 35,
@@ -58,14 +58,14 @@ export const exportEmployeesToPDF = (empleados) => {
 
 export const exportAsistenciasToPDF = (asistencias) => {
   const columns = [
-    { title: 'Fecha', key: 'fecha' },
+    { title: 'Fecha', key: 'fechaAsistencia' },
     { title: 'Empleado', key: 'empleado.nombre' },
     { title: 'Apellido', key: 'empleado.apellido' },
-    { title: 'Entrada', key: 'horaEntrada' },
-    { title: 'Salida', key: 'horaSalida' },
-    { title: 'Tipo', key: 'tipo' },
+    { title: 'Entrada', key: 'hora_entrada' },
+    { title: 'Salida', key: 'hora_salida' },
+    { title: 'Estado', key: 'estado' },
   ]
-  exportToPDF('Reporte de Asistencias', columns, asistentes || [], 'asistencias')
+  exportToPDF('Reporte de Asistencias', columns, asistencias || [], 'asistencias')
 }
 
 export const exportLicenciasToPDF = (licencias) => {

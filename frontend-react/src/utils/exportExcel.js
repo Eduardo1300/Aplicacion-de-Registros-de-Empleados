@@ -30,11 +30,11 @@ export const exportEmployeesToExcel = (empleados) => {
 
 export const exportAsistenciasToExcel = (asistencias) => {
   const data = (asistencias || []).map(asist => ({
-    Fecha: asist.fecha,
+    Fecha: asist.fechaAsistencia,
     Empleado: `${asist.empleado?.nombre || ''} ${asist.empleado?.apellido || ''}`.trim(),
-    Entrada: asist.horaEntrada || '-',
-    Salida: asist.horaSalida || '-',
-    Tipo: asist.tipo,
+    Entrada: asist.hora_entrada || '-',
+    Salida: asist.hora_salida || '-',
+    Estado: asist.estado,
   }))
   exportToExcel(data, 'asistencias')
 }
@@ -46,7 +46,7 @@ export const exportLicenciasToExcel = (licencias) => {
     'Fecha Inicio': lic.fechaInicio,
     'Fecha Fin': lic.fechaFin,
     Estado: lic.estado,
-    Motivo: lic.motivo || '-',
+    Razón: lic.razon || '-',
   }))
   exportToExcel(data, 'licencias')
 }
