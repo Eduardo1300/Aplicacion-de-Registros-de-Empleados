@@ -56,4 +56,12 @@ export class EmpleadoController {
   async findByDepartamento(@Param('departamentoId') departamentoId: string) {
     return this.empleadoService.findByDepartamento(Number(departamentoId));
   }
+
+  @Post('set-password/:id')
+  async setPassword(@Param('id') id: string, @Body() body: { password: string }) {
+    const salt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(body.password, salt);
+    await this.empleadoRepository.update(Number(id), { password_hash: hashedPassword });
+    return { message: 'Password updated' };
+  }
 }
