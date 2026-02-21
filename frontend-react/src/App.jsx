@@ -21,7 +21,7 @@ function App() {
     navigate('/login')
   }
 
-  const showNavbar = isLoggedIn && !location.pathname.startsWith('/empleado')
+  const showNavbar = isLoggedIn && !location.pathname.startsWith('/empleado') && !location.pathname.startsWith('/login')
 
   return (
     <div id="app">
