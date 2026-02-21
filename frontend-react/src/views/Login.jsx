@@ -50,8 +50,8 @@ const Login = () => {
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2 uppercase tracking-wide">
-              <i className="bi bi-person-fill mr-2 text-purple-500"></i>Usuario
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Usuario
             </label>
             <div className="relative">
               <input 
@@ -62,13 +62,13 @@ const Login = () => {
                 placeholder="Ingrese su usuario"
                 required
               />
-              <i className="bi bi-person absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+              <i className="bi bi-person absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
             </div>
           </div>
           
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2 uppercase tracking-wide">
-              <i className="bi bi-lock-fill mr-2 text-purple-500"></i>Contraseña
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Contraseña
             </label>
             <div className="relative">
               <input 
@@ -79,7 +79,7 @@ const Login = () => {
                 placeholder="Ingrese su contraseña"
                 required
               />
-              <i className="bi bi-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+              <i className="bi bi-lock absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
             </div>
           </div>
 

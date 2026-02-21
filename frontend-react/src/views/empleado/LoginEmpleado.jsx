@@ -44,13 +44,19 @@ const LoginEmpleado = () => {
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">DNI</label>
-            <input type="text" value={formData.dni} onChange={(e) => setFormData({...formData, dni: e.target.value})}
-              className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-green-500 focus:outline-none bg-gray-50" placeholder="Ingrese su DNI" required />
+            <div className="relative">
+              <input type="text" value={formData.dni} onChange={(e) => setFormData({...formData, dni: e.target.value})}
+                className="w-full px-4 py-3 pl-10 rounded-xl border-2 border-gray-200 focus:border-green-500 focus:outline-none bg-gray-50" placeholder="Ingrese su DNI" required />
+              <i className="bi bi-person absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+            </div>
           </div>
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">Clave</label>
-            <input type="password" value={formData.clave} onChange={(e) => setFormData({...formData, clave: e.target.value})}
-              className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-green-500 focus:outline-none bg-gray-50" placeholder="Ingrese su clave" required />
+            <div className="relative">
+              <input type="password" value={formData.clave} onChange={(e) => setFormData({...formData, clave: e.target.value})}
+                className="w-full px-4 py-3 pl-10 rounded-xl border-2 border-gray-200 focus:border-green-500 focus:outline-none bg-gray-50" placeholder="Ingrese su clave" required />
+              <i className="bi bi-lock absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+            </div>
           </div>
           {error && <div className="bg-red-50 text-red-600 p-3 rounded-xl">{error}</div>}
           <button type="submit" disabled={loading}
