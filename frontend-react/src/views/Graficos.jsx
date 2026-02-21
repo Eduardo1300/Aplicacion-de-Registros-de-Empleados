@@ -81,7 +81,7 @@ const Graficos = () => {
   })
 
   const attendanceByDay = last7Days.map(date => {
-    return asistencia.filter(a => a.fecha === date && a.tipo === 'Presente').length
+    return asistencias.filter(a => a.fechaAsistencia === date && a.estado === 'PRESENTE').length
   })
 
   const lineChartData = {

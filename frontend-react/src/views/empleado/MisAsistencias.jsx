@@ -16,10 +16,8 @@ const MisAsistencias = () => {
   const loadAsistencias = async () => {
     try {
       setLoading(true)
-      const response = await api.getAsistencias()
-      const empleado = JSON.parse(localStorage.getItem('empleado'))
-      const misAsistencias = response.data.filter(a => a.empleadoId === empleado.id)
-      setAsistencias(misAsistencias)
+      const response = await api.getMisAsistencias()
+      setAsistencias(response.data || [])
     } catch (err) { console.error('Error:', err) }
     finally { setLoading(false) }
   }
@@ -64,10 +62,10 @@ const MisAsistencias = () => {
               <tbody>
                 {asistencias.map((asistencia) => (
                   <tr key={asistencia.id} className="border-t border-gray-100 hover:bg-gray-50">
-                    <td className="px-4 py-3 text-gray-700">{asistencia.fecha}</td>
-                    <td className="px-4 py-3 text-gray-700">{asistencia.horaEntrada || '-'}</td>
-                    <td className="px-4 py-3 text-gray-700">{asistencia.horaSalida || '-'}</td>
-                    <td className="px-4 py-3"><span className={`px-2 py-1 rounded-full text-xs font-medium ${asistencia.tipo === 'Presente' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>{asistencia.tipo}</span></td>
+                    <td className="px-4 py-3 text-gray-700">{asistencia.fechaAsistencia}</td>
+                    <td className="px-4 py-3 text-gray-700">{asistencia.hora_entrada || '-'}</td>
+                    <td className="px-4 py-3 text-gray-700">{asistencia.hora_salida || '-'}</td>
+                    <td className="px-4 py-3"><span className={`px-2 py-1 rounded-full text-xs font-medium ${asistencia.estado === 'PRESENTE' ? 'bg-green-100 text-green-700' : asistencia.estado === 'TARDANZA' ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-700'}`}>{asistencia.estado}</span></td>
                   </tr>
                 ))}
               </tbody>

@@ -7,7 +7,7 @@ const SolicitarLicencia = () => {
   const [loading, setLoading] = useState(false)
   const [mensaje, setMensaje] = useState('')
   const [tipo, setTipo] = useState('')
-  const [formData, setFormData] = useState({ tipoLicenciaId: '', fechaInicio: '', fechaFin: '', motivo: '' })
+  const [formData, setFormData] = useState({ tipoLicenciaId: '', fechaInicio: '', fechaFin: '', razon: '' })
 
   useEffect(() => {
     const token = localStorage.getItem('empleadoToken')
@@ -19,10 +19,10 @@ const SolicitarLicencia = () => {
     setLoading(true)
     setMensaje('')
     try {
-      await api.createSolicitudLicencia(formData)
+      await api.crearSolicitudLicencia(formData)
       setMensaje('Solicitud enviada correctamente')
       setTipo('success')
-      setFormData({ tipoLicenciaId: '', fechaInicio: '', fechaFin: '', motivo: '' })
+      setFormData({ tipoLicenciaId: '', fechaInicio: '', fechaFin: '', razon: '' })
     } catch (err) {
       setMensaje(err.response?.data?.message || 'Error al enviar solicitud')
       setTipo('error')
@@ -81,8 +81,8 @@ const SolicitarLicencia = () => {
               </div>
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Motivo</label>
-              <textarea value={formData.motivo} onChange={(e) => setFormData({...formData, motivo: e.target.value})} rows="4"
+              <label className="block text-sm font-medium text-gray-700 mb-1">Razón</label>
+              <textarea value={formData.razon} onChange={(e) => setFormData({...formData, razon: e.target.value})} rows="4"
                         placeholder="Describe el motivo de tu solicitud"
                         className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-500" />
             </div>

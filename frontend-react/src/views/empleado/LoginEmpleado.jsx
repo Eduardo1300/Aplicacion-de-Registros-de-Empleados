@@ -18,7 +18,7 @@ const LoginEmpleado = () => {
     setError('')
     try {
       const api = (await import('../../services/api')).default
-      const response = await api.loginEmpleado(formData)
+      const response = await api.loginEmpleado({ dni: formData.dni, password: formData.clave })
       const { token, empleado } = response.data
       localStorage.setItem('empleadoToken', token)
       localStorage.setItem('empleado', JSON.stringify(empleado))

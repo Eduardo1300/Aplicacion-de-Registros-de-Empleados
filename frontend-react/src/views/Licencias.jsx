@@ -15,7 +15,7 @@ const Licencias = () => {
     tipoLicenciaId: '',
     fechaInicio: '',
     fechaFin: '',
-    motivo: ''
+    razon: ''
   })
   const [empleados, setEmpleados] = useState([])
   const [tiposLicencia, setTiposLicencia] = useState([])
@@ -23,6 +23,7 @@ const Licencias = () => {
   useEffect(() => {
     loadLicencias()
     loadEmpleados()
+    loadTiposLicencia()
   }, [])
 
   const loadLicencias = async () => {
@@ -41,6 +42,13 @@ const Licencias = () => {
     } catch (err) { console.error('Error:', err) }
   }
 
+  const loadTiposLicencia = async () => {
+    try {
+      const response = await api.getTiposLicencia()
+      setTiposLicencia(response.data)
+    } catch (err) { console.error('Error:', err) }
+  }
+
   const filteredLicencias = licencias.filter(l => {
     const query = searchQuery.toLowerCase()
     return l.empleado?.nombre?.toLowerCase().includes(query) || l.estado?.toLowerCase().includes(query)
@@ -52,7 +60,7 @@ const Licencias = () => {
       await api.createSolicitudLicencia(formData)
       loadLicencias()
       setShowModal(false)
-      setFormData({ empleadoId: '', tipoLicenciaId: '', fechaInicio: '', fechaFin: '', motivo: '' })
+      setFormData({ empleadoId: '', tipoLicenciaId: '', fechaInicio: '', fechaFin: '', razon: '' })
     } catch (err) { console.error('Error:', err) }
   }
 
@@ -89,7 +97,14 @@ const Licencias = () => {
   }
 
   const getEstadoBadge = (estado) => {
-    const estados = { 'Pendiente': 'bg-yellow-100 text-yellow-700', 'Aprobada': 'bg-green-100 text-green-700', 'Rechazada': 'bg-red-100 text-red-700' }
+    const estados = { 
+      'PENDIENTE': 'bg-yellow-100 text-yellow-700', 
+      'APROBADA': 'bg-green-100 text-green-700', 
+      'RECHAZADA': 'bg-red-100 text-red-700',
+      'Pendiente': 'bg-yellow-100 text-yellow-700', 
+      'Aprobada': 'bg-green-100 text-green-700', 
+      'Rechazada': 'bg-red-100 text-red-700' 
+    }
     return estados[estado] || 'bg-gray-100 text-gray-700'
   }
 
@@ -156,7 +171,7 @@ const Licencias = () => {
                   <td className="px-4 py-3">{licencia.fechaFin}</td>
                   <td className="px-4 py-3"><span className={`px-2 py-1 rounded-full text-xs font-medium ${getEstadoBadge(licencia.estado)}`}>{licencia.estado}</span></td>
                   <td className="px-4 py-3">
-                    {licencia.estado === 'Pendiente' && (
+                    {(licencia.estado === 'PENDIENTE' || licencia.estado === 'Pendiente') && (
                       <div className="flex gap-2">
                         <button onClick={() => handleAprobar(licencia.id)} className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-green-50" title="Aprobar">
                           <i className="bi bi-check-circle text-green-600"></i>
@@ -190,6 +205,14 @@ const Licencias = () => {
                   {empleados.map(emp => (<option key={emp.id} value={emp.id}>{emp.nombre} {emp.apellido}</option>))}
                 </select>
               </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Tipo de Licencia</label>
+                <select value={formData.tipoLicenciaId} onChange={e => setFormData({...formData, tipoLicenciaId: e.target.value})} required
+                        className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                  <option value="">Seleccionar tipo</option>
+                  {tiposLicencia.map(tipo => (<option key={tipo.id} value={tipo.id}>{tipo.nombre}</option>))}
+                </select>
+              </div>
               <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Fecha Inicio</label>
@@ -203,8 +226,8 @@ const Licencias = () => {
                 </div>
               </div>
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Motivo</label>
-                <textarea value={formData.motivo} onChange={e => setFormData({...formData, motivo: e.target.value})} rows="3"
+                <label className="block text-sm font-medium text-gray-700 mb-1">Razón</label>
+                <textarea value={formData.razon} onChange={e => setFormData({...formData, razon: e.target.value})} rows="3"
                           className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-yellow-500" />
               </div>
               <div className="flex justify-end gap-3 mt-6">

@@ -128,9 +128,9 @@ const Login = () => {
               <div className="text-green-500 text-xl mb-1"><i className="bi bi-person-check"></i></div>
               <p className="text-xs font-bold text-gray-700 uppercase">Empleado</p>
               <div className="mt-1 text-xs">
-                <span className="bg-white px-2 py-1 rounded text-green-600 font-mono">empleado</span>
+                <span className="bg-white px-2 py-1 rounded text-green-600 font-mono">12345678</span>
                 <span className="text-gray-400 mx-1">/</span>
-                <span className="bg-white px-2 py-1 rounded text-green-600 font-mono">empleado123</span>
+                <span className="bg-white px-2 py-1 rounded text-green-600 font-mono">123456</span>
               </div>
             </div>
           </div>

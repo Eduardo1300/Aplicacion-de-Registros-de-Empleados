@@ -19,7 +19,8 @@ const Empleados = () => {
     telefono: '',
     departamentoId: '',
     cargoId: '',
-    estado: 'Activo'
+    estado: 'Activo',
+    fechaIngreso: new Date().toISOString().split('T')[0]
   })
   const [departamentos, setDepartamentos] = useState([])
   const [cargos, setCargos] = useState([])
@@ -97,9 +98,10 @@ const Empleados = () => {
       dni: empleado.dni,
       correo: empleado.correo || '',
       telefono: empleado.telefono || '',
-      departamentoId: empleado.departamentoId,
-      cargoId: empleado.cargoId,
-      estado: empleado.estado
+      departamentoId: empleado.departamentoId || empleado.departamento?.id || '',
+      cargoId: empleado.cargoId || empleado.cargo?.id || '',
+      estado: empleado.estado,
+      fechaIngreso: empleado.fechaIngreso ? new Date(empleado.fechaIngreso).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
     })
     setShowModal(true)
   }
@@ -137,7 +139,8 @@ const Empleados = () => {
       telefono: '',
       departamentoId: '',
       cargoId: '',
-      estado: 'Activo'
+      estado: 'Activo',
+      fechaIngreso: new Date().toISOString().split('T')[0]
     })
   }
 
@@ -226,7 +229,7 @@ const Empleados = () => {
             </thead>
             <tbody>
               {filteredEmpleados.map((empleado, index) => (
-                <tr key={empleado.id} className={`border-t border-gray-100 hover ${empleado.estado === 'In:bg-gray-50activo' ? 'opacity-60' : ''}`}>
+                <tr key={empleado.id} className={`border-t border-gray-100 hover:bg-gray-50 ${empleado.estado === 'Inactivo' ? 'opacity-60' : ''}`}>
                   <td className="px-4 py-3 text-sm text-gray-700">{index + 1}</td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
@@ -365,6 +368,18 @@ const Empleados = () => {
                     ))}
                   </select>
                 </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Fecha Ingreso</label>
+                  <input 
+                    type="date" 
+                    value={formData.fechaIngreso}
+                    onChange={e => setFormData({...formData, fechaIngreso: e.target.value})}
+                    className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    required
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4 mt-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Estado</label>
                   <select 

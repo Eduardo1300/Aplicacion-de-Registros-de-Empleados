@@ -17,9 +17,7 @@ const MarcarAsistencia = () => {
     setLoading(true)
     setMensaje('')
     try {
-      const empleado = JSON.parse(localStorage.getItem('empleado'))
-      const data = { empleadoId: empleado.id, fecha: new Date().toISOString().split('T')[0], horaEntrada: new Date().toTimeString().split(' ')[0].slice(0, 5), tipo: 'Presente' }
-      await api.createAsistencia(data)
+      await api.marcarEntrada()
       setMensaje('Asistencia marcada exitosamente')
       setTipo('success')
     } catch (err) {

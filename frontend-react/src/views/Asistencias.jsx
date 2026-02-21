@@ -15,7 +15,7 @@ const Asistencias = () => {
     fecha: new Date().toISOString().split('T')[0],
     horaEntrada: '',
     horaSalida: '',
-    tipo: 'Presente'
+    tipo: 'PRESENTE'
   })
   const [empleados, setEmpleados] = useState([])
 
@@ -28,9 +28,10 @@ const Asistencias = () => {
     try {
       setLoading(true)
       const response = await api.getAsistencias()
-      setAsistencias(response.data)
+      setAsistencias(response.data || [])
     } catch (err) {
       console.error('Error:', err)
+      error('Error al cargar las asistencias')
     } finally {
       setLoading(false)
     }
@@ -39,25 +40,50 @@ const Asistencias = () => {
   const loadEmpleados = async () => {
     try {
       const response = await api.getEmpleados()
-      setEmpleados(response.data.filter(e => e.estado === 'Activo'))
+      setEmpleados((response.data || []).filter(e => e.estado === 'Activo'))
     } catch (err) {
       console.error('Error:', err)
     }
   }
 
-  const filteredAsistencias = asistencias.filter(a => {
+  const filteredAsistencias = (asistencias || []).filter(a => {
     const query = searchQuery.toLowerCase()
+    const nombreCompleto = `${a.empleado?.nombre || ''} ${a.empleado?.apellido || ''}`.toLowerCase()
     return (
-      a.empleado?.nombre?.toLowerCase().includes(query) ||
-      a.empleado?.apellido?.toLowerCase().includes(query) ||
-      a.fecha?.includes(query)
+      nombreCompleto.includes(query) ||
+      (a.fechaAsistencia || a.fecha || '').includes(query)
     )
   })
+
+  const getTipoLabel = (estado) => {
+    const labels = {
+      'PRESENTE': 'Presente',
+      'TARDANZA': 'Tardanza',
+      'AUSENTE': 'Ausente'
+    }
+    return labels[estado] || estado
+  }
+
+  const getTipoBadge = (estado) => {
+    const tipos = {
+      'PRESENTE': 'bg-green-100 text-green-700',
+      'TARDANZA': 'bg-yellow-100 text-yellow-700',
+      'AUSENTE': 'bg-red-100 text-red-700'
+    }
+    return tipos[estado] || 'bg-gray-100 text-gray-700'
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      await api.createAsistencia(formData)
+      const payload = {
+        empleadoId: parseInt(formData.empleadoId),
+        fechaAsistencia: formData.fecha,
+        horaEntrada: formData.horaEntrada || null,
+        horaSalida: formData.horaSalida || null,
+        estado: formData.tipo
+      }
+      await api.createAsistencia(payload)
       loadAsistencias()
       setShowModal(false)
       setFormData({
@@ -65,7 +91,7 @@ const Asistencias = () => {
         fecha: new Date().toISOString().split('T')[0],
         horaEntrada: '',
         horaSalida: '',
-        tipo: 'Presente'
+        tipo: 'PRESENTE'
       })
       success('Asistencia registrada correctamente')
     } catch (err) {
@@ -95,11 +121,6 @@ const Asistencias = () => {
   const handleExportExcel = () => {
     exportAsistenciasToExcel(asistencias)
     success('Excel exportado correctamente')
-  }
-
-  const getTipoBadge = (tipo) => {
-    const tipos = { 'Presente': 'bg-green-100 text-green-700', 'Ausente': 'bg-red-100 text-red-700', 'Permiso': 'bg-yellow-100 text-yellow-700' }
-    return tipos[tipo] || 'bg-gray-100 text-gray-700'
   }
 
   return (
@@ -139,6 +160,17 @@ const Asistencias = () => {
 
       {loading ? (
         <div className="flex justify-center py-12"><div className="w-10 h-10 border-4 border-green-500 border-t-transparent rounded-full animate-spin"></div></div>
+      ) : filteredAsistencias.length === 0 ? (
+        <div className="text-center py-12 bg-white rounded-xl shadow-sm">
+          <div className="w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center text-4xl text-gray-300 bg-gray-100">
+            <i className="bi bi-calendar-x"></i>
+          </div>
+          <h3 className="text-xl font-semibold text-gray-700 mb-2">No hay asistencias registradas</h3>
+          <p className="text-gray-500 mb-4">Comienza registrando la primera asistencia</p>
+          <button onClick={() => setShowModal(true)} className="px-4 py-2 rounded-lg text-white bg-gradient-green">
+            <i className="bi bi-plus-lg"></i> Nueva Asistencia
+          </button>
+        </div>
       ) : (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
           <table className="w-full">
@@ -147,13 +179,13 @@ const Asistencias = () => {
               <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">Empleado</th>
               <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">Entrada</th>
               <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">Salida</th>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">Tipo</th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">Estado</th>
               <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">Acciones</th>
             </tr></thead>
             <tbody>
               {filteredAsistencias.map((asistencia) => (
                 <tr key={asistencia.id} className="border-t border-gray-100 hover:bg-gray-50">
-                  <td className="px-4 py-3 text-sm text-gray-700">{asistencia.fecha}</td>
+                  <td className="px-4 py-3 text-sm text-gray-700">{asistencia.fechaAsistencia || asistencia.fecha}</td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold bg-gradient-green">
@@ -162,9 +194,9 @@ const Asistencias = () => {
                       <span className="text-gray-800">{asistencia.empleado?.nombre} {asistencia.empleado?.apellido}</span>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-700">{asistencia.horaEntrada || '-'}</td>
-                  <td className="px-4 py-3 text-sm text-gray-700">{asistencia.horaSalida || '-'}</td>
-                  <td className="px-4 py-3"><span className={`px-2 py-1 rounded-full text-xs font-medium ${getTipoBadge(asistencia.tipo)}`}>{asistencia.tipo}</span></td>
+                  <td className="px-4 py-3 text-sm text-gray-700">{asistencia.hora_entrada || asistencia.horaEntrada || '-'}</td>
+                  <td className="px-4 py-3 text-sm text-gray-700">{asistencia.hora_salida || asistencia.horaSalida || '-'}</td>
+                  <td className="px-4 py-3"><span className={`px-2 py-1 rounded-full text-xs font-medium ${getTipoBadge(asistencia.estado || asistencia.tipo)}`}>{getTipoLabel(asistencia.estado || asistencia.tipo)}</span></td>
                   <td className="px-4 py-3">
                     <button onClick={() => handleDelete(asistencia.id)} className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-red-50">
                       <i className="bi bi-trash text-red-500"></i>
@@ -200,12 +232,12 @@ const Asistencias = () => {
                          className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-500" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Tipo</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Estado</label>
                   <select value={formData.tipo} onChange={e => setFormData({...formData, tipo: e.target.value})}
                           className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-500">
-                    <option value="Presente">Presente</option>
-                    <option value="Ausente">Ausente</option>
-                    <option value="Permiso">Permiso</option>
+                    <option value="PRESENTE">Presente</option>
+                    <option value="TARDANZA">Tardanza</option>
+                    <option value="AUSENTE">Ausente</option>
                   </select>
                 </div>
               </div>
@@ -234,4 +266,3 @@ const Asistencias = () => {
 }
 
 export default Asistencias
-

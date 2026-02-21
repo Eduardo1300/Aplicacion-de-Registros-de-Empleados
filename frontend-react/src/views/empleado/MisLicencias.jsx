@@ -16,14 +16,21 @@ const MisLicencias = () => {
   const loadLicencias = async () => {
     try {
       setLoading(true)
-      const response = await api.getSolicitudesLicencia()
-      setLicencias(response.data)
+      const response = await api.misSolicitudesLicencia()
+      setLicencias(response.data || [])
     } catch (err) { console.error('Error:', err) }
     finally { setLoading(false) }
   }
 
   const getEstadoBadge = (estado) => {
-    const estados = { 'Pendiente': 'bg-yellow-100 text-yellow-700', 'Aprobada': 'bg-green-100 text-green-700', 'Rechazada': 'bg-red-100 text-red-700' }
+    const estados = { 
+      'PENDIENTE': 'bg-yellow-100 text-yellow-700', 
+      'APROBADA': 'bg-green-100 text-green-700', 
+      'RECHAZADA': 'bg-red-100 text-red-700',
+      'Pendiente': 'bg-yellow-100 text-yellow-700', 
+      'Aprobada': 'bg-green-100 text-green-700', 
+      'Rechazada': 'bg-red-100 text-red-700' 
+    }
     return estados[estado] || 'bg-gray-100 text-gray-700'
   }
 
