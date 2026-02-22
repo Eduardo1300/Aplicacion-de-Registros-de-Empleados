@@ -51,9 +51,9 @@ function App() {
                 <Link to="/graficos" className={`px-4 py-2 rounded-lg text-white hover:bg-white/10 transition-colors ${location.pathname === '/graficos' ? 'bg-white/20' : ''}`}>
                   <i className="bi bi-graph-up mr-2"></i>Graficos
                 </Link>
-                <a href="/empleado/login" target="_blank" rel="noopener noreferrer" className="px-4 py-2 rounded-lg text-white hover:bg-white/10 transition-colors">
+                <Link to="/empleado/login" className="px-4 py-2 rounded-lg text-white hover:bg-white/10 transition-colors">
                   <i className="bi bi-person-badge mr-2"></i>Portal Empleado
-                </a>
+                </Link>
                 <button onClick={logout} className="ml-4 px-4 py-2 rounded-lg border border-white/30 text-white hover:bg-white/10 transition-colors text-sm">
                   <i className="bi bi-box-arrow-right mr-1"></i>Salir
                 </button>

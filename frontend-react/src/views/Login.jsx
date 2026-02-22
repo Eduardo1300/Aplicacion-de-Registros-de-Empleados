@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import api from '../services/api'
 
 const Login = () => {
@@ -124,7 +124,7 @@ const Login = () => {
                 <span className="bg-white px-2 py-1 rounded text-purple-600 font-mono">admin123</span>
               </div>
             </div>
-            <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-3 rounded-xl text-center border border-green-100">
+            <Link to="/empleado/login" className="bg-gradient-to-br from-green-50 to-emerald-50 p-3 rounded-xl text-center border border-green-100 hover:from-green-100 hover:to-emerald-100 transition-all">
               <div className="text-green-500 text-xl mb-1"><i className="bi bi-person-check"></i></div>
               <p className="text-xs font-bold text-gray-700 uppercase">Empleado</p>
               <div className="mt-1 text-xs">
@@ -132,7 +132,8 @@ const Login = () => {
                 <span className="text-gray-400 mx-1">/</span>
                 <span className="bg-white px-2 py-1 rounded text-green-600 font-mono">123456</span>
               </div>
-            </div>
+              <p className="text-green-600 text-xs mt-1 font-medium">Click para acceder</p>
+            </Link>
           </div>
         </div>
       </div>
