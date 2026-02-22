@@ -10,6 +10,7 @@ import { CargoModule } from './modules/cargo/cargo.module';
 import { LicenciaModule } from './modules/licencia/licencia.module';
 import { PermissionModule } from './modules/permission/permission.module';
 import { AppController } from './app.controller';
+import { AuditoriaController } from './modules/auditoria/auditoria.controller';
 import * as entities from './entities';
 
 @Module({
@@ -50,6 +51,6 @@ import * as entities from './entities';
     LicenciaModule,
     PermissionModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, AuditoriaController],
 })
 export class AppModule {}
