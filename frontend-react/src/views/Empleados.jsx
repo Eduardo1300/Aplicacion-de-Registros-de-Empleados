@@ -224,6 +224,7 @@ const Empleados = () => {
         </div>
       ) : (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="bg-gray-50">
@@ -283,6 +284,7 @@ const Empleados = () => {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       )}
 

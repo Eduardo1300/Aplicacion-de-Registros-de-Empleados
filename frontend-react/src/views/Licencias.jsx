@@ -155,6 +155,7 @@ const Licencias = () => {
         <div className="flex justify-center py-12"><div className="w-10 h-10 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin"></div></div>
       ) : (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="overflow-x-auto">
           <table className="w-full">
             <thead><tr className="bg-gray-50">
               <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">Empleado</th>
@@ -195,6 +196,7 @@ const Licencias = () => {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       )}
 

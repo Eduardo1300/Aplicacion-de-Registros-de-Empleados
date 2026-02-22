@@ -8,10 +8,15 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
     return !!localStorage.getItem('token')
   })
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   useEffect(() => {
     const token = localStorage.getItem('token')
     setIsLoggedIn(!!token)
+  }, [location])
+
+  useEffect(() => {
+    setMobileMenuOpen(false)
   }, [location])
 
   const logout = () => {
@@ -25,6 +30,14 @@ function App() {
 
   const showNavbar = isLoggedIn && !location.pathname.startsWith('/empleado/') && location.pathname !== '/login'
 
+  const navLinks = [
+    { to: '/empleados', icon: 'bi-people', label: 'Empleados', path: '/empleados' },
+    { to: '/asistencias', icon: 'bi-clock', label: 'Asistencias', path: '/asistencias' },
+    { to: '/licencias', icon: 'bi-calendar', label: 'Licencias', path: '/licencias' },
+    { to: '/auditoria', icon: 'bi-clock-history', label: 'Auditoria', path: '/auditoria' },
+    { to: '/graficos', icon: 'bi-graph-up', label: 'Graficos', path: '/graficos' },
+  ]
+
   return (
     <div id="app">
       {showNavbar && (
@@ -33,32 +46,43 @@ function App() {
             <div className="flex justify-between items-center h-16">
               <Link to="/dashboard" className="flex items-center gap-2 text-white font-semibold text-lg">
                 <i className="bi bi-people-fill text-xl"></i>
-                Sistema de Empleados
+                <span className="hidden sm:inline">Sistema de Empleados</span>
               </Link>
+              
               <div className="hidden md:flex items-center gap-1">
-                <Link to="/empleados" className={`px-4 py-2 rounded-lg text-white hover:bg-white/10 transition-colors ${location.pathname === '/empleados' ? 'bg-white/20' : ''}`}>
-                  <i className="bi bi-people mr-2"></i>Empleados
+                {navLinks.map((link) => (
+                  <Link key={link.to} to={link.to} className={`px-3 py-2 rounded-lg text-white hover:bg-white/10 transition-colors text-sm ${location.pathname === link.path ? 'bg-white/20' : ''}`}>
+                    <i className={`bi ${link.icon} mr-1`}></i>{link.label}
+                  </Link>
+                ))}
+                <Link to="/empleado/login" className="px-3 py-2 rounded-lg text-white hover:bg-white/10 transition-colors text-sm">
+                  <i className="bi bi-person-badge mr-1"></i>Portal
                 </Link>
-                <Link to="/asistencias" className={`px-4 py-2 rounded-lg text-white hover:bg-white/10 transition-colors ${location.pathname === '/asistencias' ? 'bg-white/20' : ''}`}>
-                  <i className="bi bi-clock mr-2"></i>Asistencias
-                </Link>
-                <Link to="/licencias" className={`px-4 py-2 rounded-lg text-white hover:bg-white/10 transition-colors ${location.pathname === '/licencias' ? 'bg-white/20' : ''}`}>
-                  <i className="bi bi-calendar mr-2"></i>Licencias
-                </Link>
-                <Link to="/auditoria" className={`px-4 py-2 rounded-lg text-white hover:bg-white/10 transition-colors ${location.pathname === '/auditoria' ? 'bg-white/20' : ''}`}>
-                  <i className="bi bi-clock-history mr-2"></i>Auditoria
-                </Link>
-                <Link to="/graficos" className={`px-4 py-2 rounded-lg text-white hover:bg-white/10 transition-colors ${location.pathname === '/graficos' ? 'bg-white/20' : ''}`}>
-                  <i className="bi bi-graph-up mr-2"></i>Graficos
-                </Link>
-                <Link to="/empleado/login" className="px-4 py-2 rounded-lg text-white hover:bg-white/10 transition-colors">
-                  <i className="bi bi-person-badge mr-2"></i>Portal Empleado
-                </Link>
-                <button onClick={logout} className="ml-4 px-4 py-2 rounded-lg border border-white/30 text-white hover:bg-white/10 transition-colors text-sm">
-                  <i className="bi bi-box-arrow-right mr-1"></i>Salir
+                <button onClick={logout} className="ml-2 px-3 py-2 rounded-lg border border-white/30 text-white hover:bg-white/10 transition-colors text-sm">
+                  <i className="bi bi-box-arrow-right mr-1"></i><span className="hidden lg:inline">Salir</span>
                 </button>
               </div>
+
+              <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden text-white p-2">
+                <i className={`bi ${mobileMenuOpen ? 'bi-x-lg' : 'bi-list'} text-2xl`}></i>
+              </button>
             </div>
+
+            {mobileMenuOpen && (
+              <div className="md:hidden pb-4 space-y-1">
+                {navLinks.map((link) => (
+                  <Link key={link.to} to={link.to} className={`block px-4 py-2 rounded-lg text-white hover:bg-white/10 transition-colors ${location.pathname === link.path ? 'bg-white/20' : ''}`}>
+                    <i className={`bi ${link.icon} mr-2`}></i>{link.label}
+                  </Link>
+                ))}
+                <Link to="/empleado/login" className="block px-4 py-2 rounded-lg text-white hover:bg-white/10 transition-colors">
+                  <i className="bi bi-person-badge mr-2"></i>Portal Empleado
+                </Link>
+                <button onClick={logout} className="w-full text-left px-4 py-2 rounded-lg border border-white/30 text-white hover:bg-white/10 transition-colors">
+                  <i className="bi bi-box-arrow-right mr-2"></i>Cerrar Sesión
+                </button>
+              </div>
+            )}
           </div>
         </nav>
       )}
