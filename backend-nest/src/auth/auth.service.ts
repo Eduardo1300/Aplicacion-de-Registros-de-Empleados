@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -129,7 +129,7 @@ export class AuthService {
     });
 
     if (!empleado) {
-      throw new Error('Empleado no encontrado');
+      throw new BadRequestException('Empleado no encontrado');
     }
 
     return {
@@ -154,7 +154,7 @@ export class AuthService {
     });
 
     if (!empleado) {
-      throw new Error('Empleado no encontrado');
+      throw new BadRequestException('Empleado no encontrado');
     }
 
     if (data.correo) empleado.correo = data.correo;
@@ -171,13 +171,13 @@ export class AuthService {
     });
 
     if (!empleado) {
-      throw new Error('Empleado no encontrado');
+      throw new BadRequestException('Empleado no encontrado');
     }
 
     if (empleado.password_hash) {
       const passwordMatches = await bcrypt.compare(passwordActual, empleado.password_hash);
       if (!passwordMatches) {
-        throw new Error('Contraseña actual incorrecta');
+        throw new BadRequestException('Contraseña actual incorrecta');
       }
     }
 

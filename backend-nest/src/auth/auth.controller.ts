@@ -47,28 +47,28 @@ export class AuthController {
   @Get('perfil')
   @UseGuards(EmpleadoJwtAuthGuard)
   async getPerfil(@Request() req) {
-    const empleadoId = req.user.id || req.user.sub;
+    const empleadoId = parseInt(req.user?.id || req.user?.sub || '0', 10);
     return this.authService.getEmpleadoPerfil(empleadoId);
   }
 
   @Put('perfil')
   @UseGuards(EmpleadoJwtAuthGuard)
   async updatePerfil(@Request() req, @Body() body: { correo?: string; telefono?: string }) {
-    const empleadoId = req.user.id || req.user.sub;
+    const empleadoId = parseInt(req.user?.id || req.user?.sub || '0', 10);
     return this.authService.updateEmpleadoPerfil(empleadoId, body);
   }
 
   @Put('cambiar-password')
   @UseGuards(EmpleadoJwtAuthGuard)
   async cambiarPassword(@Request() req, @Body() body: { password_actual: string; password_nueva: string }) {
-    const empleadoId = req.user.id || req.user.sub;
+    const empleadoId = parseInt(req.user?.id || req.user?.sub || '0', 10);
     return this.authService.cambiarPassword(empleadoId, body.password_actual, body.password_nueva);
   }
 
   @Get('vacaciones/saldo')
   @UseGuards(EmpleadoJwtAuthGuard)
   async getSaldoVacaciones(@Request() req) {
-    const empleadoId = req.user.id || req.user.sub;
+    const empleadoId = parseInt(req.user?.id || req.user?.sub || '0', 10);
     const empleado = await this.empleadoRepository.findOne({
       where: { id: empleadoId },
     });
