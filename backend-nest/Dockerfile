@@ -6,11 +6,14 @@ WORKDIR /app
 RUN apk add --no-cache postgresql-client
 
 COPY package*.json ./
-RUN npm ci --only=production
+RUN npm ci
 
 COPY . .
 
 RUN npm run build
+
+# Instalar solo dependencias de producción
+RUN npm ci --only=production
 
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
