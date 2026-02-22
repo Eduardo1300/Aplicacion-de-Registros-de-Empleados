@@ -10,6 +10,8 @@ const Licencias = () => {
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [showModal, setShowModal] = useState(false)
+  const [showConfirmModal, setShowConfirmModal] = useState(false)
+  const [confirmAction, setConfirmAction] = useState(null)
   const [formData, setFormData] = useState({
     empleadoId: '',
     tipoLicenciaId: '',
@@ -64,25 +66,32 @@ const Licencias = () => {
     } catch (err) { console.error('Error:', err) }
   }
 
-  const handleAprobar = async (id) => {
-    try { 
-      await api.aprobarLicencia(id, { usuarioAprobadorId: 3, observaciones: 'Aprobado' }); 
-      loadLicencias(); 
-      success('Licencia aprobada correctamente')
-    } catch (err) { 
-      error('Error al aprobar licencia')
-      console.error('Error:', err) 
-    }
+  const handleAprobar = (id) => {
+    setConfirmAction({ type: 'aprobar', id })
+    setShowConfirmModal(true)
   }
 
-  const handleRechazar = async (id) => {
-    try { 
-      await api.rechazarLicencia(id, { usuarioAprobadorId: 3, observaciones: 'Rechazado' }); 
-      loadLicencias(); 
-      success('Licencia rechazada correctamente')
-    } catch (err) { 
-      error('Error al rechazar licencia')
-      console.error('Error:', err) 
+  const handleRechazar = (id) => {
+    setConfirmAction({ type: 'rechazar', id })
+    setShowConfirmModal(true)
+  }
+
+  const confirmDecision = async () => {
+    if (!confirmAction) return
+    try {
+      if (confirmAction.type === 'aprobar') {
+        await api.aprobarLicencia(confirmAction.id, { usuarioAprobadorId: 3, observaciones: 'Aprobado' })
+        success('Licencia aprobada correctamente')
+      } else {
+        await api.rechazarLicencia(confirmAction.id, { usuarioAprobadorId: 3, observaciones: 'Rechazado' })
+        success('Licencia rechazada correctamente')
+      }
+      loadLicencias()
+      setShowConfirmModal(false)
+      setConfirmAction(null)
+    } catch (err) {
+      error(`Error al ${confirmAction.type === 'aprobar' ? 'aprobar' : 'rechazar'} licencia`)
+      console.error('Error:', err)
     }
   }
 
@@ -186,6 +195,53 @@ const Licencias = () => {
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {showConfirmModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setShowConfirmModal(false)}>
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md" onClick={e => e.stopPropagation()}>
+            <div className="p-6">
+              <div className="flex justify-center mb-4">
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                  confirmAction?.type === 'aprobar' ? 'bg-green-100' : 'bg-red-100'
+                }`}>
+                  <i className={`bi ${
+                    confirmAction?.type === 'aprobar' ? 'bi-check-lg text-green-600' : 'bi-x-lg text-red-600'
+                  } text-xl`}></i>
+                </div>
+              </div>
+              <h3 className="text-lg font-semibold text-center mb-2 text-gray-800">
+                {confirmAction?.type === 'aprobar' ? '¿Aprobar Licencia?' : '¿Rechazar Licencia?'}
+              </h3>
+              <p className="text-gray-600 text-center mb-6">
+                {confirmAction?.type === 'aprobar' 
+                  ? '¿Estás seguro de que deseas aprobar esta solicitud de licencia?' 
+                  : '¿Estás seguro de que deseas rechazar esta solicitud de licencia?'}
+              </p>
+              <div className="flex gap-3">
+                <button 
+                  onClick={() => {
+                    setShowConfirmModal(false)
+                    setConfirmAction(null)
+                  }} 
+                  className="flex-1 px-4 py-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 font-medium"
+                >
+                  Cancelar
+                </button>
+                <button 
+                  onClick={confirmDecision} 
+                  className={`flex-1 px-4 py-2 rounded-lg text-white font-medium ${
+                    confirmAction?.type === 'aprobar' 
+                      ? 'bg-green-600 hover:bg-green-700' 
+                      : 'bg-red-600 hover:bg-red-700'
+                  }`}
+                >
+                  {confirmAction?.type === 'aprobar' ? 'Aprobar' : 'Rechazar'}
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
