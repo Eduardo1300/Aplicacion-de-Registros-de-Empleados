@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import api from '../services/api'
 
 const Login = () => {
@@ -10,7 +10,6 @@ const Login = () => {
   })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const [loginType, setLoginType] = useState('admin')
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -18,25 +17,20 @@ const Login = () => {
     setError('')
 
     try {
-      if (loginType === 'admin') {
-        const response = await api.login(formData)
-        const { token, nombreUsuario, rol } = response.data
-        
-        localStorage.setItem('token', token)
-        localStorage.setItem('usuario', JSON.stringify({ nombreUsuario, rol }))
-        
-        navigate('/dashboard')
-      } else {
-        const response = await api.loginEmpleado({ dni: formData.nombreUsuario, password: formData.clave })
-        const { token, empleado } = response.data
-        
+      const response = await api.login(formData)
+      const { token, nombreUsuario, rol, empleado } = response.data
+      
+      if (empleado) {
         localStorage.setItem('empleadoToken', token)
         localStorage.setItem('empleado', JSON.stringify(empleado))
-        
         navigate('/empleado/dashboard')
+      } else {
+        localStorage.setItem('token', token)
+        localStorage.setItem('usuario', JSON.stringify({ nombreUsuario, rol }))
+        navigate('/dashboard')
       }
     } catch (err) {
-      const errorMsg = err.response?.data?.message || 'Error en la autenticación'
+      const errorMsg = err.response?.data?.message || 'Credenciales inválidas'
       setError(errorMsg)
     } finally {
       setLoading(false)
@@ -51,7 +45,7 @@ const Login = () => {
       </div>
       
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 relative z-10">
-        <div className="text-center mb-6">
+        <div className="text-center mb-8">
           <div className="w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center text-4xl text-white bg-gradient-purple shadow-gradient-purple">
             <i className="bi bi-person-badge"></i>
           </div>
@@ -59,21 +53,10 @@ const Login = () => {
           <p className="text-gray-500">Gestión Integral de Empleados</p>
         </div>
 
-        <div className="flex mb-6 bg-gray-100 rounded-lg p-1">
-          <button type="button" onClick={() => { setLoginType('admin'); setError(''); }}
-            className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all ${loginType === 'admin' ? 'bg-white text-purple-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
-            <i className="bi bi-shield-lock mr-1"></i> Administrador
-          </button>
-          <button type="button" onClick={() => { setLoginType('empleado'); setError(''); }}
-            className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all ${loginType === 'empleado' ? 'bg-white text-green-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
-            <i className="bi bi-person mr-1"></i> Empleado
-          </button>
-        </div>
-
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              {loginType === 'admin' ? 'Usuario' : 'DNI'}
+              Usuario o DNI
             </label>
             <div className="relative">
               <input 
@@ -81,10 +64,10 @@ const Login = () => {
                 value={formData.nombreUsuario}
                 onChange={(e) => setFormData({...formData, nombreUsuario: e.target.value})}
                 className="w-full px-4 py-3 pl-10 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:outline-none transition-colors bg-gray-50"
-                placeholder={loginType === 'admin' ? "Ingrese su usuario" : "Ingrese su DNI"}
+                placeholder="admin o DNI de empleado"
                 required
               />
-              <i className={`bi ${loginType === 'admin' ? 'bi-person' : 'bi-credit-card'} absolute left-3 top-1/2 -translate-y-1/2 text-gray-400`}></i>
+              <i className="bi bi-person absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
             </div>
           </div>
           
@@ -118,12 +101,18 @@ const Login = () => {
           <button 
             type="submit" 
             disabled={loading}
-            className={`w-full py-3 rounded-xl text-white font-semibold text-lg disabled:opacity-70 flex items-center justify-center gap-2 ${loginType === 'admin' ? 'bg-gradient-purple shadow-gradient-purple' : 'bg-gradient-green shadow-gradient-green'}`}
+            className="w-full py-3 rounded-xl text-white font-semibold text-lg transition-all hover:shadow-lg disabled:opacity-70 bg-gradient-purple shadow-gradient-purple"
           >
             {loading ? (
-              <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+              <span className="flex items-center justify-center gap-2">
+                <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                Verificando...
+              </span>
             ) : (
-              <><i className="bi bi-arrow-right-circle-fill"></i> Iniciar Sesión</>
+              <span className="flex items-center justify-center gap-2">
+                <i className="bi bi-arrow-right-circle-fill"></i>
+                Iniciar Sesión
+              </span>
             )}
           </button>
         </form>
