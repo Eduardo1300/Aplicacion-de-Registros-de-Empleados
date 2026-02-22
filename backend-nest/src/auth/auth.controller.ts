@@ -1,4 +1,4 @@
-import { Controller, Post, Body, HttpCode, HttpStatus, Get, Put, UseGuards, Request } from '@nestjs/common';
+import { Controller, Post, Body, HttpCode, HttpStatus, Get, Put, UseGuards, Request, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from '../dto/login.dto';
 import { LoginEmpleadoDto } from '../dto/login-empleado.dto';
@@ -18,22 +18,18 @@ export class AuthController {
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  async login(@Body() body: LoginDto | LoginEmpleadoDto) {
-    const loginDto = body as LoginDto;
-    const loginEmpleadoDto = body as LoginEmpleadoDto;
+  async login(@Body() body: { nombreUsuario: string; clave: string }) {
+    const { nombreUsuario, clave } = body;
     
-    if ('nombreUsuario' in loginDto && 'clave' in loginDto) {
-      try {
-        return await this.authService.login(loginDto);
-      } catch (err) {
-        if (loginDto.nombreUsuario.length === 8 && /^\d+$/.test(loginDto.nombreUsuario)) {
-          return await this.authService.loginEmpleado({ dni: loginDto.nombreUsuario, password: loginDto.clave });
-        }
-        throw err;
-      }
+    if (!nombreUsuario || !clave) {
+      throw new UnauthorizedException('Credenciales requeridas');
+    }
+
+    if (/^\d{8}$/.test(nombreUsuario)) {
+      return await this.authService.loginEmpleado({ dni: nombreUsuario, password: clave });
     }
     
-    throw new Error('Credenciales inválidas');
+    return await this.authService.login({ nombreUsuario, clave });
   }
 
   @Post('register')
