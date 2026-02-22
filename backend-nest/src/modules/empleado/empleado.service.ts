@@ -58,7 +58,9 @@ export class EmpleadoService {
   async delete(id: number): Promise<void> {
     const empleado = await this.findById(id);
     if (empleado) {
-      await this.empleadoRepository.remove(empleado);
+      // Soft delete - change status to Inactivo instead of removing
+      empleado.estado = 'Inactivo';
+      await this.empleadoRepository.save(empleado);
     }
   }
 
