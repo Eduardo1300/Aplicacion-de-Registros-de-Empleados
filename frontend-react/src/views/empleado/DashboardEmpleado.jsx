@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import SaldoLicencias from '../../components/SaldoLicencias'
 
 const DashboardEmpleado = () => {
   const navigate = useNavigate()
@@ -76,34 +77,41 @@ const DashboardEmpleado = () => {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
-          <Link to="/empleado/asistencia" className="bg-white rounded-xl p-4 md:p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl flex items-center justify-center text-white text-xl bg-gradient-green"><i className="bi bi-clock-fill"></i></div>
-              <div>
-                <div className="font-semibold text-gray-800">Asistencia</div>
-                <div className="text-sm text-gray-500 hidden sm:block">Registra tu asistencia diaria</div>
-              </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6 md:mb-8">
+          <div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <Link to="/empleado/asistencia" className="bg-white rounded-xl p-4 md:p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl flex items-center justify-center text-white text-xl bg-gradient-green"><i className="bi bi-clock-fill"></i></div>
+                  <div>
+                    <div className="font-semibold text-gray-800">Asistencia</div>
+                    <div className="text-sm text-gray-500 hidden sm:block">Registra tu asistencia</div>
+                  </div>
+                </div>
+              </Link>
+              <Link to="/empleado/licencias" className="bg-white rounded-xl p-4 md:p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl flex items-center justify-center text-white text-xl bg-gradient-yellow"><i className="bi bi-calendar-check-fill"></i></div>
+                  <div>
+                    <div className="font-semibold text-gray-800">Mis Licencias</div>
+                    <div className="text-sm text-gray-500 hidden sm:block">Ver licencias</div>
+                  </div>
+                </div>
+              </Link>
+              <Link to="/empleado/perfil" className="bg-white rounded-xl p-4 md:p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl flex items-center justify-center text-white text-xl bg-gradient-purple"><i className="bi bi-person-fill"></i></div>
+                  <div>
+                    <div className="font-semibold text-gray-800">Mi Perfil</div>
+                    <div className="text-sm text-gray-500 hidden sm:block">Actualizar datos</div>
+                  </div>
+                </div>
+              </Link>
             </div>
-          </Link>
-          <Link to="/empleado/licencias" className="bg-white rounded-xl p-4 md:p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl flex items-center justify-center text-white text-xl bg-gradient-yellow"><i className="bi bi-calendar-check-fill"></i></div>
-              <div>
-                <div className="font-semibold text-gray-800">Mis Licencias</div>
-                <div className="text-sm text-gray-500 hidden sm:block">Ver licencias solicitadas</div>
-              </div>
-            </div>
-          </Link>
-          <Link to="/empleado/perfil" className="bg-white rounded-xl p-4 md:p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all md:col-span-1 lg:col-span-1">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl flex items-center justify-center text-white text-xl bg-gradient-purple"><i className="bi bi-person-fill"></i></div>
-              <div>
-                <div className="font-semibold text-gray-800">Mi Perfil</div>
-                <div className="text-sm text-gray-500 hidden sm:block">Actualizar mis datos</div>
-              </div>
-            </div>
-          </Link>
+          </div>
+          <div className="hidden lg:block">
+            <SaldoLicencias diasDisponibles={12} diasUsados={8} diasTotales={20} />
+          </div>
         </div>
 
         <div className="bg-white rounded-xl p-4 md:p-6 shadow-sm border border-gray-100">

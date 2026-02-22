@@ -58,6 +58,10 @@ function App() {
                 <Link to="/empleado/login" className="px-3 py-2 rounded-lg text-white hover:bg-white/10 transition-colors text-sm">
                   <i className="bi bi-person-badge mr-1"></i>Portal
                 </Link>
+                <button className="relative px-3 py-2 rounded-lg text-white hover:bg-white/10 transition-colors text-sm">
+                  <i className="bi bi-bell"></i>
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">3</span>
+                </button>
                 <button onClick={logout} className="ml-2 px-3 py-2 rounded-lg border border-white/30 text-white hover:bg-white/10 transition-colors text-sm">
                   <i className="bi bi-box-arrow-right mr-1"></i><span className="hidden lg:inline">Salir</span>
                 </button>

@@ -3,12 +3,15 @@ import api from '../services/api'
 import { useToast } from '../context/ToastContext'
 import { exportEmployeesToPDF } from '../utils/exportPDF'
 import { exportEmployeesToExcel } from '../utils/exportExcel'
+import Pagination from '../components/Pagination'
 
 const Empleados = () => {
   const { success, error } = useToast()
   const [empleados, setEmpleados] = useState([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 10
   const [showModal, setShowModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [empleadoToDelete, setEmpleadoToDelete] = useState(null)
@@ -73,6 +76,12 @@ const Empleados = () => {
       emp.correo?.toLowerCase().includes(query)
     )
   })
+
+  const totalPages = Math.ceil(filteredEmpleados.length / itemsPerPage)
+  const paginatedEmpleados = filteredEmpleados.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  )
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -238,7 +247,7 @@ const Empleados = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredEmpleados.map((empleado, index) => (
+              {paginatedEmpleados.map((empleado, index) => (
                 <tr key={empleado.id} className={`border-t border-gray-100 hover:bg-gray-50 ${empleado.estado === 'Inactivo' ? 'opacity-60' : ''}`}>
                   <td className="px-4 py-3 text-sm text-gray-700">{index + 1}</td>
                   <td className="px-4 py-3">
@@ -285,6 +294,13 @@ const Empleados = () => {
             </tbody>
           </table>
           </div>
+          {totalPages > 1 && (
+            <Pagination 
+              currentPage={currentPage} 
+              totalPages={totalPages} 
+              onPageChange={setCurrentPage} 
+            />
+          )}
         </div>
       )}
 
