@@ -3,12 +3,17 @@ import api from '../services/api'
 import { useToast } from '../context/ToastContext'
 import { exportAsistenciasToPDF } from '../utils/exportPDF'
 import { exportAsistenciasToExcel } from '../utils/exportExcel'
+import Pagination from '../components/Pagination'
 
 const Asistencias = () => {
   const { success, error } = useToast()
   const [asistencias, setAsistencias] = useState([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
+  const [filterEstado, setFilterEstado] = useState('')
+  const [filterFecha, setFilterFecha] = useState('')
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 10
   const [showModal, setShowModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [itemToDelete, setItemToDelete] = useState(null)
@@ -51,11 +56,17 @@ const Asistencias = () => {
   const filteredAsistencias = (asistencias || []).filter(a => {
     const query = searchQuery.toLowerCase()
     const nombreCompleto = `${a.empleado?.nombre || ''} ${a.empleado?.apellido || ''}`.toLowerCase()
-    return (
-      nombreCompleto.includes(query) ||
-      (a.fechaAsistencia || a.fecha || '').includes(query)
-    )
+    const matchesSearch = nombreCompleto.includes(query) || (a.fechaAsistencia || a.fecha || '').includes(query)
+    const matchesEstado = !filterEstado || a.estado === filterEstado
+    const matchesFecha = !filterFecha || (a.fechaAsistencia || a.fecha || '').startsWith(filterFecha)
+    return matchesSearch && matchesEstado && matchesFecha
   })
+
+  const totalPages = Math.ceil(filteredAsistencias.length / itemsPerPage)
+  const paginatedAsistencias = filteredAsistencias.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  )
 
   const getTipoLabel = (estado) => {
     const labels = {
@@ -149,18 +160,27 @@ const Asistencias = () => {
       </div>
 
       <div className="flex gap-4 mb-6 items-center flex-wrap">
-        <div className="relative flex-1 max-w-md">
+        <div className="relative flex-1 min-w-[200px]">
           <input type="text" placeholder="Buscar por empleado o fecha..."
-            value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
+            value={searchQuery} onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
             className="w-full px-4 py-2 pl-10 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-500" />
           <i className="bi bi-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
         </div>
+        <select value={filterEstado} onChange={(e) => { setFilterEstado(e.target.value); setCurrentPage(1); }}
+          className="px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-500">
+          <option value="">Todos los estados</option>
+          <option value="PRESENTE">Presente</option>
+          <option value="TARDANZA">Tardanza</option>
+          <option value="AUSENTE">Ausente</option>
+        </select>
+        <input type="date" value={filterFecha} onChange={(e) => { setFilterFecha(e.target.value); setCurrentPage(1); }}
+          className="px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-500" />
         <div className="flex gap-2">
           <button onClick={handleExportPDF} className="px-3 py-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 flex items-center gap-2">
-            <i className="bi bi-file-earmark-pdf text-red-500"></i> PDF
+            <i className="bi bi-file-earmark-pdf text-red-500"></i> <span className="hidden sm:inline">PDF</span>
           </button>
           <button onClick={handleExportExcel} className="px-3 py-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 flex items-center gap-2">
-            <i className="bi bi-file-earmark-excel text-green-500"></i> Excel
+            <i className="bi bi-file-earmark-excel text-green-500"></i> <span className="hidden sm:inline">Excel</span>
           </button>
         </div>
       </div>
@@ -191,7 +211,7 @@ const Asistencias = () => {
               <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">Acciones</th>
             </tr></thead>
             <tbody>
-              {filteredAsistencias.map((asistencia) => (
+              {paginatedAsistencias.map((asistencia) => (
                 <tr key={asistencia.id} className="border-t border-gray-100 hover:bg-gray-50">
                   <td className="px-4 py-3 text-sm text-gray-700">{asistencia.fechaAsistencia || asistencia.fecha}</td>
                   <td className="px-4 py-3">
@@ -215,6 +235,9 @@ const Asistencias = () => {
             </tbody>
           </table>
           </div>
+          {totalPages > 1 && (
+            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+          )}
         </div>
       )}
 

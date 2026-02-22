@@ -50,7 +50,7 @@ export class EmpleadoService {
     }
 
     const empleado = this.empleadoRepository.create(empleadoData);
-    return await this.empleadoRepository.save(empleado);
+    return (await this.empleadoRepository.save(empleado)) as unknown as Empleado;
   }
 
   async update(id: number, updateData: Partial<Empleado> & { password?: string }): Promise<Empleado | null> {
@@ -65,7 +65,7 @@ export class EmpleadoService {
     }
     
     Object.assign(empleado, dataToUpdate);
-    return await this.empleadoRepository.save(empleado);
+    return (await this.empleadoRepository.save(empleado)) as unknown as Empleado;
   }
 
   async delete(id: number): Promise<void> {

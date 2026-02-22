@@ -3,12 +3,16 @@ import api from '../services/api'
 import { useToast } from '../context/ToastContext'
 import { exportLicenciasToPDF } from '../utils/exportPDF'
 import { exportLicenciasToExcel } from '../utils/exportExcel'
+import Pagination from '../components/Pagination'
 
 const Licencias = () => {
   const { success, error } = useToast()
   const [licencias, setLicencias] = useState([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
+  const [filterEstado, setFilterEstado] = useState('')
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 10
   const [showModal, setShowModal] = useState(false)
   const [showConfirmModal, setShowConfirmModal] = useState(false)
   const [confirmAction, setConfirmAction] = useState(null)
@@ -53,8 +57,16 @@ const Licencias = () => {
 
   const filteredLicencias = licencias.filter(l => {
     const query = searchQuery.toLowerCase()
-    return l.empleado?.nombre?.toLowerCase().includes(query) || l.estado?.toLowerCase().includes(query)
+    const matchesSearch = l.empleado?.nombre?.toLowerCase().includes(query) || l.estado?.toLowerCase().includes(query)
+    const matchesEstado = !filterEstado || l.estado === filterEstado
+    return matchesSearch && matchesEstado
   })
+
+  const totalPages = Math.ceil(filteredLicencias.length / itemsPerPage)
+  const paginatedLicencias = filteredLicencias.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  )
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -136,14 +148,21 @@ const Licencias = () => {
       </div>
 
       <div className="flex gap-4 mb-6 items-center flex-wrap">
-        <div className="relative flex-1 max-w-md">
-          <input type="text" placeholder="Buscar licencias..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
+        <div className="relative flex-1 min-w-[200px]">
+          <input type="text" placeholder="Buscar licencias..." value={searchQuery} onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
             className="w-full px-4 py-2 pl-10 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-yellow-500" />
           <i className="bi bi-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
         </div>
+        <select value={filterEstado} onChange={(e) => { setFilterEstado(e.target.value); setCurrentPage(1); }}
+          className="px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-yellow-500">
+          <option value="">Todos los estados</option>
+          <option value="PENDIENTE">Pendiente</option>
+          <option value="APROBADA">Aprobada</option>
+          <option value="RECHAZADA">Rechazada</option>
+        </select>
         <div className="flex gap-2">
           <button onClick={handleExportPDF} className="px-3 py-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 flex items-center gap-2">
-            <i className="bi bi-file-earmark-pdf text-red-500"></i> PDF
+            <i className="bi bi-file-earmark-pdf text-red-500"></i> <span className="hidden sm:inline">PDF</span>
           </button>
           <button onClick={handleExportExcel} className="px-3 py-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 flex items-center gap-2">
             <i className="bi bi-file-earmark-excel text-green-500"></i> Excel
@@ -166,7 +185,7 @@ const Licencias = () => {
               <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">Acciones</th>
             </tr></thead>
             <tbody>
-              {filteredLicencias.map((licencia) => (
+              {paginatedLicencias.map((licencia) => (
                 <tr key={licencia.id} className="border-t border-gray-100 hover:bg-gray-50">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
@@ -197,6 +216,9 @@ const Licencias = () => {
             </tbody>
           </table>
           </div>
+          {totalPages > 1 && (
+            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+          )}
         </div>
       )}
 
