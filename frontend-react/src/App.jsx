@@ -29,7 +29,7 @@ function App() {
         <nav className="bg-gradient-to-r from-purple-600 to-indigo-600 shadow-lg">
           <div className="container mx-auto px-4">
             <div className="flex justify-between items-center h-16">
-              <Link to="/" className="flex items-center gap-2 text-white font-semibold text-lg">
+              <Link to="/dashboard" className="flex items-center gap-2 text-white font-semibold text-lg">
                 <i className="bi bi-people-fill text-xl"></i>
                 Sistema de Empleados
               </Link>
