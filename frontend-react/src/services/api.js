@@ -115,4 +115,5 @@ export default {
   
   misSolicitudesLicencia: () => empleadoClient.get('/solicitud-licencia/mis'),
   crearSolicitudLicencia: (data) => empleadoClient.post('/solicitud-licencia', data),
+  updatePerfil: (data) => empleadoClient.put('/auth/perfil', data),
 }
