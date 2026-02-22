@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Empleado } from '../../entities/empleado.entity';
 import { CreateEmpleadoDto } from '../../dto/create-empleado.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class EmpleadoService {
@@ -39,17 +40,27 @@ export class EmpleadoService {
       throw new BadRequestException('DNI ya existe');
     }
 
-    const empleado = this.empleadoRepository.create({
+    const empleadoData: any = {
       ...createEmpleadoDto,
       estado: createEmpleadoDto.estado || 'Activo',
-    });
+    };
 
+    if (createEmpleadoDto.password) {
+      empleadoData.password_hash = await bcrypt.hash(createEmpleadoDto.password, 10);
+    }
+
+    const empleado = this.empleadoRepository.create(empleadoData);
     return this.empleadoRepository.save(empleado);
   }
 
   async update(id: number, updateData: Partial<Empleado>): Promise<Empleado | null> {
     const empleado = await this.findById(id);
     if (!empleado) return null;
+    
+    if (updateData.password) {
+      updateData['password_hash'] = await bcrypt.hash(updateData.password, 10);
+      delete updateData.password;
+    }
     
     Object.assign(empleado, updateData);
     return this.empleadoRepository.save(empleado);
@@ -58,7 +69,6 @@ export class EmpleadoService {
   async delete(id: number): Promise<void> {
     const empleado = await this.findById(id);
     if (empleado) {
-      // Soft delete - change status to Inactivo instead of removing
       empleado.estado = 'Inactivo';
       await this.empleadoRepository.save(empleado);
     }

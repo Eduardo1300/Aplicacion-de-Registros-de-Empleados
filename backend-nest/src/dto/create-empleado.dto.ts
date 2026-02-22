@@ -8,4 +8,5 @@ export class CreateEmpleadoDto {
   estado?: string;
   departamentoId?: number;
   cargoId?: number;
+  password?: string;
 }

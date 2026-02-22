@@ -22,7 +22,8 @@ const Empleados = () => {
     departamentoId: '',
     cargoId: '',
     estado: 'Activo',
-    fechaIngreso: new Date().toISOString().split('T')[0]
+    fechaIngreso: new Date().toISOString().split('T')[0],
+    password: ''
   })
   const [departamentos, setDepartamentos] = useState([])
   const [cargos, setCargos] = useState([])
@@ -147,7 +148,8 @@ const Empleados = () => {
       departamentoId: '',
       cargoId: '',
       estado: 'Activo',
-      fechaIngreso: new Date().toISOString().split('T')[0]
+      fechaIngreso: new Date().toISOString().split('T')[0],
+      password: ''
     })
   }
 
@@ -397,6 +399,19 @@ const Empleados = () => {
                     <option value="Activo">Activo</option>
                     <option value="Inactivo">Inactivo</option>
                   </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {editingEmpleado ? 'Nueva Contraseña (opcional)' : 'Contraseña'}
+                  </label>
+                  <input 
+                    type="password" 
+                    value={formData.password}
+                    onChange={e => setFormData({...formData, password: e.target.value})}
+                    className="w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    placeholder={editingEmpleado ? "Dejar vacío para mantener" : "Contraseña para acceso empleado"}
+                    {...(editingEmpleado ? {} : { required: true })}
+                  />
                 </div>
               </div>
               <div className="flex justify-end gap-3 mt-6">
