@@ -51,7 +51,7 @@ const Graficos = () => {
     return { date, present, tardanza, ausente }
   })
 
-  const asistenciaList = Array.isArray(asistencias) ? asistentes : []
+  const asistenciaList = Array.isArray(asistencias) ? [...asistencias] : []
 
   const departmentCounts = empleados.reduce((acc, emp) => {
     const dept = emp.departamento?.nombre || 'Sin asignar'
@@ -66,7 +66,8 @@ const Graficos = () => {
   }, {})
 
   const asistenciaCounts = asistenciaList.reduce((acc, a) => {
-    acc[a.estado] = (acc[a.estado] || 0) + 1
+    const estado = a.estado || 'SIN_REGISTRO'
+    acc[estado] = (acc[estado] || 0) + 1
     return acc
   }, {})
 
@@ -180,14 +181,14 @@ const Graficos = () => {
     ]
   }
 
-  const barHorizontalData = {
+  const asistenciaDoughnutData = {
     labels: Object.keys(asistenciaCounts),
     datasets: [{
-      label: 'Estado de Asistencias',
       data: Object.values(asistenciaCounts),
-      backgroundColor: [colores.green[0], colores.yellow[0], colores.red[0]],
-      borderRadius: 8,
-      barThickness: 40
+      backgroundColor: [colores.green[0], colores.yellow[0], colores.red[0], colores.blue[0]],
+      borderWidth: 2,
+      borderColor: '#fff',
+      hoverOffset: 10
     }]
   }
 
@@ -292,7 +293,7 @@ const Graficos = () => {
         <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
           <h3 className="text-lg font-bold text-gray-800 mb-6">Estado de Asistencias</h3>
           <div className="h-64">
-            <Doughnut data={pieChartData} options={pieOptions} />
+            <Doughnut data={asistenciaDoughnutData} options={pieOptions} />
           </div>
         </div>
       </div>
@@ -331,7 +332,7 @@ const Graficos = () => {
         <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
           <h3 className="text-lg font-bold text-gray-800 mb-4">Resumen de Estados</h3>
           <div className="h-64">
-            <Bar data={barHorizontalData} options={horizontalBarOptions} />
+            <Bar data={barChartData} options={horizontalBarOptions} />
           </div>
         </div>
       </div>

@@ -1,9 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement } from 'chart.js'
-import { Bar, Pie, Doughnut, Line } from 'react-chartjs-2'
 import api from '../services/api'
-
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement)
 
 const Auditoria = () => {
   const [logs, setLogs] = useState([])
@@ -42,76 +38,6 @@ const Auditoria = () => {
     return 'bg-blue-100 text-blue-700'
   }
 
-  const actionCounts = logs.reduce((acc, log) => {
-    acc[log.accion] = (acc[log.accion] || 0) + 1
-    return acc
-  }, {})
-
-  const entityCounts = logs.reduce((acc, log) => {
-    acc[log.entidad] = (acc[log.entidad] || 0) + 1
-    return acc
-  }, {})
-
-  const dailyCounts = logs.reduce((acc, log) => {
-    const date = new Date(log.fecha).toLocaleDateString('es-ES')
-    acc[date] = (acc[date] || 0) + 1
-    return acc
-  }, {})
-
-  const userCounts = logs.reduce((acc, log) => {
-    const user = log.usuario || 'Sistema'
-    acc[user] = (acc[user] || 0) + 1
-    return acc
-  }, {})
-
-  const pieData = {
-    labels: Object.keys(actionCounts),
-    datasets: [{
-      data: Object.values(actionCounts),
-      backgroundColor: ['#10b981', '#f59e0b', '#ef4444', '#3b82f6'],
-      borderWidth: 2,
-      borderColor: '#fff'
-    }]
-  }
-
-  const doughnutData = {
-    labels: Object.keys(entityCounts),
-    datasets: [{
-      data: Object.values(entityCounts),
-      backgroundColor: ['#8b5cf6', '#06b6d4', '#f43f5e', '#10b981', '#f59e0b', '#3b82f6', '#ec4899'],
-      borderWidth: 2,
-      borderColor: '#fff'
-    }]
-  }
-
-  const barData = {
-    labels: Object.keys(userCounts).slice(0, 5),
-    datasets: [{
-      label: 'Acciones por Usuario',
-      data: Object.values(userCounts).slice(0, 5),
-      backgroundColor: '#8b5cf6',
-      borderRadius: 8
-    }]
-  }
-
-  const lineData = {
-    labels: Object.keys(dailyCounts).slice(-7),
-    datasets: [{
-      label: 'Actividades por Día',
-      data: Object.values(dailyCounts).slice(-7),
-      borderColor: '#3b82f6',
-      backgroundColor: 'rgba(59, 130, 246, 0.1)',
-      fill: true,
-      tension: 0.4
-    }]
-  }
-
-  const chartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: { legend: { position: 'bottom' } }
-  }
-
   const uniqueEntities = [...new Set(logs.map(l => l.entidad))]
 
   return (
@@ -129,9 +55,9 @@ const Auditoria = () => {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
         {[
           { title: 'Total Acciones', value: logs.length, icon: 'bi-list-task', color: 'from-blue-500 to-cyan-500' },
-          { title: 'Creaciones', value: actionCounts.CREATE || 0, icon: 'bi-plus-circle', color: 'from-green-500 to-emerald-500' },
-          { title: 'Actualizaciones', value: actionCounts.UPDATE || 0, icon: 'bi-pencil', color: 'from-yellow-500 to-orange-500' },
-          { title: 'Eliminaciones', value: actionCounts.DELETE || 0, icon: 'bi-trash', color: 'from-red-500 to-rose-500' }
+          { title: 'Creaciones', value: logs.filter(l => l.accion === 'CREATE').length, icon: 'bi-plus-circle', color: 'from-green-500 to-emerald-500' },
+          { title: 'Actualizaciones', value: logs.filter(l => l.accion === 'UPDATE').length, icon: 'bi-pencil', color: 'from-yellow-500 to-orange-500' },
+          { title: 'Eliminaciones', value: logs.filter(l => l.accion === 'DELETE').length, icon: 'bi-trash', color: 'from-red-500 to-rose-500' }
         ].map((stat, i) => (
           <div key={i} className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all">
             <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center mb-4`}>
@@ -141,26 +67,6 @@ const Auditoria = () => {
             <div className="text-gray-500 text-sm">{stat.title}</div>
           </div>
         ))}
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
-          <h3 className="text-lg font-bold text-gray-800 mb-4">Acciones por Tipo</h3>
-          <div className="h-64"><Pie data={pieData} options={chartOptions} /></div>
-        </div>
-        <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
-          <h3 className="text-lg font-bold text-gray-800 mb-4">Entidades Afectadas</h3>
-          <div className="h-64"><Doughnut data={doughnutData} options={chartOptions} /></div>
-        </div>
-        <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
-          <h3 className="text-lg font-bold text-gray-800 mb-4">Usuarios Activos</h3>
-          <div className="h-64"><Bar data={barData} options={chartOptions} /></div>
-        </div>
-      </div>
-
-      <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 mb-8">
-        <h3 className="text-lg font-bold text-gray-800 mb-4">Actividad por Día (Última Semana)</h3>
-        <div className="h-64"><Line data={lineData} options={chartOptions} /></div>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
