@@ -103,7 +103,7 @@ export default {
   getEstadisticas: () => apiClient.get('/estadisticas'),
   getEstadisticasDepartamento: (id) => apiClient.get(`/estadisticas/departamento/${id}`),
 
-  getTiposLicencia: () => apiClient.get('/tipo-licencia'),
+  getTiposLicencia: () => apiClient.get('/tipos-licencia'),
 
   getAuditoria: () => apiClient.get('/auditoria'),
   getAuditoriaByEntity: (entity) => apiClient.get(`/auditoria?entity=${entity}`),
