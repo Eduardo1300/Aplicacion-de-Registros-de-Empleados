@@ -65,8 +65,10 @@ const Licencias = () => {
   }
 
   const handleAprobar = async (id) => {
+    const usuario = JSON.parse(localStorage.getItem('usuario') || '{}')
+    const usuarioId = usuario?.id || 1
     try { 
-      await api.aprobarLicencia(id); 
+      await api.aprobarLicencia(id, { usuarioAprobadorId: usuarioId, observaciones: 'Aprobado' }); 
       loadLicencias(); 
       success('Licencia aprobada correctamente')
     } catch (err) { 
@@ -76,8 +78,10 @@ const Licencias = () => {
   }
 
   const handleRechazar = async (id) => {
+    const usuario = JSON.parse(localStorage.getItem('usuario') || '{}')
+    const usuarioId = usuario?.id || 1
     try { 
-      await api.rechazarLicencia(id); 
+      await api.rechazarLicencia(id, { usuarioAprobadorId: usuarioId, observaciones: 'Rechazado' }); 
       loadLicencias(); 
       success('Licencia rechazada correctamente')
     } catch (err) { 

@@ -96,8 +96,8 @@ export default {
   getSolicitudesLicencia: () => apiClient.get('/solicitud-licencia'),
   getSolicitudLicencia: (id) => apiClient.get(`/solicitud-licencia/${id}`),
   createSolicitudLicencia: (data) => apiClient.post('/solicitud-licencia', data),
-  aprobarLicencia: (id) => apiClient.post(`/solicitud-licencia/${id}/aprobar`),
-  rechazarLicencia: (id) => apiClient.post(`/solicitud-licencia/${id}/rechazar`),
+  aprobarLicencia: (id, data = {}) => apiClient.post(`/solicitud-licencia/${id}/aprobar`, data),
+  rechazarLicencia: (id, data = {}) => apiClient.post(`/solicitud-licencia/${id}/rechazar`, data),
   deleteSolicitudLicencia: (id) => apiClient.delete(`/solicitud-licencia/${id}`),
 
   getEstadisticas: () => apiClient.get('/estadisticas'),
