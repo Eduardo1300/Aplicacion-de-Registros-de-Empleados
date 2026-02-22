@@ -51,7 +51,7 @@ const Graficos = () => {
     return { date, present, tardanza, ausente }
   })
 
-  const asistenciaList = Array.isArray(asistencias) ? asistencia : []
+  const asistenciaList = Array.isArray(asistencias) ? asistentes : []
 
   const departmentCounts = empleados.reduce((acc, emp) => {
     const dept = emp.departamento?.nombre || 'Sin asignar'

@@ -5,7 +5,9 @@ import Router from './router'
 function App() {
   const location = useLocation()
   const navigate = useNavigate()
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    return !!localStorage.getItem('token')
+  })
 
   useEffect(() => {
     const token = localStorage.getItem('token')
