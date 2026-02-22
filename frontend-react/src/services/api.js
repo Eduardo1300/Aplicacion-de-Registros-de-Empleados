@@ -108,6 +108,7 @@ export default {
   getAuditoria: () => apiClient.get('/auditoria'),
   getAuditoriaByEntity: (entity) => apiClient.get(`/auditoria?entity=${entity}`),
 
+  getAsistenciaHoy: () => empleadoClient.get('/asistencia/hoy'),
   marcarEntrada: () => empleadoClient.post('/asistencia/entrada'),
   marcarSalida: () => empleadoClient.post('/asistencia/salida'),
   getMisAsistencias: (mes, año) => empleadoClient.get('/asistencia/historial', { params: { mes, año } }),

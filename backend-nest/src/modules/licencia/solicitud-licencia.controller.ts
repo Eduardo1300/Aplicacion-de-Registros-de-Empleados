@@ -7,6 +7,25 @@ import { SolicitudLicenciaService } from './solicitud-licencia.service';
 export class SolicitudLicenciaController {
   constructor(private solicitudService: SolicitudLicenciaService) {}
 
+  // Endpoints específicos PRIMERO (para empleados)
+  @Get('mis')
+  @UseGuards(EmpleadoJwtAuthGuard)
+  async misSolicitudes(@Request() req) {
+    const empleadoId = parseInt(req.user?.id || req.user?.sub || '0', 10);
+    return this.solicitudService.findByEmpleado(empleadoId);
+  }
+
+  @Get('estado/:estado')
+  async findByEstado(@Param('estado') estado: string) {
+    return this.solicitudService.findByEstado(estado);
+  }
+
+  @Get('empleado/:empleadoId')
+  async findByEmpleado(@Param('empleadoId') empleadoId: string) {
+    return this.solicitudService.findByEmpleado(Number(empleadoId));
+  }
+
+  // Endpoints genéricos DESPUÉS (para admin)
   @Get()
   async findAll() {
     return this.solicitudService.findAll();
@@ -15,16 +34,6 @@ export class SolicitudLicenciaController {
   @Get(':id')
   async findById(@Param('id') id: string) {
     return this.solicitudService.findById(Number(id));
-  }
-
-  @Get('empleado/:empleadoId')
-  async findByEmpleado(@Param('empleadoId') empleadoId: string) {
-    return this.solicitudService.findByEmpleado(Number(empleadoId));
-  }
-
-  @Get('estado/:estado')
-  async findByEstado(@Param('estado') estado: string) {
-    return this.solicitudService.findByEstado(estado);
   }
 
   @Post()
@@ -55,13 +64,5 @@ export class SolicitudLicenciaController {
   @UseGuards(JwtAuthGuard)
   async delete(@Param('id') id: string) {
     return this.solicitudService.delete(Number(id));
-  }
-
-  // Endpoints para empleados
-  @Get('mis')
-  @UseGuards(EmpleadoJwtAuthGuard)
-  async misSolicitudes(@Request() req) {
-    const empleadoId = req.user.id || req.user.sub;
-    return this.solicitudService.findByEmpleado(empleadoId);
   }
 }

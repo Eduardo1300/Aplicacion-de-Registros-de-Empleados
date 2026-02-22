@@ -82,6 +82,11 @@ const MisLicencias = () => {
         
         {loading ? (
           <div className="flex justify-center py-12"><div className="w-10 h-10 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin"></div></div>
+        ) : licencias.length === 0 ? (
+          <div className="bg-white rounded-xl p-8 text-center border border-gray-100">
+            <i className="bi bi-inbox text-4xl text-gray-300 block mb-3"></i>
+            <p className="text-gray-600">No hay solicitudes de licencia</p>
+          </div>
         ) : (
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="overflow-x-auto">

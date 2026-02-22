@@ -21,18 +21,15 @@ const DashboardEmpleado = () => {
   const loadStats = async () => {
     try {
       setLoadingStats(true)
-      const token = localStorage.getItem('empleadoToken')
       
       const today = new Date().toISOString().split('T')[0]
       const [asistenciasRes, licenciasRes] = await Promise.all([
-        api.getMisAsistencias(),
+        api.getAsistenciaHoy(),
         api.misSolicitudesLicencia()
       ])
       
-      const asistenciaHoy = (asistenciasRes.data || []).find(a => 
-        a.fechaAsistencia === today || a.fecha === today
-      )
-      
+      const asistenciaHoy = asistenciasRes.data ? asistenciasRes.data : null
+
       const licenciasPendientes = (licenciasRes.data || []).filter(l => 
         l.estado === 'PENDIENTE' || l.estado === 'Pendiente'
       ).length

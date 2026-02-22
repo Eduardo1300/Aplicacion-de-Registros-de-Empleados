@@ -93,27 +93,33 @@ export class AsistenciaService {
   }
 
   async marcarEntrada(empleadoId: number) {
-    const hoy = new Date();
-    hoy.setHours(0, 0, 0, 0);
+    const ahora = new Date().toTimeString().split(' ')[0].substring(0, 8);
+    
+    // Verificar si ya existe registro de hoy
+    const existente = await this.asistenciaRepository.query(
+      `SELECT * FROM "asistencias" WHERE empleado_id = $1 AND DATE("fechaAsistencia") = CURRENT_DATE`,
+      [empleadoId]
+    );
 
-    const existente = await this.asistenciaRepository.findOne({
-      where: {
-        empleado_id: empleadoId,
-        fechaAsistencia: hoy,
-      },
-    });
-
-    if (existente?.hora_entrada) {
+    if (existente.length > 0 && existente[0].hora_entrada) {
       throw new BadRequestException('Ya registraste la entrada hoy');
     }
 
-    const ahora = new Date().toTimeString().split(' ')[0].substring(0, 8);
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
 
-    if (existente) {
-      existente.hora_entrada = ahora;
-      return this.asistenciaRepository.save(existente);
+    if (existente.length > 0) {
+      // Actualizar el registro existente
+      await this.asistenciaRepository.update(
+        existente[0].id,
+        { hora_entrada: ahora }
+      );
+      return this.asistenciaRepository.findOne({
+        where: { id: existente[0].id }
+      });
     }
 
+    // Crear nuevo registro
     const nueva = this.asistenciaRepository.create({
       empleado_id: empleadoId,
       fechaAsistencia: hoy,
@@ -125,28 +131,31 @@ export class AsistenciaService {
   }
 
   async marcarSalida(empleadoId: number) {
-    const hoy = new Date();
-    hoy.setHours(0, 0, 0, 0);
+    const ahora = new Date().toTimeString().split(' ')[0].substring(0, 8);
+    
+    // Verificar si existe registro de hoy
+    const existente = await this.asistenciaRepository.query(
+      `SELECT * FROM "asistencias" WHERE empleado_id = $1 AND DATE("fechaAsistencia") = CURRENT_DATE`,
+      [empleadoId]
+    );
 
-    const asistencia = await this.asistenciaRepository.findOne({
-      where: {
-        empleado_id: empleadoId,
-        fechaAsistencia: hoy,
-      },
-    });
-
-    if (!asistencia) {
+    if (existente.length === 0) {
       throw new BadRequestException('No has registrado la entrada hoy');
     }
 
-    if (asistencia.hora_salida) {
+    if (existente[0].hora_salida) {
       throw new BadRequestException('Ya registraste la salida hoy');
     }
 
-    const ahora = new Date().toTimeString().split(' ')[0].substring(0, 8);
-    asistencia.hora_salida = ahora;
+    // Actualizar registro con hora de salida
+    await this.asistenciaRepository.update(
+      existente[0].id,
+      { hora_salida: ahora }
+    );
 
-    return this.asistenciaRepository.save(asistencia);
+    return this.asistenciaRepository.findOne({
+      where: { id: existente[0].id }
+    });
   }
 
   async getHistorial(empleadoId: number, mes?: number, año?: number) {
