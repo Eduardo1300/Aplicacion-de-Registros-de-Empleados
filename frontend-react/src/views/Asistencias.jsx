@@ -10,6 +10,8 @@ const Asistencias = () => {
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [showModal, setShowModal] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [itemToDelete, setItemToDelete] = useState(null)
   const [formData, setFormData] = useState({
     empleadoId: '',
     fecha: new Date().toISOString().split('T')[0],
@@ -100,16 +102,21 @@ const Asistencias = () => {
     }
   }
 
-  const handleDelete = async (id) => {
-    if (window.confirm('¿Eliminar esta asistencia?')) {
-      try {
-        await api.deleteAsistencia(id)
-        loadAsistencias()
-        success('Asistencia eliminada correctamente')
-      } catch (err) {
-        error('Error al eliminar asistencia')
-        console.error('Error:', err)
-      }
+  const handleDelete = (id) => {
+    setItemToDelete(id)
+    setShowDeleteModal(true)
+  }
+
+  const confirmDelete = async () => {
+    try {
+      await api.deleteAsistencia(itemToDelete)
+      loadAsistencias()
+      success('Asistencia eliminada correctamente')
+      setShowDeleteModal(false)
+      setItemToDelete(null)
+    } catch (err) {
+      error('Error al eliminar asistencia')
+      console.error('Error:', err)
     }
   }
 
@@ -258,6 +265,28 @@ const Asistencias = () => {
                 <button type="submit" className="px-4 py-2 rounded-lg text-white bg-gradient-green">Guardar</button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setShowDeleteModal(false)}>
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md" onClick={e => e.stopPropagation()}>
+            <div className="p-6 text-center">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-100 flex items-center justify-center">
+                <i className="bi bi-exclamation-triangle text-3xl text-red-500"></i>
+              </div>
+              <h3 className="text-xl font-bold text-gray-800 mb-2">Confirmar Eliminación</h3>
+              <p className="text-gray-600 mb-6">¿Estás seguro de eliminar esta asistencia?</p>
+              <div className="flex justify-center gap-3">
+                <button onClick={() => setShowDeleteModal(false)} className="px-6 py-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50">
+                  Cancelar
+                </button>
+                <button onClick={confirmDelete} className="px-6 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600">
+                  Eliminar
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
