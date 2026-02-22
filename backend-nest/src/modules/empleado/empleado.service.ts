@@ -50,20 +50,22 @@ export class EmpleadoService {
     }
 
     const empleado = this.empleadoRepository.create(empleadoData);
-    return this.empleadoRepository.save(empleado);
+    return await this.empleadoRepository.save(empleado);
   }
 
-  async update(id: number, updateData: Partial<Empleado>): Promise<Empleado | null> {
+  async update(id: number, updateData: Partial<Empleado> & { password?: string }): Promise<Empleado | null> {
     const empleado = await this.findById(id);
     if (!empleado) return null;
     
-    if (updateData.password) {
-      updateData['password_hash'] = await bcrypt.hash(updateData.password, 10);
-      delete updateData.password;
+    const dataToUpdate = updateData as any;
+    
+    if (dataToUpdate.password) {
+      dataToUpdate.password_hash = await bcrypt.hash(dataToUpdate.password, 10);
+      delete dataToUpdate.password;
     }
     
-    Object.assign(empleado, updateData);
-    return this.empleadoRepository.save(empleado);
+    Object.assign(empleado, dataToUpdate);
+    return await this.empleadoRepository.save(empleado);
   }
 
   async delete(id: number): Promise<void> {
