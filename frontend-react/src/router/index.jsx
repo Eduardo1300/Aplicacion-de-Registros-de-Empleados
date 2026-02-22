@@ -6,7 +6,6 @@ import Asistencias from '../views/Asistencias'
 import Licencias from '../views/Licencias'
 import Graficos from '../views/Graficos'
 import Auditoria from '../views/Auditoria'
-import LoginEmpleado from '../views/empleado/LoginEmpleado'
 import DashboardEmpleado from '../views/empleado/DashboardEmpleado'
 import MarcarAsistencia from '../views/empleado/MarcarAsistencia'
 import MisAsistencias from '../views/empleado/MisAsistencias'
@@ -25,7 +24,7 @@ const ProtectedRoute = ({ children }) => {
 const ProtectedRouteEmpleado = ({ children }) => {
   const token = localStorage.getItem('empleadoToken')
   if (!token) {
-    return <Navigate to="/empleado/login" replace />
+    return <Navigate to="/login" replace />
   }
   return children
 }
@@ -42,7 +41,6 @@ const Router = () => {
       <Route path="/graficos" element={<ProtectedRoute><Graficos /></ProtectedRoute>} />
       <Route path="/auditoria" element={<ProtectedRoute><Auditoria /></ProtectedRoute>} />
       
-      <Route path="/empleado/login" element={<LoginEmpleado />} />
       <Route path="/empleado/dashboard" element={<ProtectedRouteEmpleado><DashboardEmpleado /></ProtectedRouteEmpleado>} />
       <Route path="/empleado/asistencia" element={<ProtectedRouteEmpleado><MarcarAsistencia /></ProtectedRouteEmpleado>} />
       <Route path="/empleado/mis-asistencias" element={<ProtectedRouteEmpleado><MisAsistencias /></ProtectedRouteEmpleado>} />

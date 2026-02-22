@@ -18,7 +18,7 @@ const MiPerfil = () => {
   useEffect(() => {
     const token = localStorage.getItem('empleadoToken')
     const emp = localStorage.getItem('empleado')
-    if (!token || !emp) { navigate('/empleado/login'); return }
+    if (!token || !emp) { navigate('/login'); return }
     const parsedEmp = JSON.parse(emp)
     setEmpleado(parsedEmp)
     setFormData({
@@ -30,7 +30,7 @@ const MiPerfil = () => {
   const logout = () => {
     localStorage.removeItem('empleadoToken')
     localStorage.removeItem('empleado')
-    navigate('/empleado/login')
+    navigate('/login')
   }
 
   const handleSave = async () => {

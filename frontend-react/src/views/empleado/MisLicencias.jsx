@@ -10,7 +10,7 @@ const MisLicencias = () => {
 
   useEffect(() => {
     const token = localStorage.getItem('empleadoToken')
-    if (!token) { navigate('/empleado/login'); return }
+    if (!token) { navigate('/login'); return }
     loadLicencias()
   }, [navigate])
 
@@ -35,7 +35,7 @@ const MisLicencias = () => {
     return estados[estado] || 'bg-gray-100 text-gray-700'
   }
 
-  const logout = () => { localStorage.removeItem('empleadoToken'); localStorage.removeItem('empleado'); navigate('/empleado/login') }
+  const logout = () => { localStorage.removeItem('empleadoToken'); localStorage.removeItem('empleado'); navigate('/login') }
 
   const navItems = [
     { to: '/empleado/dashboard', icon: 'bi-house', label: 'Inicio' },

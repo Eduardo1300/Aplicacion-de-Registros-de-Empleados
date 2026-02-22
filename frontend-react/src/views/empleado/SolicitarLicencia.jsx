@@ -12,7 +12,7 @@ const SolicitarLicencia = () => {
 
   useEffect(() => {
     const token = localStorage.getItem('empleadoToken')
-    if (!token) navigate('/empleado/login')
+    if (!token) navigate('/login')
   }, [navigate])
 
   const handleSubmit = async (e) => {
@@ -30,7 +30,7 @@ const SolicitarLicencia = () => {
     } finally { setLoading(false) }
   }
 
-  const logout = () => { localStorage.removeItem('empleadoToken'); localStorage.removeItem('empleado'); navigate('/empleado/login') }
+  const logout = () => { localStorage.removeItem('empleadoToken'); localStorage.removeItem('empleado'); navigate('/login') }
 
   const navItems = [
     { to: '/empleado/dashboard', icon: 'bi-house', label: 'Inicio' },

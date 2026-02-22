@@ -12,7 +12,7 @@ const DashboardEmpleado = () => {
 
   useEffect(() => {
     const token = localStorage.getItem('empleadoToken')
-    if (!token) { navigate('/empleado/login'); return }
+    if (!token) { navigate('/login'); return }
     const emp = localStorage.getItem('empleado')
     if (emp) setEmpleado(JSON.parse(emp))
     loadStats()
@@ -61,7 +61,7 @@ const DashboardEmpleado = () => {
   const logout = () => {
     localStorage.removeItem('empleadoToken')
     localStorage.removeItem('empleado')
-    navigate('/empleado/login')
+    navigate('/login')
   }
 
   const getAsistenciaBadge = () => {

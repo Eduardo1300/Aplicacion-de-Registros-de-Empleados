@@ -11,7 +11,7 @@ const MarcarAsistencia = () => {
 
   useEffect(() => {
     const token = localStorage.getItem('empleadoToken')
-    if (!token) navigate('/empleado/login')
+    if (!token) navigate('/login')
   }, [navigate])
 
   const marcarAsistencia = async () => {
@@ -30,7 +30,7 @@ const MarcarAsistencia = () => {
   const logout = () => {
     localStorage.removeItem('empleadoToken')
     localStorage.removeItem('empleado')
-    navigate('/empleado/login')
+    navigate('/login')
   }
 
   const navItems = [

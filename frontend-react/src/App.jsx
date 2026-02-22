@@ -55,7 +55,7 @@ function App() {
                     <i className={`bi ${link.icon} mr-1`}></i>{link.label}
                   </Link>
                 ))}
-                <Link to="/empleado/login" className="px-3 py-2 rounded-lg text-white hover:bg-white/10 transition-colors text-sm">
+                <Link to="/login" className="px-3 py-2 rounded-lg text-white hover:bg-white/10 transition-colors text-sm">
                   <i className="bi bi-person-badge mr-1"></i>Portal
                 </Link>
                 <button className="relative px-3 py-2 rounded-lg text-white hover:bg-white/10 transition-colors text-sm">
@@ -79,7 +79,7 @@ function App() {
                     <i className={`bi ${link.icon} mr-2`}></i>{link.label}
                   </Link>
                 ))}
-                <Link to="/empleado/login" className="block px-4 py-2 rounded-lg text-white hover:bg-white/10 transition-colors">
+                <Link to="/login" className="block px-4 py-2 rounded-lg text-white hover:bg-white/10 transition-colors">
                   <i className="bi bi-person-badge mr-2"></i>Portal Empleado
                 </Link>
                 <button onClick={logout} className="w-full text-left px-4 py-2 rounded-lg border border-white/30 text-white hover:bg-white/10 transition-colors">

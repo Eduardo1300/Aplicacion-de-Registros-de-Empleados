@@ -10,7 +10,7 @@ const MisAsistencias = () => {
 
   useEffect(() => {
     const token = localStorage.getItem('empleadoToken')
-    if (!token) { navigate('/empleado/login'); return }
+    if (!token) { navigate('/login'); return }
     loadAsistencias()
   }, [navigate])
 
@@ -23,7 +23,7 @@ const MisAsistencias = () => {
     finally { setLoading(false) }
   }
 
-  const logout = () => { localStorage.removeItem('empleadoToken'); localStorage.removeItem('empleado'); navigate('/empleado/login') }
+  const logout = () => { localStorage.removeItem('empleadoToken'); localStorage.removeItem('empleado'); navigate('/login') }
 
   const navItems = [
     { to: '/empleado/dashboard', icon: 'bi-house', label: 'Inicio' },
