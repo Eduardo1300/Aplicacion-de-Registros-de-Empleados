@@ -6,24 +6,47 @@ const MisAsistencias = () => {
   const navigate = useNavigate()
   const [asistencias, setAsistencias] = useState([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   useEffect(() => {
     const token = localStorage.getItem('empleadoToken')
-    if (!token) { navigate('/login'); return }
+    if (!token) { navigate('/empleado/login'); return }
     loadAsistencias()
   }, [navigate])
 
   const loadAsistencias = async () => {
     try {
       setLoading(true)
+      setError(null)
       const response = await api.getMisAsistencias()
       setAsistencias(response.data || [])
-    } catch (err) { console.error('Error:', err) }
+    } catch (err) {
+      console.error('Error:', err)
+      setError('Error al cargar las asistencias')
+    }
     finally { setLoading(false) }
   }
 
-  const logout = () => { localStorage.removeItem('empleadoToken'); localStorage.removeItem('empleado'); navigate('/login') }
+  const logout = () => { localStorage.removeItem('empleadoToken'); localStorage.removeItem('empleado'); navigate('/empleado/login') }
+
+  const getEstadoBadge = (estado) => {
+    const estados = { 
+      'PRESENTE': 'bg-green-100 text-green-700', 
+      'TARDANZA': 'bg-yellow-100 text-yellow-700', 
+      'AUSENTE': 'bg-red-100 text-red-700'
+    }
+    return estados[estado] || 'bg-gray-100 text-gray-700'
+  }
+
+  const getEstadoLabel = (estado) => {
+    const labels = { 
+      'PRESENTE': 'Presente', 
+      'TARDANZA': 'Tardanza', 
+      'AUSENTE': 'Ausente'
+    }
+    return labels[estado] || estado
+  }
 
   const navItems = [
     { to: '/empleado/dashboard', icon: 'bi-house', label: 'Inicio' },
@@ -53,7 +76,7 @@ const MisAsistencias = () => {
             </Link>
           ))}
         </nav>
-        <div className="p-4 border-t border-gray-100">
+        <div className border-t border-gray="p-4-100">
           <button onClick={logout} className="flex items-center gap-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 w-full"><i className="bi bi-box-arrow-right"></i><span>Cerrar Sesión</span></button>
         </div>
       </aside>
@@ -62,18 +85,61 @@ const MisAsistencias = () => {
 
       <main className="flex-1 p-4 md:p-8">
         <div className="flex items-center justify-between mb-6 md:mb-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Mis Asistencias</h1>
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Mis Asistencias</h1>
+            <p className="text-gray">Historial de-500 text-sm tus registros de asistencia</p>
+          </div>
           <button onClick={() => setSidebarOpen(true)} className="md:hidden text-gray-600 p-2">
             <i className="bi bi-list text-2xl"></i>
           </button>
         </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center text-green-600"><i className="bi bi-calendar-check"></i></div>
+              <div>
+                <p className="text-xs text-gray-500">Total Registros</p>
+                <p className="text-xl font-bold text-gray-800">{asistencias.length}</p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center text-green-600"><i className="bi bi-check-circle"></i></div>
+              <div>
+                <p className="text-xs text-gray-500">Días Presentes</p>
+                <p className="text-xl font-bold text-gray-800">{asistencias.filter(a => a.estado === 'PRESENTE').length}</p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-yellow-100 flex items-center justify-center text-yellow-600"><i className="bi bi-exclamation-circle"></i></div>
+              <div>
+                <p className="text-xs text-gray-500">Tardanzas</p>
+                <p className="text-xl font-bold text-gray-800">{asistencias.filter(a => a.estado === 'TARDANZA').length}</p>
+              </div>
+            </div>
+          </div>
+        </div>
         
         {loading ? (
           <div className="flex justify-center py-12"><div className="w-10 h-10 border-4 border-green-500 border-t-transparent rounded-full animate-spin"></div></div>
-        ) : asistencias.length === 0 ? (
+        ) : error ? (
+          <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-center">
+            <p className="text-red-600">{error}</p>
+          </div>
+        ) : asistentes.length === 0 ? (
           <div className="bg-white rounded-xl p-8 text-center border border-gray-100">
-            <i className="bi bi-inbox text-4xl text-gray-300 block mb-3"></i>
-            <p className="text-gray-600">No hay registros de asistencia</p>
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center text-3xl text-gray-300">
+              <i className="bi bi-inbox"></i>
+            </div>
+            <h3 className="text-lg font-semibold text-gray-700 mb-2">No hay registros de asistencia</h3>
+            <p className="text-gray-500 mb-4">Aún no has registrado ninguna asistencia</p>
+            <Link to="/empleado/asistencia" className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+              <i className="bi bi-plus-lg"></i> Registrar Asistencia
+            </Link>
           </div>
         ) : (
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
@@ -83,15 +149,15 @@ const MisAsistencias = () => {
                   <th className="px-3 md:px-4 py-3 text-left text-sm font-semibold text-gray-600">Fecha</th>
                   <th className="px-3 md:px-4 py-3 text-left text-sm font-semibold text-gray-600">Entrada</th>
                   <th className="px-3 md:px-4 py-3 text-left text-sm font-semibold text-gray-600">Salida</th>
-                  <th className="px-3 md:px-4 py-3 text-left text-sm font-semibold text-gray-600">Tipo</th>
+                  <th className="px-3 md:px-4 py-3 text-left text-sm font-semibold text-gray-600">Estado</th>
                 </tr></thead>
                 <tbody>
                   {asistencias.map((asistencia) => (
                     <tr key={asistencia.id} className="border-t border-gray-100 hover:bg-gray-50">
-                      <td className="px-3 md:px-4 py-3 text-gray-700 text-sm">{asistencia.fechaAsistencia}</td>
-                      <td className="px-3 md:px-4 py-3 text-gray-700 text-sm">{asistencia.hora_entrada || '-'}</td>
-                      <td className="px-3 md:px-4 py-3 text-gray-700 text-sm">{asistencia.hora_salida || '-'}</td>
-                      <td className="px-3 md:px-4 py-3"><span className={`px-2 py-1 rounded-full text-xs font-medium ${asistencia.estado === 'PRESENTE' ? 'bg-green-100 text-green-700' : asistencia.estado === 'TARDANZA' ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-700'}`}>{asistencia.estado}</span></td>
+                      <td className="px-3 md:px-4 py-3 text-gray-700 text-sm">{asistencia.fechaAsistencia || asistencia.fecha || '-'}</td>
+                      <td className="px-3 md:px-4 py-3 text-gray-700 text-sm">{asistencia.hora_entrada || asistencia.horaEntrada || '-'}</td>
+                      <td className="px-3 md:px-4 py-3 text-gray-700 text-sm">{asistencia.hora_salida || asistencia.horaSalida || '-'}</td>
+                      <td className="px-3 md:px-4 py-3"><span className={`px-2 py-1 rounded-full text-xs font-medium ${getEstadoBadge(asistencia.estado)}`}>{getEstadoLabel(asistencia.estado)}</span></td>
                     </tr>
                   ))}
                 </tbody>

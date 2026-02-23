@@ -6,20 +6,25 @@ const MisLicencias = () => {
   const navigate = useNavigate()
   const [licencias, setLicencias] = useState([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   useEffect(() => {
     const token = localStorage.getItem('empleadoToken')
-    if (!token) { navigate('/login'); return }
+    if (!token) { navigate('/empleado/login'); return }
     loadLicencias()
   }, [navigate])
 
   const loadLicencias = async () => {
     try {
       setLoading(true)
+      setError(null)
       const response = await api.misSolicitudesLicencia()
       setLicencias(response.data || [])
-    } catch (err) { console.error('Error:', err) }
+    } catch (err) { 
+      console.error('Error:', err)
+      setError('Error al cargar las licencias')
+    }
     finally { setLoading(false) }
   }
 
@@ -35,7 +40,19 @@ const MisLicencias = () => {
     return estados[estado] || 'bg-gray-100 text-gray-700'
   }
 
-  const logout = () => { localStorage.removeItem('empleadoToken'); localStorage.removeItem('empleado'); navigate('/login') }
+  const getEstadoLabel = (estado) => {
+    const labels = { 
+      'PENDIENTE': 'Pendiente', 
+      'APROBADA': 'Aprobada', 
+      'RECHAZADA': 'Rechazada',
+      'Pendiente': 'Pendiente', 
+      'Aprobada': 'Aprobada', 
+      'Rechazada': 'Rechazada' 
+    }
+    return labels[estado] || estado
+  }
+
+  const logout = () => { localStorage.removeItem('empleadoToken'); localStorage.removeItem('empleado'); navigate('/empleado/login') }
 
   const navItems = [
     { to: '/empleado/dashboard', icon: 'bi-house', label: 'Inicio' },
@@ -74,18 +91,61 @@ const MisLicencias = () => {
 
       <main className="flex-1 p-4 md:p-8">
         <div className="flex items-center justify-between mb-6 md:mb-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Mis Licencias</h1>
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Mis Licencias</h1>
+            <p className="text-gray-500 text-sm">Historial de solicitudes de licencias</p>
+          </div>
           <button onClick={() => setSidebarOpen(true)} className="md:hidden text-gray-600 p-2">
             <i className="bi bi-list text-2xl"></i>
           </button>
         </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-yellow-100 flex items-center justify-center text-yellow-600"><i className="bi bi-clock"></i></div>
+              <div>
+                <p className="text-xs text-gray-500">Pendientes</p>
+                <p className="text-xl font-bold text-gray-800">{licencias.filter(l => l.estado === 'PENDIENTE' || l.estado === 'Pendiente').length}</p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center text-green-600"><i className="bi bi-check-circle"></i></div>
+              <div>
+                <p className="text-xs text-gray-500">Aprobadas</p>
+                <p className="text-xl font-bold text-gray-800">{licencias.filter(l => l.estado === 'APROBADA' || l.estado === 'Aprobada').length}</p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-red-100 flex items-center justify-center text-red-600"><i className="bi bi-x-circle"></i></div>
+              <div>
+                <p className="text-xs text-gray-500">Rechazadas</p>
+                <p className="text-xl font-bold text-gray-800">{licencias.filter(l => l.estado === 'RECHAZADA' || l.estado === 'Rechazada').length}</p>
+              </div>
+            </div>
+          </div>
+        </div>
         
         {loading ? (
           <div className="flex justify-center py-12"><div className="w-10 h-10 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin"></div></div>
+        ) : error ? (
+          <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-center">
+            <p className="text-red-600">{error}</p>
+          </div>
         ) : licencias.length === 0 ? (
           <div className="bg-white rounded-xl p-8 text-center border border-gray-100">
-            <i className="bi bi-inbox text-4xl text-gray-300 block mb-3"></i>
-            <p className="text-gray-600">No hay solicitudes de licencia</p>
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center text-3xl text-gray-300">
+              <i className="bi bi-calendar-x"></i>
+            </div>
+            <h3 className="text-lg font-semibold text-gray-700 mb-2">No hay solicitudes de licencia</h3>
+            <p className="text-gray-500 mb-4">Aún no has solicitado ninguna licencia</p>
+            <Link to="/empleado/solicitar-licencia" className="inline-flex items-center gap-2 px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600">
+              <i className="bi bi-plus-lg"></i> Nueva Solicitud
+            </Link>
           </div>
         ) : (
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
@@ -93,17 +153,17 @@ const MisLicencias = () => {
               <table className="w-full">
                 <thead><tr className="bg-gray-50">
                   <th className="px-3 md:px-4 py-3 text-left text-sm font-semibold text-gray-600">Tipo</th>
-                  <th className="px-3 md:px-4 py-3 text-left text-sm font-semibold text-gray-600">Inicio</th>
-                  <th className="px-3 md:px-4 py-3 text-left text-sm font-semibold text-gray-600">Fin</th>
+                  <th className="px-3 md:px-4 py-3 text-left text-sm font-semibold text-gray-600">Fecha Inicio</th>
+                  <th className="px-3 md:px-4 py-3 text-left text-sm font-semibold text-gray-600">Fecha Fin</th>
                   <th className="px-3 md:px-4 py-3 text-left text-sm font-semibold text-gray-600">Estado</th>
                 </tr></thead>
                 <tbody>
                   {licencias.map((licencia) => (
                     <tr key={licencia.id} className="border-t border-gray-100 hover:bg-gray-50">
-                      <td className="px-3 md:px-4 py-3 text-gray-700 text-sm">{licencia.tipoLicencia?.nombre || '-'}</td>
-                      <td className="px-3 md:px-4 py-3 text-gray-700 text-sm">{licencia.fechaInicio}</td>
-                      <td className="px-3 md:px-4 py-3 text-gray-700 text-sm">{licencia.fechaFin}</td>
-                      <td className="px-3 md:px-4 py-3"><span className={`px-2 py-1 rounded-full text-xs font-medium ${getEstadoBadge(licencia.estado)}`}>{licencia.estado}</span></td>
+                      <td className="px-3 md:px-4 py-3 text-gray-700 text-sm">{licencia.tipoLicencia?.nombre || licencia.tipo_licencia?.nombre || '-'}</td>
+                      <td className="px-3 md:px-4 py-3 text-gray-700 text-sm">{licencia.fechaInicio || '-'}</td>
+                      <td className="px-3 md:px-4 py-3 text-gray-700 text-sm">{licencia.fechaFin || '-'}</td>
+                      <td className="px-3 md:px-4 py-3"><span className={`px-2 py-1 rounded-full text-xs font-medium ${getEstadoBadge(licencia.estado)}`}>{getEstadoLabel(licencia.estado)}</span></td>
                     </tr>
                   ))}
                 </tbody>

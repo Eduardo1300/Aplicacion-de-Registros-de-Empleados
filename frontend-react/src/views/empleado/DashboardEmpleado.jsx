@@ -12,7 +12,7 @@ const DashboardEmpleado = () => {
 
   useEffect(() => {
     const token = localStorage.getItem('empleadoToken')
-    if (!token) { navigate('/login'); return }
+    if (!token) { navigate('/empleado/login'); return }
     const emp = localStorage.getItem('empleado')
     if (emp) setEmpleado(JSON.parse(emp))
     loadStats()

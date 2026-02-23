@@ -8,11 +8,27 @@ const MarcarAsistencia = () => {
   const [mensaje, setMensaje] = useState('')
   const [tipo, setTipo] = useState('')
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [asistenciaHoy, setAsistenciaHoy] = useState(null)
+  const [loadingCheck, setLoadingCheck] = useState(true)
 
   useEffect(() => {
     const token = localStorage.getItem('empleadoToken')
-    if (!token) navigate('/login')
+    if (!token) navigate('/empleado/login')
+    checkAsistenciaHoy()
   }, [navigate])
+
+  const checkAsistenciaHoy = async () => {
+    try {
+      setLoadingCheck(true)
+      const response = await api.getAsistenciaHoy()
+      setAsistenciaHoy(response.data)
+    } catch (err) {
+      console.log('No hay asistencia hoy')
+      setAsistenciaHoy(null)
+    } finally {
+      setLoadingCheck(false)
+    }
+  }
 
   const marcarAsistencia = async () => {
     setLoading(true)
@@ -21,8 +37,10 @@ const MarcarAsistencia = () => {
       await api.marcarEntrada()
       setMensaje('Asistencia marcada exitosamente')
       setTipo('success')
+      checkAsistenciaHoy()
     } catch (err) {
-      setMensaje(err.response?.data?.message || 'Error al marcar asistencia')
+      const errorMsg = err.response?.data?.message || 'Error al marcar asistencia'
+      setMensaje(errorMsg)
       setTipo('error')
     } finally { setLoading(false) }
   }
@@ -30,8 +48,20 @@ const MarcarAsistencia = () => {
   const logout = () => {
     localStorage.removeItem('empleadoToken')
     localStorage.removeItem('empleado')
-    navigate('/login')
+    navigate('/empleado/login')
   }
+
+  const getEstadoBadge = () => {
+    if (!asistenciaHoy) return null
+    switch (asistenciaHoy.estado) {
+      case 'PRESENTE': return { bg: 'bg-green-100', text: 'text-green-700', label: 'Presente' }
+      case 'TARDANZA': return { bg: 'bg-yellow-100', text: 'text-yellow-700', label: 'Tardanza' }
+      case 'AUSENTE': return { bg: 'bg-red-100', text: 'text-red-700', label: 'Ausente' }
+      default: return null
+    }
+  }
+
+  const badge = getEstadoBadge()
 
   const navItems = [
     { to: '/empleado/dashboard', icon: 'bi-house', label: 'Inicio' },
@@ -75,25 +105,46 @@ const MarcarAsistencia = () => {
             <i className="bi bi-list text-2xl"></i>
           </button>
         </div>
-        
-        <div className="bg-white rounded-xl p-6 md:p-8 shadow-sm border border-gray-100 max-w-md mx-auto text-center">
-          <div className="w-20 h-20 md:w-24 md:h-24 mx-auto mb-4 md:mb-6 rounded-full flex items-center justify-center text-4xl md:text-5xl text-white bg-gradient-green shadow-gradient-green">
-            <i className="bi bi-clock-fill"></i>
-          </div>
-          <h2 className="text-xl md:text-2xl font-bold text-gray-800 mb-2">Registro de Asistencia</h2>
-          <p className="text-gray-500 mb-4 md:mb-6 text-sm md:text-base">{new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
-          
-          <button onClick={marcarAsistencia} disabled={loading}
-            className="w-full py-3 md:py-4 rounded-xl text-white font-semibold text-base md:text-lg disabled:opacity-70 flex items-center justify-center gap-2 bg-gradient-green shadow-gradient-green">
-            {loading ? (<><span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span> Registrando...</>) : (<><i className="bi bi-check-circle"></i> Marcar Asistencia</>)}
-          </button>
 
-          {mensaje && (
-            <div className={`mt-4 p-3 rounded-xl ${tipo === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-              {mensaje}
+        {loadingCheck ? (
+          <div className="flex justify-center py-12"><div className="w-10 h-10 border-4 border-green-500 border-t-transparent rounded-full animate-spin"></div></div>
+        ) : asistenciaHoy ? (
+          <div className="bg-white rounded-xl p-6 md:p-8 shadow-sm border border-gray-100 max-w-md mx-auto text-center">
+            <div className={`w-20 h-20 md:w-24 md:h-24 mx-auto mb-4 md:mb-6 rounded-full flex items-center justify-center text-4xl md:text-5xl ${badge?.bg || 'bg-gray-100'} ${badge?.text || 'text-gray-700'}`}>
+              <i className={`bi ${asistenciaHoy.hora_entrada ? 'bi-check-circle-fill' : 'bi-x-circle'}`}></i>
             </div>
-          )}
-        </div>
+            <h2 className="text-xl md:text-2xl font-bold text-gray-800 mb-2">Asistencia Registrada</h2>
+            <div className={`inline-block px-4 py-2 rounded-full ${badge?.bg || 'bg-gray-100'} ${badge?.text || 'text-gray-700'} font-semibold mb-4`}>
+              {badge?.label || asistenciaHoy.estado}
+            </div>
+            {asistenciaHoy.hora_entrada && (
+              <p className="text-gray-500">Entrada: {asistenciaHoy.hora_entrada}</p>
+            )}
+            {asistenciaHoy.hora_salida && (
+              <p className="text-gray-500">Salida: {asistenciaHoy.hora_salida}</p>
+            )}
+            <p className="text-gray-400 text-sm mt-4">{new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+          </div>
+        ) : (
+          <div className="bg-white rounded-xl p-6 md:p-8 shadow-sm border border-gray-100 max-w-md mx-auto text-center">
+            <div className="w-20 h-20 md:w-24 md:h-24 mx-auto mb-4 md:mb-6 rounded-full flex items-center justify-center text-4xl md:text-5xl text-white bg-gradient-green shadow-gradient-green">
+              <i className="bi bi-clock-fill"></i>
+            </div>
+            <h2 className="text-xl md:text-2xl font-bold text-gray-800 mb-2">Registro de Asistencia</h2>
+            <p className="text-gray-500 mb-4 md:mb-6 text-sm md:text-base">{new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+            
+            <button onClick={marcarAsistencia} disabled={loading}
+              className="w-full py-3 md:py-4 rounded-xl text-white font-semibold text-base md:text-lg disabled:opacity-70 flex items-center justify-center gap-2 bg-gradient-green shadow-gradient-green">
+              {loading ? (<><span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span> Registrando...</>) : (<><i className="bi bi-check-circle"></i> Marcar Asistencia</>)}
+            </button>
+
+            {mensaje && (
+              <div className={`mt-4 p-3 rounded-xl ${tipo === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                {mensaje}
+              </div>
+            )}
+          </div>
+        )}
       </main>
     </div>
   )

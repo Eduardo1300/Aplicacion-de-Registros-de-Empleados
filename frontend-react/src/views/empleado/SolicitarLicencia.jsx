@@ -12,7 +12,7 @@ const SolicitarLicencia = () => {
 
   useEffect(() => {
     const token = localStorage.getItem('empleadoToken')
-    if (!token) navigate('/login')
+    if (!token) navigate('/empleado/login')
   }, [navigate])
 
   const handleSubmit = async (e) => {
