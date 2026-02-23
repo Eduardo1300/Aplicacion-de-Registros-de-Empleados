@@ -149,23 +149,55 @@ export class AuthService {
   }
 
   async updateEmpleadoPerfil(empleadoId: number, data: { correo?: string; telefono?: string }) {
+    if (!empleadoId || empleadoId === 0) {
+      throw new BadRequestException('ID de empleado inválido');
+    }
+
     const empleado = await this.empleadoRepository.findOne({
       where: { id: empleadoId },
+      relations: ['cargo', 'departamento'],
     });
 
     if (!empleado) {
       throw new BadRequestException('Empleado no encontrado');
     }
 
-    if (data.correo) empleado.correo = data.correo;
-    if (data.telefono) empleado.telefono = data.telefono;
+    // Validar datos
+    if (data.correo) {
+      if (!data.correo.includes('@')) {
+        throw new BadRequestException('Correo inválido');
+      }
+      empleado.correo = data.correo;
+    }
+    
+    if (data.telefono) {
+      empleado.telefono = data.telefono;
+    }
 
-    await this.empleadoRepository.save(empleado);
+    const saved = await this.empleadoRepository.save(empleado);
 
-    return { message: 'Perfil actualizado correctamente' };
+    return {
+      message: 'Perfil actualizado correctamente',
+      data: {
+        id: saved.id,
+        nombre: saved.nombre,
+        apellido: saved.apellido,
+        dni: saved.dni,
+        correo: saved.correo,
+        telefono: saved.telefono,
+        cargo: saved.cargo,
+        departamento: saved.departamento,
+        fecha_ingreso: saved.fechaIngreso,
+        estado: saved.estado,
+      }
+    };
   }
 
   async cambiarPassword(empleadoId: number, passwordActual: string, passwordNueva: string) {
+    if (!empleadoId || empleadoId === 0) {
+      throw new BadRequestException('ID de empleado inválido');
+    }
+
     const empleado = await this.empleadoRepository.findOne({
       where: { id: empleadoId },
     });

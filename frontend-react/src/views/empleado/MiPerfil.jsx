@@ -36,14 +36,16 @@ const MiPerfil = () => {
   const handleSave = async () => {
     setLoading(true)
     try {
-      await api.updatePerfil(formData)
-      const updatedEmp = { ...empleado, ...formData }
+      const response = await api.updatePerfil(formData)
+      const updatedEmp = response.data?.data || { ...empleado, ...formData }
       setEmpleado(updatedEmp)
       localStorage.setItem('empleado', JSON.stringify(updatedEmp))
-      success('Perfil actualizado correctamente')
+      success(response.data?.message || 'Perfil actualizado correctamente')
       setEditMode(false)
     } catch (err) {
-      error('Error al actualizar perfil')
+      const errorMsg = err.response?.data?.message || err.message || 'Error al actualizar perfil'
+      error(errorMsg)
+      console.error('Error updating profile:', err)
     } finally {
       setLoading(false)
     }
