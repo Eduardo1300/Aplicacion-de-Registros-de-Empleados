@@ -11,10 +11,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       password: process.env.DB_PASSWORD || 'postgres',
       database: process.env.DB_NAME || 'bd_registro_empleados',
       entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-      synchronize: process.env.NODE_ENV !== 'production',
-      logging: process.env.NODE_ENV !== 'production',
+      synchronize: true,
+      logging: false,
       migrations: [__dirname + '/migrations/*{.ts,.js}'],
-      migrationsRun: true,
+      migrationsRun: false,
       ssl: (process.env.DB_HOST || '').includes('render.com') || (process.env.DB_HOST || '').includes('proxy.rlwy.net')
         ? { rejectUnauthorized: false } 
         : false,

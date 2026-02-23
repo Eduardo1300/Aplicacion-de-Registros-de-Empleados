@@ -1,0 +1,15 @@
+      table_name      
+----------------------
+ asistencias
+ cargos
+ departamentos
+ empleados
+ permissions
+ role_permissions
+ roles
+ saldos_licencia
+ solicitudes_licencia
+ tipos_licencia
+ usuarios
+(11 rows)
+
