@@ -15,7 +15,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       logging: process.env.NODE_ENV !== 'production',
       migrations: [__dirname + '/migrations/*{.ts,.js}'],
       migrationsRun: true,
-      ssl: (process.env.DB_HOST || '').includes('render.com') 
+      ssl: (process.env.DB_HOST || '').includes('render.com') || (process.env.DB_HOST || '').includes('proxy.rlwy.net')
         ? { rejectUnauthorized: false } 
         : false,
     }),
