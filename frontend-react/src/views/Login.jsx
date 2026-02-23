@@ -5,8 +5,8 @@ import api from '../services/api'
 const Login = () => {
   const navigate = useNavigate()
   const [formData, setFormData] = useState({
-    nombreUsuario: '',
-    clave: ''
+    nombreUsuario: 'admin',
+    clave: 'admin123'
   })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
