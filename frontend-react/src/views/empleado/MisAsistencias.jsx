@@ -87,7 +87,7 @@ const MisAsistencias = () => {
         <div className="flex items-center justify-between mb-6 md:mb-8">
           <div>
             <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Mis Asistencias</h1>
-            <p className="text-gray">Historial de-500 text-sm tus registros de asistencia</p>
+            <p className="text-gray-500 text-sm">Historial de tus registros de asistencia</p>
           </div>
           <button onClick={() => setSidebarOpen(true)} className="md:hidden text-gray-600 p-2">
             <i className="bi bi-list text-2xl"></i>
