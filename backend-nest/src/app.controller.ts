@@ -21,6 +21,11 @@ export class AppController {
     return 'Sistema de Registro de Empleados API';
   }
 
+  @Get('api/health')
+  getHealth() {
+    return { status: 'ok' };
+  }
+
   @Get('api/estadisticas')
   async getEstadisticas() {
     const today = new Date().toISOString().split('T')[0]
