@@ -6,8 +6,17 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   
   app.enableCors({
-    origin: '*',
+    origin: [
+      'http://localhost:5173',
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'https://gestion.christophervaldivia.me',
+      'https://aplicacion-de-registros-de-empleados-eznn.onrender.com',
+      '*'
+    ],
     credentials: true,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    allowedHeaders: 'Content-Type,Authorization',
   });
 
   // Swagger Configuration
