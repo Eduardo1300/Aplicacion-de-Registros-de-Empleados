@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const API_URL = 'https://aplicacion-de-registros-de-empleados.railway.internal/api'
+const API_URL = 'https://aplicacion-de-registros-de-empleados-production.up.railway.app/api'
 
 const apiClient = axios.create({
   baseURL: API_URL,

@@ -11,8 +11,7 @@ async function bootstrap() {
       'http://localhost:3000',
       'http://localhost:3001',
       'https://gestion.christophervaldivia.me',
-      'https://aplicacion-de-registros-de-empleados.railway.app',
-      'https://aplicacion-de-registros-de-empleados.railway.internal'
+      'https://aplicacion-de-registros-de-empleados-production.up.railway.app'
     ],
     credentials: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
