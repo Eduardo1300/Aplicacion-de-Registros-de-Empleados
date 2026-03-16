@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const API_URL = 'https://aplicacion-de-registros-de-empleados.onrender.com/api'
+const API_URL = 'https://aplicacion-de-registros-de-empleados.railway.internal/api'
 
 const apiClient = axios.create({
   baseURL: API_URL,

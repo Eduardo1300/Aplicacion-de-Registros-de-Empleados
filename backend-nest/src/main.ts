@@ -11,9 +11,8 @@ async function bootstrap() {
       'http://localhost:3000',
       'http://localhost:3001',
       'https://gestion.christophervaldivia.me',
-      'https://aplicacion-de-registros-de-empleados.onrender.com',
-      'https://aplicacion-de-registros-de-empleados-eznn.onrender.com',
-      '*'
+      'https://aplicacion-de-registros-de-empleados.railway.app',
+      'https://aplicacion-de-registros-de-empleados.railway.internal'
     ],
     credentials: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
